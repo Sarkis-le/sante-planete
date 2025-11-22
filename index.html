@@ -1,702 +1,515 @@
-diff --git a/index.html b/index.html
-index a406b60a5bf60c26baa6490c1059b9ab8f87504a..956284263eec1e9a2b329349172cae2c0edd1b30 100644
---- a/index.html
-+++ b/index.html
-@@ -1,268 +1,490 @@
- <!doctype html>
- <html lang="fr">
- <head>
-   <meta charset="utf-8">
-   <title>Santé Planète – Articles</title>
-   <meta name="viewport" content="width=device-width, initial-scale=1">
-+  <link
-+    rel="icon"
-+    type="image/svg+xml"
-+    href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%2322c55e'/%3E%3Cstop offset='100%25' stop-color='%2310b981'/%3E%3C/linearGradient%3E%3C/defs%3E%3Ccircle cx='32' cy='32' r='30' fill='%23020617' stroke='url(%23g)' stroke-width='6'/%3E%3Cpath d='M20 34c6 3 10 4 14 0s10-11 14-12' fill='none' stroke='url(%23g)' stroke-width='5' stroke-linecap='round'/%3E%3Cpath d='M20 30v12c0 4 2 8 6 8s6-4 6-8V20' fill='none' stroke='%23e5e7eb' stroke-width='5' stroke-linecap='round'/%3E%3C/svg%3E"
-+  />
-   <style>
-+    :root {
-+      --bg: #020617;
-+      --panel: #0b1224;
-+      --panel-strong: #0f172a;
-+      --text: #e5e7eb;
-+      --muted: #9ca3af;
-+      --accent: #22c55e;
-+      --accent-2: #10b981;
-+      --border: #1f2937;
-+      --shadow: 0 20px 70px rgba(0, 0, 0, 0.25);
-+    }
-+
-+    * {
-+      box-sizing: border-box;
-+    }
-+
-     body {
-       margin: 0;
--      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
--      background: #020617;
--      color: #e5e7eb;
-+      font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-+      background: radial-gradient(circle at 10% 10%, rgba(34, 197, 94, 0.08), transparent 35%),
-+        radial-gradient(circle at 90% 20%, rgba(16, 185, 129, 0.08), transparent 32%),
-+        var(--bg);
-+      color: var(--text);
-+      min-height: 100vh;
-     }
--    header {
-+
-+    .hero {
-+      padding: 2.5rem 1.5rem 1.8rem;
-+      max-width: 1100px;
-+      margin: 0 auto;
-+    }
-+
-+    .hero-card {
-+      background: linear-gradient(135deg, rgba(34, 197, 94, 0.12), rgba(15, 23, 42, 0.9));
-+      border: 1px solid rgba(34, 197, 94, 0.18);
-+      border-radius: 1.25rem;
-       padding: 1.5rem;
--      background: radial-gradient(circle at top left, #22c55e33, transparent 60%);
--      border-bottom: 1px solid #1f2937;
-+      box-shadow: var(--shadow);
-+      position: relative;
-+      overflow: hidden;
-+    }
-+
-+    .hero-card::after {
-+      content: "";
-+      position: absolute;
-+      inset: 0;
-+      background: radial-gradient(circle at 70% 20%, rgba(16, 185, 129, 0.2), transparent 35%);
-+      pointer-events: none;
-+    }
-+
-+    .topline {
-+      display: flex;
-+      align-items: center;
-+      justify-content: space-between;
-+      gap: 1rem;
-+      margin-bottom: 1.25rem;
-+    }
-+
-+    .brand {
-+      display: flex;
-+      align-items: center;
-+      gap: 0.8rem;
-     }
--    .title {
--      font-size: 1.8rem;
--      font-weight: 700;
-+
-+    .logo-mark {
-+      width: 48px;
-+      height: 48px;
-+      border-radius: 14px;
-+      background: linear-gradient(145deg, rgba(34, 197, 94, 0.9), rgba(16, 185, 129, 0.75));
-+      display: grid;
-+      place-items: center;
-+      color: #0b1224;
-+      font-weight: 800;
-+      font-size: 1.2rem;
-+      box-shadow: 0 10px 30px rgba(34, 197, 94, 0.35);
-+    }
-+
-+    .brand h1 {
-       margin: 0;
-+      font-size: 1.4rem;
-+      letter-spacing: -0.02em;
-     }
--    .subtitle {
--      margin: 0.3rem 0 0;
--      color: #9ca3af;
-+
-+    .brand p {
-+      margin: 0;
-+      color: var(--muted);
-+      font-size: 0.95rem;
-+    }
-+
-+    .nav-links {
-+      display: flex;
-+      gap: 0.9rem;
-+      align-items: center;
-     }
-+
-+    .nav-links a {
-+      color: var(--text);
-+      text-decoration: none;
-+      font-size: 0.95rem;
-+      padding: 0.35rem 0.75rem;
-+      border-radius: 999px;
-+      border: 1px solid rgba(255, 255, 255, 0.08);
-+      background: rgba(255, 255, 255, 0.02);
-+    }
-+
-+    .nav-links a:hover {
-+      border-color: rgba(34, 197, 94, 0.4);
-+      color: var(--accent);
-+    }
-+
-+    .hero-text h2 {
-+      margin: 0 0 0.5rem;
-+      font-size: clamp(1.6rem, 3vw, 2.2rem);
-+      letter-spacing: -0.02em;
-+    }
-+
-+    .eyebrow {
-+      display: inline-flex;
-+      align-items: center;
-+      gap: 0.35rem;
-+      padding: 0.25rem 0.6rem;
-+      border-radius: 999px;
-+      background: rgba(255, 255, 255, 0.06);
-+      color: var(--muted);
-+      font-size: 0.85rem;
-+      margin-bottom: 0.6rem;
-+    }
-+
-+    .hero-text p {
-+      margin: 0;
-+      color: var(--muted);
-+      font-size: 1rem;
-+      max-width: 720px;
-+      line-height: 1.6;
-+    }
-+
-     main {
--      max-width: 960px;
-+      max-width: 1100px;
-       margin: 0 auto;
--      padding: 1.5rem;
-+      padding: 0 1.5rem 2.5rem;
-     }
--    .topbar {
-+
-+    .section-head {
-       display: flex;
-       justify-content: space-between;
-       align-items: center;
-+      margin: 1.5rem 0 1rem;
-       gap: 1rem;
--      margin-bottom: 1.5rem;
-     }
--    .topbar a {
--      color: #22c55e;
--      text-decoration: none;
--      font-size: 0.95rem;
-+
-+    .section-head h3 {
-+      margin: 0;
-+      font-size: 1.2rem;
-+      letter-spacing: -0.01em;
-     }
--    .topbar a:hover {
--      text-decoration: underline;
-+
-+    .section-head span {
-+      color: var(--muted);
-+      font-size: 0.95rem;
-     }
--    .articles-grid {
-+
-+    #articles {
-       display: grid;
--      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
--      gap: 1.5rem;
--    }
--    article {
--      border-radius: 0.75rem;
--      border: 1px solid #1f2937;
--      padding: 1rem 1.2rem;
--      background: radial-gradient(circle at top left, #0f172a, #020617);
--    }
--    .meta {
--      font-size: 0.8rem;
--      color: #9ca3af;
-+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-+      gap: 1.2rem;
-+    }
-+
-+    .article-card {
-+      background: var(--panel);
-+      border: 1px solid var(--border);
-+      border-radius: 1rem;
-+      padding: 1.1rem 1.2rem;
-+      box-shadow: var(--shadow);
-+      position: relative;
-+      overflow: hidden;
-+      transition: transform 160ms ease, border-color 160ms ease;
-+    }
-+
-+    .article-card:hover {
-+      transform: translateY(-4px);
-+      border-color: rgba(34, 197, 94, 0.4);
-+    }
-+
-+    .article-card .meta {
-       display: flex;
-       justify-content: space-between;
--      margin-bottom: 0.3rem;
-+      align-items: center;
-+      color: var(--muted);
-+      font-size: 0.85rem;
-+      margin-bottom: 0.4rem;
-     }
--    h2 {
--      font-size: 1.1rem;
--      margin: 0.2rem 0 0.4rem;
-+
-+    .article-card h2 {
-+      margin: 0.15rem 0 0.35rem;
-+      font-size: 1.05rem;
-+      letter-spacing: -0.01em;
-     }
--    p {
--      font-size: 0.9rem;
--      line-height: 1.5;
--      margin: 0.3rem 0;
-+
-+    .article-card p {
-+      margin: 0;
-+      color: #c7d0dd;
-+      line-height: 1.55;
-+      font-size: 0.95rem;
-     }
--    .link {
--      margin-top: 0.6rem;
--      display: inline-block;
--      font-size: 0.9rem;
--      color: #22c55e;
-+
-+    .read-more {
-+      margin-top: 0.7rem;
-+      display: inline-flex;
-+      align-items: center;
-+      gap: 0.35rem;
-+      color: var(--accent);
-       text-decoration: none;
-+      font-weight: 600;
-+      font-size: 0.95rem;
-     }
--    .link:hover {
--      text-decoration: underline;
--    }
--    .disclaimer {
--      margin-top: 1.5rem;
--      font-size: 0.8rem;
--      color: #9ca3af;
--      border-top: 1px solid #1f2937;
--      padding-top: 0.8rem;
-+
-+    .read-more:hover {
-+      color: var(--accent-2);
-     }
-+
-     .article-full {
--      margin-top: 1.5rem;
--      padding: 1.2rem 1.4rem;
--      border-radius: 0.75rem;
--      border: 1px solid #1f2937;
--      background: #020617;
-+      margin-top: 2rem;
-+      padding: 1.5rem 1.6rem;
-+      border-radius: 1.2rem;
-+      border: 1px solid var(--border);
-+      background: linear-gradient(180deg, #0b1224, #050b1a);
-+      box-shadow: var(--shadow);
-     }
-+
-     .article-full h1 {
--      margin: 0 0 0.6rem;
--      font-size: 1.4rem;
-+      margin: 0 0 0.4rem;
-+      font-size: 1.5rem;
-+      letter-spacing: -0.01em;
-     }
-+
-     .article-full .meta-line {
-+      margin: 0 0 1rem;
-+      color: var(--muted);
-+      font-size: 0.95rem;
-+    }
-+
-+    .article-full p {
-+      color: #d9e1ec;
-+      line-height: 1.7;
-+      font-size: 1rem;
-+      margin: 0 0 0.9rem;
-+    }
-+
-+    .badge {
-+      display: inline-flex;
-+      align-items: center;
-+      gap: 0.4rem;
-+      padding: 0.3rem 0.7rem;
-+      background: rgba(34, 197, 94, 0.12);
-+      color: var(--accent);
-+      border-radius: 999px;
-       font-size: 0.85rem;
--      color: #9ca3af;
--      margin-bottom: 0.6rem;
-+      border: 1px solid rgba(34, 197, 94, 0.35);
-     }
-+
-     .back-link {
--      display: inline-block;
-+      display: inline-flex;
-+      align-items: center;
-+      gap: 0.4rem;
-       margin-top: 1rem;
--      font-size: 0.9rem;
--      color: #22c55e;
-+      font-size: 0.95rem;
-+      color: var(--accent);
-       text-decoration: none;
-+      font-weight: 600;
-     }
-+
-     .back-link:hover {
--      text-decoration: underline;
-+      color: var(--accent-2);
-+    }
-+
-+    .disclaimer {
-+      margin-top: 1.8rem;
-+      font-size: 0.9rem;
-+      color: var(--muted);
-+      border-top: 1px solid var(--border);
-+      padding-top: 0.9rem;
-+      line-height: 1.6;
-+    }
-+
-+    .empty-state {
-+      color: var(--muted);
-+      font-size: 1rem;
-+      background: var(--panel);
-+      border: 1px dashed var(--border);
-+      padding: 1rem;
-+      border-radius: 1rem;
-+    }
-+
-+    @media (max-width: 640px) {
-+      .topline { flex-direction: column; align-items: flex-start; }
-+      .nav-links { width: 100%; flex-wrap: wrap; }
-+      .nav-links a { padding: 0.35rem 0.65rem; }
-     }
-   </style>
- </head>
- <body>
--<header>
--  <div>
--    <h1 class="title">Santé Planète</h1>
--    <p class="subtitle">
--      Conseils et informations générales sur la santé, accessibles partout dans le monde.
-+  <header class="hero">
-+    <div class="hero-card">
-+      <div class="topline">
-+        <div class="brand">
-+          <div class="logo-mark" aria-hidden="true">SP</div>
-+          <div>
-+            <h1>Santé Planète</h1>
-+            <p>Magazine santé & bien-être pour tous</p>
-+          </div>
-+        </div>
-+        <nav class="nav-links" aria-label="Sections principales">
-+          <a href="#articles-section">Articles</a>
-+          <a href="#apropos">À propos</a>
-+          <a href="#mentions">Mentions</a>
-+        </nav>
-+      </div>
-+      <div class="hero-text">
-+        <div class="eyebrow">Actualités santé — rafraîchies en continu</div>
-+        <h2>Des articles clairs, sourcés et faciles à consulter</h2>
-+        <p>
-+          Découvrez les dernières publications de l'équipe Santé Planète : prévention, bien-être,
-+          gestes du quotidien et explications simples pour mieux comprendre votre santé.
-+        </p>
-+      </div>
-+    </div>
-+  </header>
-+
-+  <main>
-+    <div class="section-head" id="articles-section">
-+      <h3>Dernières publications</h3>
-+      <span>Mis à jour automatiquement dès qu'un article est publié</span>
-+    </div>
-+
-+    <div id="articles" class="articles-grid">
-+      <!-- cartes d'articles insérées par JavaScript -->
-+    </div>
-+
-+    <div id="article-full" class="article-full" style="display:none;"></div>
-+
-+    <p id="apropos" class="disclaimer">
-+      Les contenus publiés sur Santé Planète sont fournis à titre informatif pour accompagner le quotidien
-+      des familles et des voyageurs. Ils ne remplacent jamais l'avis d'un médecin ou d'un professionnel de santé.
-     </p>
--  </div>
--</header>
--
--<main>
--  <div class="topbar">
--    <h2 style="margin:0;font-size:1.1rem;">Derniers articles</h2>
--    <a href="/admin.html">Espace administration</a>
--  </div>
--
--  <div id="articles" class="articles-grid">
--    <!-- cartes d'articles insérées par JavaScript -->
--  </div>
--
--  <div id="article-full" class="article-full" style="display:none;"></div>
--
--  <p class="disclaimer">
--    Les contenus publiés sur Santé Planète sont fournis à titre purement informatif
--    et ne remplacent en aucun cas la consultation d'un professionnel de santé.
--  </p>
--</main>
--
--<script>
--  async function loadArticles() {
--    try {
--      const res = await fetch("/api/articles");
--      const data = await res.json();
--      window.__ARTICLES__ = data || [];
--
--      const params = new URLSearchParams(window.location.search);
--      const slug = params.get("article");
--
--      if (slug) {
--        showArticle(slug);
--      } else {
--        showList();
-+
-+    <p id="mentions" class="disclaimer">
-+      Éditeur : Santé Planète — Ressources éducatives et prévention. Les données sont fournies telles quelles,
-+      sans garantie. En cas d'urgence, contactez les services médicaux locaux.
-+    </p>
-+  </main>
-+
-+  <script>
-+    async function loadArticles() {
-+      try {
-+        const res = await fetch("/api/articles");
-+        const data = await res.json();
-+        window.__ARTICLES__ = data || [];
-+
-+        const params = new URLSearchParams(window.location.search);
-+        const slug = params.get("article");
-+
-+        if (slug) {
-+          showArticle(slug);
-+        } else {
-+          showList();
-+        }
-+      } catch (e) {
-+        console.error(e);
-+        document.getElementById("articles").innerHTML =
-+          '<div class="empty-state">Erreur lors du chargement des articles.</div>';
-       }
--    } catch (e) {
--      console.error(e);
--      document.getElementById("articles").innerHTML =
--        "<p>Erreur lors du chargement des articles.</p>";
-     }
--  }
- 
--  function showList() {
--    const container = document.getElementById("articles");
--    const full = document.getElementById("article-full");
--    full.style.display = "none";
--    container.style.display = "grid";
-+    function formatDate(value) {
-+      const date = value ? new Date(value) : new Date();
-+      return date.toLocaleDateString("fr-FR", {
-+        day: "2-digit",
-+        month: "long",
-+        year: "numeric",
-+      });
-+    }
-+
-+    function showList() {
-+      const container = document.getElementById("articles");
-+      const full = document.getElementById("article-full");
-+      full.style.display = "none";
-+      container.style.display = "grid";
-+
-+      const articles = window.__ARTICLES__ || [];
-+      if (!articles.length) {
-+        container.innerHTML = '<div class="empty-state">Aucun article publié pour le moment.</div>';
-+        return;
-+      }
-+
-+      container.innerHTML = "";
-+      for (const art of articles) {
-+        const card = document.createElement("article");
-+        card.className = "article-card";
-+
-+        const meta = document.createElement("div");
-+        meta.className = "meta";
-+        const cat = document.createElement("span");
-+        cat.textContent = art.category || "Santé";
-+        const date = document.createElement("span");
-+        date.textContent = formatDate(art.createdAt);
-+        meta.appendChild(cat);
-+        meta.appendChild(date);
-+
-+        const h2 = document.createElement("h2");
-+        h2.textContent = art.title;
- 
--    const articles = window.__ARTICLES__ || [];
--    if (!articles.length) {
--      container.innerHTML = "<p>Aucun article publié pour le moment.</p>";
--      return;
-+        const p = document.createElement("p");
-+        const contentPreview = art.summary || (art.content || "").slice(0, 180);
-+        p.textContent = contentPreview + (contentPreview.length >= 180 ? "…" : "");
-+
-+        const a = document.createElement("a");
-+        a.href = "?article=" + encodeURIComponent(art.slug);
-+        a.className = "read-more";
-+        a.textContent = "Lire l'article";
-+
-+        card.appendChild(meta);
-+        card.appendChild(h2);
-+        card.appendChild(p);
-+        card.appendChild(a);
-+
-+        container.appendChild(card);
-+      }
-     }
- 
--    container.innerHTML = "";
--    for (const art of articles) {
--      const div = document.createElement("article");
-+    function showArticle(slug) {
-+      const container = document.getElementById("articles");
-+      const full = document.getElementById("article-full");
-+      container.style.display = "none";
-+      full.style.display = "block";
-+
-+      const articles = window.__ARTICLES__ || [];
-+      const art = articles.find((a) => a.slug === slug);
-+
-+      if (!art) {
-+        full.innerHTML = '<div class="empty-state">Article introuvable.</div><a href="/" class="back-link">← Retour aux articles</a>';
-+        return;
-+      }
-+
-+      full.innerHTML = "";
-+
-+      const badge = document.createElement("div");
-+      badge.className = "badge";
-+      badge.textContent = art.category || "Santé";
-+
-+      const h1 = document.createElement("h1");
-+      h1.textContent = art.title;
- 
-       const meta = document.createElement("div");
--      meta.className = "meta";
--      const cat = document.createElement("span");
--      cat.textContent = art.category || "Santé";
--      const date = document.createElement("span");
--      date.textContent = new Date(art.createdAt).toLocaleDateString("fr-FR");
--      meta.appendChild(cat);
--      meta.appendChild(date);
--
--      const h2 = document.createElement("h2");
--      h2.textContent = art.title;
--
--      const p = document.createElement("p");
--      p.textContent = art.summary || (art.content || "").slice(0, 160) + "…";
--
--      const a = document.createElement("a");
--      a.href = "?article=" + encodeURIComponent(art.slug);
--      a.className = "link";
--      a.textContent = "Lire l'article";
--
--      div.appendChild(meta);
--      div.appendChild(h2);
--      div.appendChild(p);
--      div.appendChild(a);
--
--      container.appendChild(div);
--    }
--  }
--
--  function showArticle(slug) {
--    const container = document.getElementById("articles");
--    const full = document.getElementById("article-full");
--    container.style.display = "none";
--    full.style.display = "block";
--
--    const articles = window.__ARTICLES__ || [];
--    const art = articles.find((a) => a.slug === slug);
--
--    if (!art) {
--      full.innerHTML = "<p>Article introuvable.</p><a href=\"/\" class=\"back-link\">← Retour aux articles</a>";
--      return;
--    }
--
--    full.innerHTML = "";
--
--    const h1 = document.createElement("h1");
--    h1.textContent = art.title;
--
--    const meta = document.createElement("div");
--    meta.className = "meta-line";
--    meta.textContent =
--      (art.category || "Santé") +
--      " – " +
--      new Date(art.createdAt).toLocaleDateString("fr-FR");
--
--    full.appendChild(h1);
--    full.appendChild(meta);
--
--    const paragraphs = (art.content || "").split(/\n\s*\n/);
--    for (const para of paragraphs) {
--      const p = document.createElement("p");
--      p.textContent = para.trim();
--      full.appendChild(p);
--    }
--
--    const pDisc = document.createElement("p");
--    pDisc.className = "disclaimer";
--    pDisc.textContent =
--      "Ces informations sont générales et ne constituent ni un diagnostic ni un traitement. " +
--      "En cas de doute ou de symptôme persistant, consultez un professionnel de santé.";
--    full.appendChild(pDisc);
--
--    const back = document.createElement("a");
--    back.href = "/";
--    back.className = "back-link";
--    back.textContent = "← Retour aux articles";
--    full.appendChild(back);
--  }
--
--  loadArticles();
--</script>
-+      meta.className = "meta-line";
-+      meta.textContent = `Publié le ${formatDate(art.createdAt)}`;
-+
-+      full.appendChild(badge);
-+      full.appendChild(h1);
-+      full.appendChild(meta);
-+
-+      const paragraphs = (art.content || "").split(/\n\s*\n/);
-+      for (const para of paragraphs) {
-+        const p = document.createElement("p");
-+        p.textContent = para.trim();
-+        full.appendChild(p);
-+      }
-+
-+      const back = document.createElement("a");
-+      back.href = "/";
-+      back.className = "back-link";
-+      back.textContent = "← Retour aux articles";
-+      full.appendChild(back);
-+    }
-+
-+    loadArticles();
-+  </script>
- </body>
- </html>
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <title>Santé Planète – Articles</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link
+    rel="icon"
+    type="image/svg+xml"
+    href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%2322c55e'/%3E%3Cstop offset='100%25' stop-color='%2310b981'/%3E%3C/linearGradient%3E%3C/defs%3E%3Ccircle cx='32' cy='32' r='30' fill='%23020617' stroke='url(%23g)' stroke-width='6'/%3E%3Cpath d='M20 34c6 3 10 4 14 0s10-11 14-12' fill='none' stroke='url(%23g)' stroke-width='5' stroke-linecap='round'/%3E%3Cpath d='M20 30v12c0 4 2 8 6 8s6-4 6-8V20' fill='none' stroke='%23e5e7eb' stroke-width='5' stroke-linecap='round'/%3E%3C/svg%3E"
+  />
+  <style>
+    :root {
+      --bg: #020617;
+      --panel: #0b1224;
+      --panel-strong: #0f172a;
+      --text: #e5e7eb;
+      --muted: #9ca3af;
+      --accent: #22c55e;
+      --accent-2: #10b981;
+      --border: #1f2937;
+      --shadow: 0 20px 70px rgba(0, 0, 0, 0.25);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background:
+        radial-gradient(circle at 10% 10%, rgba(34, 197, 94, 0.08), transparent 35%),
+        radial-gradient(circle at 90% 20%, rgba(16, 185, 129, 0.08), transparent 32%),
+        var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    .hero {
+      padding: 2.5rem 1.5rem 1.8rem;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    .hero-card {
+      background: linear-gradient(135deg, rgba(34, 197, 94, 0.12), rgba(15, 23, 42, 0.9));
+      border: 1px solid rgba(34, 197, 94, 0.18);
+      border-radius: 1.25rem;
+      padding: 1.5rem;
+      box-shadow: var(--shadow);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-card::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at 70% 20%, rgba(16, 185, 129, 0.2), transparent 35%);
+      pointer-events: none;
+    }
+
+    .topline {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      margin-bottom: 1.25rem;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+    }
+
+    .logo-mark {
+      width: 48px;
+      height: 48px;
+      border-radius: 14px;
+      background: linear-gradient(145deg, rgba(34, 197, 94, 0.9), rgba(16, 185, 129, 0.75));
+      display: grid;
+      place-items: center;
+      color: #0b1224;
+      font-weight: 800;
+      font-size: 1.2rem;
+      box-shadow: 0 10px 30px rgba(34, 197, 94, 0.35);
+    }
+
+    .brand h1 {
+      margin: 0;
+      font-size: 1.4rem;
+      letter-spacing: -0.02em;
+    }
+
+    .brand p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 0.9rem;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .nav-links a {
+      color: var(--text);
+      text-decoration: none;
+      font-size: 0.95rem;
+      padding: 0.35rem 0.75rem;
+      border-radius: 999px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      background: rgba(255, 255, 255, 0.02);
+    }
+
+    .nav-links a:hover {
+      border-color: rgba(34, 197, 94, 0.4);
+      color: var(--accent);
+    }
+
+    .hero-text h2 {
+      margin: 0 0 0.5rem;
+      font-size: clamp(1.6rem, 3vw, 2.2rem);
+      letter-spacing: -0.02em;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      padding: 0.25rem 0.6rem;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.06);
+      color: var(--muted);
+      font-size: 0.85rem;
+      margin-bottom: 0.6rem;
+    }
+
+    .hero-text p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 1rem;
+      max-width: 720px;
+      line-height: 1.6;
+    }
+
+    main {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 1.5rem 2.5rem;
+    }
+
+    .section-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin: 1.5rem 0 1rem;
+      gap: 1rem;
+    }
+
+    .section-head h3 {
+      margin: 0;
+      font-size: 1.2rem;
+      letter-spacing: -0.01em;
+    }
+
+    .section-head span {
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    #articles {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.2rem;
+    }
+
+    .article-card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 1rem;
+      padding: 1.1rem 1.2rem;
+      box-shadow: var(--shadow);
+      position: relative;
+      overflow: hidden;
+      transition: transform 160ms ease, border-color 160ms ease;
+    }
+
+    .article-card:hover {
+      transform: translateY(-4px);
+      border-color: rgba(34, 197, 94, 0.4);
+    }
+
+    .article-card .meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: var(--muted);
+      font-size: 0.85rem;
+      margin-bottom: 0.4rem;
+    }
+
+    .article-card h2 {
+      margin: 0.15rem 0 0.35rem;
+      font-size: 1.05rem;
+      letter-spacing: -0.01em;
+    }
+
+    .article-card p {
+      margin: 0;
+      color: #c7d0dd;
+      line-height: 1.55;
+      font-size: 0.95rem;
+    }
+
+    .read-more {
+      margin-top: 0.7rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      color: var(--accent);
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 0.95rem;
+    }
+
+    .read-more:hover {
+      color: var(--accent-2);
+    }
+
+    .article-full {
+      margin-top: 2rem;
+      padding: 1.5rem 1.6rem;
+      border-radius: 1.2rem;
+      border: 1px solid var(--border);
+      background: linear-gradient(180deg, #0b1224, #050b1a);
+      box-shadow: var(--shadow);
+    }
+
+    .article-full h1 {
+      margin: 0 0 0.4rem;
+      font-size: 1.5rem;
+      letter-spacing: -0.01em;
+    }
+
+    .article-full .meta-line {
+      margin: 0 0 1rem;
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    .article-full p {
+      color: #d9e1ec;
+      line-height: 1.7;
+      font-size: 1rem;
+      margin: 0 0 0.9rem;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.3rem 0.7rem;
+      background: rgba(34, 197, 94, 0.12);
+      color: var(--accent);
+      border-radius: 999px;
+      font-size: 0.85rem;
+      border: 1px solid rgba(34, 197, 94, 0.35);
+      margin-bottom: 0.75rem;
+    }
+
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      margin-top: 1rem;
+      font-size: 0.95rem;
+      color: var(--accent);
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .back-link:hover {
+      color: var(--accent-2);
+    }
+
+    .disclaimer {
+      margin-top: 1.8rem;
+      font-size: 0.9rem;
+      color: var(--muted);
+      border-top: 1px solid var(--border);
+      padding-top: 0.9rem;
+      line-height: 1.6;
+    }
+
+    .empty-state {
+      color: var(--muted);
+      font-size: 1rem;
+      background: var(--panel);
+      border: 1px dashed var(--border);
+      padding: 1rem;
+      border-radius: 1rem;
+    }
+
+    @media (max-width: 640px) {
+      .topline {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .nav-links a {
+        padding: 0.35rem 0.65rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="hero">
+    <div class="hero-card">
+      <div class="topline">
+        <div class="brand">
+          <div class="logo-mark" aria-hidden="true">SP</div>
+          <div>
+            <h1>Santé Planète</h1>
+            <p>Magazine santé &amp; bien-être pour tous</p>
+          </div>
+        </div>
+        <nav class="nav-links" aria-label="Sections principales">
+          <a href="#articles-section">Articles</a>
+          <a href="#apropos">À propos</a>
+          <a href="#mentions">Mentions</a>
+        </nav>
+      </div>
+      <div class="hero-text">
+        <div class="eyebrow">Actualités santé — rafraîchies en continu</div>
+        <h2>Des articles clairs, sourcés et faciles à consulter</h2>
+        <p>
+          Découvrez les dernières publications de l'équipe Santé Planète : prévention, bien-être,
+          gestes du quotidien et explications simples pour mieux comprendre votre santé.
+        </p>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <div class="section-head" id="articles-section">
+      <h3>Dernières publications</h3>
+      <span>Mis à jour automatiquement dès qu'un article est publié</span>
+    </div>
+
+    <div id="articles" class="articles-grid">
+      <!-- cartes d'articles insérées par JavaScript -->
+    </div>
+
+    <div id="article-full" class="article-full" style="display:none;"></div>
+
+    <p id="apropos" class="disclaimer">
+      Les contenus publiés sur Santé Planète sont fournis à titre informatif pour accompagner le quotidien
+      des familles et des voyageurs. Ils ne remplacent jamais l'avis d'un médecin ou d'un professionnel de santé.
+    </p>
+
+    <p id="mentions" class="disclaimer">
+      Éditeur : Santé Planète — Ressources éducatives et prévention. Les données sont fournies telles quelles,
+      sans garantie. En cas d'urgence, contactez les services médicaux locaux.
+    </p>
+  </main>
+
+  <script>
+    async function loadArticles() {
+      try {
+        const res = await fetch("/api/articles");
+        if (!res.ok) {
+          throw new Error("Réponse réseau incorrecte");
+        }
+
+        const data = await res.json();
+        window.__ARTICLES__ = Array.isArray(data) ? data : [];
+
+        const params = new URLSearchParams(window.location.search);
+        const slug = params.get("article");
+
+        if (slug) {
+          showArticle(slug);
+        } else {
+          showList();
+        }
+      } catch (e) {
+        console.error(e);
+        window.__ARTICLES__ = [];
+        document.getElementById("articles").innerHTML =
+          '<div class="empty-state">Erreur lors du chargement des articles.</div>';
+      }
+    }
+
+    function formatDate(value) {
+      const date = value ? new Date(value) : new Date();
+      if (isNaN(date.getTime())) {
+        return "";
+      }
+      return date.toLocaleDateString("fr-FR", {
+        day: "2-digit",
+        month: "long",
+        year: "numeric",
+      });
+    }
+
+    function showList() {
+      const container = document.getElementById("articles");
+      const full = document.getElementById("article-full");
+      full.style.display = "none";
+      container.style.display = "grid";
+
+      const articles = window.__ARTICLES__ || [];
+      if (!articles.length) {
+        container.innerHTML = '<div class="empty-state">Aucun article publié pour le moment.</div>';
+        return;
+      }
+
+      container.innerHTML = "";
+      for (const art of articles) {
+        const card = document.createElement("article");
+        card.className = "article-card";
+
+        const meta = document.createElement("div");
+        meta.className = "meta";
+        const cat = document.createElement("span");
+        cat.textContent = art.category || "Santé";
+        const date = document.createElement("span");
+        date.textContent = formatDate(art.createdAt);
+        meta.appendChild(cat);
+        meta.appendChild(date);
+
+        const h2 = document.createElement("h2");
+        h2.textContent = art.title || "Article sans titre";
+
+        const p = document.createElement("p");
+        const rawContent = art.summary || art.content || "";
+        const contentPreview = rawContent.slice(0, 180);
+        p.textContent = contentPreview + (rawContent.length > 180 ? "…" : "");
+
+        const a = document.createElement("a");
+        a.href = "?article=" + encodeURIComponent(art.slug || "");
+        a.className = "read-more";
+        a.textContent = "Lire l'article";
+
+        card.appendChild(meta);
+        card.appendChild(h2);
+        card.appendChild(p);
+        card.appendChild(a);
+
+        container.appendChild(card);
+      }
+    }
+
+    function showArticle(slug) {
+      const container = document.getElementById("articles");
+      const full = document.getElementById("article-full");
+      container.style.display = "none";
+      full.style.display = "block";
+
+      const articles = window.__ARTICLES__ || [];
+      const art = articles.find((a) => a.slug === slug);
+
+      if (!art) {
+        full.innerHTML =
+          '<div class="empty-state">Article introuvable.</div>' +
+          '<a href="/" class="back-link">← Retour aux articles</a>';
+        return;
+      }
+
+      full.innerHTML = "";
+
+      const badge = document.createElement("div");
+      badge.className = "badge";
+      badge.textContent = art.category || "Santé";
+
+      const h1 = document.createElement("h1");
+      h1.textContent = art.title || "Article sans titre";
+
+      const meta = document.createElement("div");
+      meta.className = "meta-line";
+      const dateLabel = formatDate(art.createdAt);
+      meta.textContent = dateLabel ? `Publié le ${dateLabel}` : "";
+
+      full.appendChild(badge);
+      full.appendChild(h1);
+      if (dateLabel) {
+        full.appendChild(meta);
+      }
+
+      const content = art.content || "";
+      const paragraphs = content.split(/\n\s*\n/);
+      for (const para of paragraphs) {
+        const trimmed = para.trim();
+        if (!trimmed) continue;
+        const p = document.createElement("p");
+        p.textContent = trimmed;
+        full.appendChild(p);
+      }
+
+      const back = document.createElement("a");
+      back.href = "/";
+      back.className = "back-link";
+      back.textContent = "← Retour aux articles";
+      full.appendChild(back);
+    }
+
+    loadArticles();
+  </script>
+</body>
+</html>
