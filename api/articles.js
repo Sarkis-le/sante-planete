@@ -8,7 +8,6 @@ const pool = new Pool({
 });
 
 module.exports = async (req, res) => {
-  // Autoriser seulement GET et POST
   if (req.method !== "GET" && req.method !== "POST") {
     res.setHeader("Allow", "GET, POST");
     return res.status(405).json({ error: "Méthode non autorisée" });
@@ -16,14 +15,13 @@ module.exports = async (req, res) => {
 
   try {
     if (req.method === "GET") {
-      // Récupérer les articles (adapter au besoin le nom de la table)
+      // lire les articles
       const result = await pool.query(
-        `SELECT "id", "title", "slug", "summary", "category", "content", "createdAt"
-         FROM "Article"
-         ORDER BY "createdAt" DESC
+        `SELECT id, title, slug, summary, category, content, created_at
+         FROM articles
+         ORDER BY created_at DESC
          LIMIT 50`
       );
-
       return res.status(200).json(result.rows);
     }
 
@@ -36,11 +34,11 @@ module.exports = async (req, res) => {
           .json({ error: "Titre, slug et contenu sont obligatoires." });
       }
 
-      // ⚠️ AUCUN MOT DE PASSE ICI : tout le monde peut publier.
+      // AUCUN mot de passe : tout le monde peut publier
       const insert = await pool.query(
-        `INSERT INTO "Article" ("title", "slug", "summary", "category", "content")
+        `INSERT INTO articles (title, slug, summary, category, content)
          VALUES ($1, $2, $3, $4, $5)
-         RETURNING "id", "title", "slug", "summary", "category", "content", "createdAt"`,
+         RETURNING id, title, slug, summary, category, content, created_at`,
         [title, slug, summary || null, category || null, content]
       );
 
