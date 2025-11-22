@@ -1,91 +1,55 @@
 // api/articles.js
-const { query } = require("./db");
+const { Pool } = require("pg");
 
-const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || "";
-
-async function parseJsonBody(req) {
-  return new Promise((resolve, reject) => {
-    let body = "";
-    req.on("data", (chunk) => {
-      body += chunk.toString();
-    });
-    req.on("end", () => {
-      try {
-        resolve(JSON.parse(body || "{}"));
-      } catch (e) {
-        reject(e);
-      }
-    });
-  });
-}
+// Connexion à Neon via la variable d'environnement DATABASE_URL
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL,
+  ssl: { rejectUnauthorized: false },
+});
 
 module.exports = async (req, res) => {
-  res.setHeader("Content-Type", "application/json");
-
-  if (req.method === "GET") {
-    // Liste des articles publiés
-    try {
-      const rows = await query(
-        'SELECT id, slug, title, summary, category, content, "createdAt", published FROM "Article" WHERE published = true ORDER BY "createdAt" DESC'
-      );
-      res.statusCode = 200;
-      res.end(JSON.stringify(rows));
-    } catch (err) {
-      console.error("GET /api/articles error", err);
-      res.statusCode = 500;
-      res.end(JSON.stringify({ error: "Erreur lors du chargement des articles" }));
-    }
-    return;
+  // Autoriser seulement GET et POST
+  if (req.method !== "GET" && req.method !== "POST") {
+    res.setHeader("Allow", "GET, POST");
+    return res.status(405).json({ error: "Méthode non autorisée" });
   }
 
-  if (req.method === "POST") {
-    // Création d'un article
-    try {
-      const body = await parseJsonBody(req);
+  try {
+    if (req.method === "GET") {
+      // Récupérer les articles (adapter au besoin le nom de la table)
+      const result = await pool.query(
+        `SELECT "id", "title", "slug", "summary", "category", "content", "createdAt"
+         FROM "Article"
+         ORDER BY "createdAt" DESC
+         LIMIT 50`
+      );
 
-      const {
-        adminPassword,
-        title,
-        slug,
-        summary,
-        category,
-        content,
-        published
-      } = body || {};
+      return res.status(200).json(result.rows);
+    }
 
-      if (!adminPassword || adminPassword !== ADMIN_PASSWORD) {
-        res.statusCode = 401;
-        res.end(JSON.stringify({ error: "Mot de passe administrateur invalide" }));
-        return;
-      }
+    if (req.method === "POST") {
+      const { title, slug, summary, category, content } = req.body || {};
 
       if (!title || !slug || !content) {
-        res.statusCode = 400;
-        res.end(
-          JSON.stringify({
-            error: "Titre, slug et contenu sont obligatoires"
-          })
-        );
-        return;
+        return res
+          .status(400)
+          .json({ error: "Titre, slug et contenu sont obligatoires." });
       }
 
-      await query(
-        `INSERT INTO "Article" (title, slug, summary, category, content, "createdAt", published)
-         VALUES ($1, $2, $3, $4, $5, NOW(), $6)`,
-        [title, slug, summary || null, category || null, content, !!published]
+      // ⚠️ AUCUN MOT DE PASSE ICI : tout le monde peut publier.
+      const insert = await pool.query(
+        `INSERT INTO "Article" ("title", "slug", "summary", "category", "content")
+         VALUES ($1, $2, $3, $4, $5)
+         RETURNING "id", "title", "slug", "summary", "category", "content", "createdAt"`,
+        [title, slug, summary || null, category || null, content]
       );
 
-      res.statusCode = 200;
-      res.end(JSON.stringify({ ok: true }));
-    } catch (err) {
-      console.error("POST /api/articles error", err);
-      res.statusCode = 500;
-      res.end(JSON.stringify({ error: "Erreur lors de la création de l'article" }));
+      return res.status(201).json(insert.rows[0]);
     }
-    return;
+  } catch (err) {
+    console.error("Erreur API /api/articles:", err);
+    return res
+      .status(500)
+      .json({ error: "Erreur serveur lors du traitement de l’article." });
   }
-
-  // Méthode non gérée
-  res.statusCode = 405;
-  res.end(JSON.stringify({ error: "Méthode non autorisée" }));
 };
