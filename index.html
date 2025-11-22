@@ -1,0 +1,268 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <title>Santé Planète – Articles</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: #020617;
+      color: #e5e7eb;
+    }
+    header {
+      padding: 1.5rem;
+      background: radial-gradient(circle at top left, #22c55e33, transparent 60%);
+      border-bottom: 1px solid #1f2937;
+    }
+    .title {
+      font-size: 1.8rem;
+      font-weight: 700;
+      margin: 0;
+    }
+    .subtitle {
+      margin: 0.3rem 0 0;
+      color: #9ca3af;
+    }
+    main {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 1.5rem;
+    }
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+    .topbar a {
+      color: #22c55e;
+      text-decoration: none;
+      font-size: 0.95rem;
+    }
+    .topbar a:hover {
+      text-decoration: underline;
+    }
+    .articles-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 1.5rem;
+    }
+    article {
+      border-radius: 0.75rem;
+      border: 1px solid #1f2937;
+      padding: 1rem 1.2rem;
+      background: radial-gradient(circle at top left, #0f172a, #020617);
+    }
+    .meta {
+      font-size: 0.8rem;
+      color: #9ca3af;
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 0.3rem;
+    }
+    h2 {
+      font-size: 1.1rem;
+      margin: 0.2rem 0 0.4rem;
+    }
+    p {
+      font-size: 0.9rem;
+      line-height: 1.5;
+      margin: 0.3rem 0;
+    }
+    .link {
+      margin-top: 0.6rem;
+      display: inline-block;
+      font-size: 0.9rem;
+      color: #22c55e;
+      text-decoration: none;
+    }
+    .link:hover {
+      text-decoration: underline;
+    }
+    .disclaimer {
+      margin-top: 1.5rem;
+      font-size: 0.8rem;
+      color: #9ca3af;
+      border-top: 1px solid #1f2937;
+      padding-top: 0.8rem;
+    }
+    .article-full {
+      margin-top: 1.5rem;
+      padding: 1.2rem 1.4rem;
+      border-radius: 0.75rem;
+      border: 1px solid #1f2937;
+      background: #020617;
+    }
+    .article-full h1 {
+      margin: 0 0 0.6rem;
+      font-size: 1.4rem;
+    }
+    .article-full .meta-line {
+      font-size: 0.85rem;
+      color: #9ca3af;
+      margin-bottom: 0.6rem;
+    }
+    .back-link {
+      display: inline-block;
+      margin-top: 1rem;
+      font-size: 0.9rem;
+      color: #22c55e;
+      text-decoration: none;
+    }
+    .back-link:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+<header>
+  <div>
+    <h1 class="title">Santé Planète</h1>
+    <p class="subtitle">
+      Conseils et informations générales sur la santé, accessibles partout dans le monde.
+    </p>
+  </div>
+</header>
+
+<main>
+  <div class="topbar">
+    <h2 style="margin:0;font-size:1.1rem;">Derniers articles</h2>
+    <a href="/admin.html">Espace administration</a>
+  </div>
+
+  <div id="articles" class="articles-grid">
+    <!-- cartes d'articles insérées par JavaScript -->
+  </div>
+
+  <div id="article-full" class="article-full" style="display:none;"></div>
+
+  <p class="disclaimer">
+    Les contenus publiés sur Santé Planète sont fournis à titre purement informatif
+    et ne remplacent en aucun cas la consultation d'un professionnel de santé.
+  </p>
+</main>
+
+<script>
+  async function loadArticles() {
+    try {
+      const res = await fetch("/api/articles");
+      const data = await res.json();
+      window.__ARTICLES__ = data || [];
+
+      const params = new URLSearchParams(window.location.search);
+      const slug = params.get("article");
+
+      if (slug) {
+        showArticle(slug);
+      } else {
+        showList();
+      }
+    } catch (e) {
+      console.error(e);
+      document.getElementById("articles").innerHTML =
+        "<p>Erreur lors du chargement des articles.</p>";
+    }
+  }
+
+  function showList() {
+    const container = document.getElementById("articles");
+    const full = document.getElementById("article-full");
+    full.style.display = "none";
+    container.style.display = "grid";
+
+    const articles = window.__ARTICLES__ || [];
+    if (!articles.length) {
+      container.innerHTML = "<p>Aucun article publié pour le moment.</p>";
+      return;
+    }
+
+    container.innerHTML = "";
+    for (const art of articles) {
+      const div = document.createElement("article");
+
+      const meta = document.createElement("div");
+      meta.className = "meta";
+      const cat = document.createElement("span");
+      cat.textContent = art.category || "Santé";
+      const date = document.createElement("span");
+      date.textContent = new Date(art.createdAt).toLocaleDateString("fr-FR");
+      meta.appendChild(cat);
+      meta.appendChild(date);
+
+      const h2 = document.createElement("h2");
+      h2.textContent = art.title;
+
+      const p = document.createElement("p");
+      p.textContent = art.summary || (art.content || "").slice(0, 160) + "…";
+
+      const a = document.createElement("a");
+      a.href = "?article=" + encodeURIComponent(art.slug);
+      a.className = "link";
+      a.textContent = "Lire l'article";
+
+      div.appendChild(meta);
+      div.appendChild(h2);
+      div.appendChild(p);
+      div.appendChild(a);
+
+      container.appendChild(div);
+    }
+  }
+
+  function showArticle(slug) {
+    const container = document.getElementById("articles");
+    const full = document.getElementById("article-full");
+    container.style.display = "none";
+    full.style.display = "block";
+
+    const articles = window.__ARTICLES__ || [];
+    const art = articles.find((a) => a.slug === slug);
+
+    if (!art) {
+      full.innerHTML = "<p>Article introuvable.</p><a href=\"/\" class=\"back-link\">← Retour aux articles</a>";
+      return;
+    }
+
+    full.innerHTML = "";
+
+    const h1 = document.createElement("h1");
+    h1.textContent = art.title;
+
+    const meta = document.createElement("div");
+    meta.className = "meta-line";
+    meta.textContent =
+      (art.category || "Santé") +
+      " – " +
+      new Date(art.createdAt).toLocaleDateString("fr-FR");
+
+    full.appendChild(h1);
+    full.appendChild(meta);
+
+    const paragraphs = (art.content || "").split(/\n\s*\n/);
+    for (const para of paragraphs) {
+      const p = document.createElement("p");
+      p.textContent = para.trim();
+      full.appendChild(p);
+    }
+
+    const pDisc = document.createElement("p");
+    pDisc.className = "disclaimer";
+    pDisc.textContent =
+      "Ces informations sont générales et ne constituent ni un diagnostic ni un traitement. " +
+      "En cas de doute ou de symptôme persistant, consultez un professionnel de santé.";
+    full.appendChild(pDisc);
+
+    const back = document.createElement("a");
+    back.href = "/";
+    back.className = "back-link";
+    back.textContent = "← Retour aux articles";
+    full.appendChild(back);
+  }
+
+  loadArticles();
+</script>
+</body>
+</html>
