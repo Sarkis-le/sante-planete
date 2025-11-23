@@ -21,6 +21,7 @@ function sendJson(res, status, payload) {
 }
 
 export async function readJsonBody(req) {
+  // Si un middleware a déjà parsé le body
   if (req.body !== undefined) {
     if (typeof req.body === "string") {
       return req.body ? JSON.parse(req.body) : {};
@@ -28,6 +29,7 @@ export async function readJsonBody(req) {
     return req.body;
   }
 
+  // Sinon : on lit le flux brut
   return new Promise((resolve, reject) => {
     let data = "";
 
@@ -47,34 +49,42 @@ export async function readJsonBody(req) {
   });
 }
 
+// Récupère éventuellement l'id dans /api/articles/:id
+function getArticleIdFromPath(pathname) {
+  // /api/articles  ou /api/articles/123
+  const match = pathname.match(/^\/api\/articles\/?(\d+)?$/);
+  if (!match) return null;
+  if (!match[1]) return null;
+  const id = Number.parseInt(match[1], 10);
+  return Number.isNaN(id) ? null : id;
+}
+
 export default async function handler(req, res) {
   applyCors(res);
 
   const url = req.url ? new URL(req.url, "http://localhost") : null;
   const pathname = url ? url.pathname : "";
 
-  // /api/articles ou /api/articles/:id
-  const match = pathname.match(/^\/api\/articles(?:\/(\d+))?$/);
-  if (!match) {
+  // On accepte /api/articles et /api/articles/:id
+  if (!pathname.startsWith("/api/articles")) {
     sendJson(res, 404, { error: "Ressource non trouvée" });
     return;
   }
-  const articleId = match[1] ? parseInt(match[1], 10) : null;
+
+  const articleId = getArticleIdFromPath(pathname);
 
   if (req.method === "OPTIONS") {
+    // Pré-flight CORS
     res.statusCode = 204;
     res.end();
     return;
   }
 
-  // GET
+  // --- GET ---
   if (req.method === "GET") {
     try {
-      if (articleId) {
-        const rows = await query(
-          "SELECT * FROM articles WHERE id = $1 LIMIT 1",
-          [articleId]
-        );
+      if (articleId != null) {
+        const rows = await query("SELECT * FROM articles WHERE id = $1", [articleId]);
         if (!rows.length) {
           sendJson(res, 404, { error: "Article introuvable" });
           return;
@@ -82,7 +92,7 @@ export default async function handler(req, res) {
         sendJson(res, 200, rows[0]);
       } else {
         const rows = await query(
-          "SELECT * FROM articles ORDER BY id DESC"
+          'SELECT * FROM articles ORDER BY id DESC'
         );
         sendJson(res, 200, rows);
       }
@@ -93,7 +103,7 @@ export default async function handler(req, res) {
     return;
   }
 
-  // POST (création)
+  // --- POST (création) ---
   if (req.method === "POST") {
     let body;
     try {
@@ -122,7 +132,7 @@ export default async function handler(req, res) {
 
     try {
       const rows = await query(
-        `INSERT INTO articles (title, summary, content, category, slug, imageUrl)
+        `INSERT INTO articles (title, summary, content, category, slug, "imageUrl")
          VALUES ($1, $2, $3, $4, $5, $6)
          RETURNING *`,
         [title, summary, content, category, slug, imageUrl]
@@ -130,18 +140,23 @@ export default async function handler(req, res) {
       sendJson(res, 201, rows[0]);
     } catch (err) {
       console.error("POST /api/articles error", err);
-      sendJson(res, 500, { error: "Erreur serveur" });
+      // Conflit slug unique par exemple
+      if (err.code === "23505") {
+        sendJson(res, 400, { error: "Ce slug est déjà utilisé." });
+      } else {
+        sendJson(res, 500, { error: "Erreur serveur" });
+      }
     }
     return;
   }
 
-  // Besoin d'un id pour PUT / DELETE
-  if (!articleId) {
+  // A partir d'ici, il faut un id
+  if (articleId == null) {
     sendJson(res, 400, { error: "Identifiant d’article manquant dans l’URL." });
     return;
   }
 
-  // PUT (mise à jour)
+  // --- PUT (mise à jour) ---
   if (req.method === "PUT") {
     let body;
     try {
@@ -163,7 +178,7 @@ export default async function handler(req, res) {
 
     if (!title || !slug || !content) {
       sendJson(res, 400, {
-        error: "Titre, slug et contenu sont requis pour la mise à jour.",
+        error: "Titre, slug et contenu sont requis.",
       });
       return;
     }
@@ -176,7 +191,7 @@ export default async function handler(req, res) {
              content = $3,
              category = $4,
              slug = $5,
-             imageUrl = $6
+             "imageUrl" = $6
          WHERE id = $7
          RETURNING *`,
         [title, summary, content, category, slug, imageUrl, articleId]
@@ -190,12 +205,16 @@ export default async function handler(req, res) {
       sendJson(res, 200, rows[0]);
     } catch (err) {
       console.error("PUT /api/articles error", err);
-      sendJson(res, 500, { error: "Erreur serveur" });
+      if (err.code === "23505") {
+        sendJson(res, 400, { error: "Ce slug est déjà utilisé." });
+      } else {
+        sendJson(res, 500, { error: "Erreur serveur" });
+      }
     }
     return;
   }
 
-  // DELETE
+  // --- DELETE ---
   if (req.method === "DELETE") {
     try {
       const rows = await query(
@@ -214,5 +233,6 @@ export default async function handler(req, res) {
     return;
   }
 
+  // Méthode non gérée
   sendJson(res, 405, { error: "Méthode non autorisée" });
 }
