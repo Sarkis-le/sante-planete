@@ -5,29 +5,30 @@
   <title>Santé Planète – Articles</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <!-- Favicon simple bleu -->
+  <!-- Favicon simple -->
   <link
     rel="icon"
     type="image/svg+xml"
-    href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='30' fill='%231f2937'/%3E%3Ctext x='32' y='38' text-anchor='middle' font-family='system-ui, -apple-system, BlinkMacSystemFont' font-size='22' fill='%23bfdbfe'%3ESP%3C/text%3E%3C/svg%3E"
+    href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='30' fill='%23f3f4f6'/%3E%3Ctext x='32' y='38' text-anchor='middle' font-family='system-ui, -apple-system, BlinkMacSystemFont' font-size='22' fill='%23111827'%3ESP%3C/text%3E%3C/svg%3E"
   />
 
   <style>
     :root {
       --bg-page: #f3f4f6;
       --bg-surface: #ffffff;
-      --bg-surface-soft: #f9fafb;
+      --bg-soft: #f9fafb;
       --border-soft: #e5e7eb;
       --border-strong: #d1d5db;
       --text-main: #111827;
       --text-muted: #6b7280;
       --accent: #2563eb;
-      --accent-soft: #eff6ff;
       --accent-dark: #1d4ed8;
+      --accent-soft: #eff6ff;
       --danger: #b91c1c;
 
       --radius-lg: 1rem;
       --radius-md: 0.75rem;
+      --radius-sm: 0.5rem;
       --shadow-soft: 0 10px 25px rgba(15, 23, 42, 0.08);
       --shadow-header: 0 1px 0 rgba(15, 23, 42, 0.06);
       --max-width: 1120px;
@@ -51,7 +52,8 @@
     }
 
     a:focus-visible,
-    button:focus-visible {
+    button:focus-visible,
+    input:focus-visible {
       outline: 2px solid var(--accent);
       outline-offset: 2px;
     }
@@ -92,8 +94,8 @@
       width: 40px;
       height: 40px;
       border-radius: 999px;
-      background-color: var(--accent);
-      color: white;
+      background-color: var(--text-main);
+      color: #f9fafb;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -137,7 +139,7 @@
       color: #ffffff;
     }
 
-    /* MAIN LAYOUT */
+    /* MAIN */
 
     .main {
       flex: 1;
@@ -147,19 +149,19 @@
       padding: 1.75rem 1.25rem 2.5rem;
       display: flex;
       flex-direction: column;
-      gap: 1.75rem;
+      gap: 2rem;
     }
 
-    /* HERO */
+    /* HERO ACCUEIL */
 
     .hero {
       background-color: var(--bg-surface);
       border-radius: var(--radius-lg);
-      padding: 1.5rem 1.4rem;
+      padding: 1.6rem 1.5rem;
       box-shadow: var(--shadow-soft);
       border: 1px solid var(--border-soft);
       display: grid;
-      grid-template-columns: minmax(0, 2fr) minmax(230px, 1.2fr);
+      grid-template-columns: minmax(0, 2.2fr) minmax(230px, 1.1fr);
       gap: 1.2rem;
     }
 
@@ -173,18 +175,56 @@
     }
 
     .hero h2 {
-      margin: 0 0 0.4rem;
-      font-size: clamp(1.6rem, 2.3vw, 2rem);
+      margin: 0 0 0.5rem;
+      font-size: clamp(1.7rem, 2.4vw, 2.1rem);
     }
 
     .hero p {
       margin: 0;
       color: var(--text-muted);
       font-size: 0.95rem;
-      max-width: 34rem;
+      max-width: 36rem;
     }
 
-    .hero-meta {
+    .hero-actions {
+      margin-top: 0.9rem;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.6rem;
+    }
+
+    .btn-primary,
+    .btn-secondary {
+      font-size: 0.9rem;
+      padding: 0.45rem 0.95rem;
+      border-radius: 999px;
+      border: none;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+    }
+
+    .btn-primary {
+      background-color: var(--accent);
+      color: #ffffff;
+    }
+
+    .btn-primary:hover {
+      background-color: var(--accent-dark);
+    }
+
+    .btn-secondary {
+      background-color: var(--bg-soft);
+      color: var(--text-main);
+      border: 1px solid var(--border-soft);
+    }
+
+    .btn-secondary:hover {
+      background-color: #e5e7eb;
+    }
+
+    .hero-aside {
       align-self: center;
       justify-self: flex-end;
       text-align: right;
@@ -192,31 +232,18 @@
       color: var(--text-muted);
     }
 
-    .hero-meta strong {
+    .hero-aside strong {
       display: block;
-      font-size: 1.4rem;
+      font-size: 1.5rem;
       color: var(--accent-dark);
     }
 
-    /* ARTICLES LIST SECTION */
-
-    .section-head {
-      display: flex;
-      align-items: baseline;
-      justify-content: space-between;
-      gap: 0.75rem;
-      flex-wrap: wrap;
-    }
-
-    .section-head h3 {
-      margin: 0;
-      font-size: 1.15rem;
-    }
-
-    .section-head span {
-      font-size: 0.9rem;
+    .hero-aside span.small {
+      font-size: 0.8rem;
       color: var(--text-muted);
     }
+
+    /* BARRE DE RECHERCHE + CATEGORIES FILTRES */
 
     .tools-row {
       display: flex;
@@ -233,31 +260,96 @@
 
     .search-box input {
       width: 100%;
-      padding: 0.4rem 0.75rem;
+      padding: 0.5rem 0.85rem;
       border-radius: 999px;
       border: 1px solid var(--border-soft);
       font-size: 0.9rem;
+      background-color: #ffffff;
     }
 
-    .search-box input:focus-visible {
-      outline: 2px solid var(--accent);
-      outline-offset: 2px;
+    .search-box input::placeholder {
+      color: #9ca3af;
+    }
+
+    .quick-filters {
+      display: flex;
+      gap: 0.4rem;
+      flex-wrap: wrap;
     }
 
     .filter-pill {
-      font-size: 0.85rem;
-      padding: 0.3rem 0.7rem;
+      font-size: 0.8rem;
+      padding: 0.25rem 0.7rem;
       border-radius: 999px;
       border: 1px solid var(--border-soft);
-      background-color: var(--bg-surface-soft);
+      background-color: var(--bg-soft);
       color: var(--text-muted);
     }
 
-    /* LISTE D'ARTICLES */
+    /* SECTIONS LISTES */
+
+    .section-head {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+      margin-bottom: 0.6rem;
+    }
+
+    .section-head h3 {
+      margin: 0;
+      font-size: 1.15rem;
+    }
+
+    .section-head span {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+    }
+
+    /* TENDANCES */
+
+    .trend-list {
+      display: flex;
+      gap: 0.9rem;
+      overflow-x: auto;
+      padding-bottom: 0.2rem;
+    }
+
+    .trend-card {
+      min-width: 240px;
+      max-width: 280px;
+      background-color: var(--bg-surface);
+      border-radius: var(--radius-md);
+      padding: 0.85rem 0.9rem;
+      border: 1px solid var(--border-soft);
+      box-shadow: 0 1px 4px rgba(15, 23, 42, 0.04);
+      flex-shrink: 0;
+    }
+
+    .trend-meta {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-bottom: 0.15rem;
+    }
+
+    .trend-title {
+      margin: 0 0 0.3rem;
+      font-size: 0.98rem;
+      font-weight: 600;
+    }
+
+    .trend-snippet {
+      margin: 0;
+      font-size: 0.86rem;
+      color: var(--text-muted);
+    }
+
+    /* DERNIERS ARTICLES */
 
     .articles-grid {
       display: grid;
-      grid-template-columns: minmax(0, 1.7fr) minmax(220px, 1fr);
+      grid-template-columns: minmax(0, 2.1fr) minmax(240px, 1.1fr);
       gap: 1.5rem;
       align-items: flex-start;
     }
@@ -361,41 +453,148 @@
       font-size: 0.88rem;
     }
 
-    /* ARTICLE COMPLET */
+    /* CATEGORIES VISUELLES */
 
-    .article-full-wrapper {
+    .categories-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 0.9rem;
+    }
+
+    .category-card {
+      background-color: var(--bg-surface);
+      border-radius: var(--radius-md);
+      padding: 0.7rem 0.8rem;
+      border: 1px solid var(--border-soft);
+      font-size: 0.88rem;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      gap: 0.15rem;
+      transition: border-color 120ms ease, background-color 120ms ease;
+    }
+
+    .category-card:hover {
+      border-color: var(--accent);
+      background-color: var(--accent-soft);
+    }
+
+    .category-label {
+      font-weight: 600;
+    }
+
+    .category-desc {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+    }
+
+    /* ARTICLE VIEW */
+
+    .article-view {
       display: none;
     }
 
     .article-full {
       background-color: var(--bg-surface);
       border-radius: var(--radius-lg);
-      padding: 1.4rem 1.4rem 1.6rem;
+      padding: 1.6rem 1.5rem 1.8rem;
       border: 1px solid var(--border-soft);
       box-shadow: var(--shadow-soft);
     }
 
     .article-full h1 {
-      margin: 0 0 0.2rem;
-      font-size: 1.45rem;
+      margin: 0 0 0.4rem;
+      font-size: 1.7rem;
     }
 
-    .article-full .meta-line {
+    .article-chapo {
+      margin: 0 0 1rem;
+      font-size: 0.98rem;
+      color: var(--text-muted);
+    }
+
+    .article-meta-line {
       margin: 0 0 1rem;
       font-size: 0.85rem;
       color: var(--text-muted);
     }
 
+    .article-meta-line span + span::before {
+      content: " • ";
+      margin: 0 0.25rem;
+      color: var(--border-strong);
+    }
+
+    .share-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 0.75rem;
+      border-top: 1px solid var(--border-soft);
+      border-bottom: 1px solid var(--border-soft);
+      padding: 0.6rem 0;
+      margin-bottom: 1rem;
+      font-size: 0.85rem;
+    }
+
+    .share-buttons {
+      display: flex;
+      gap: 0.4rem;
+      flex-wrap: wrap;
+    }
+
+    .share-btn {
+      padding: 0.25rem 0.6rem;
+      border-radius: 999px;
+      border: 1px solid var(--border-soft);
+      background-color: var(--bg-soft);
+      font-size: 0.8rem;
+      cursor: pointer;
+    }
+
+    .like-btn {
+      padding: 0.25rem 0.7rem;
+      border-radius: 999px;
+      border: 1px solid var(--border-soft);
+      background-color: #ffffff;
+      cursor: pointer;
+      font-size: 0.82rem;
+    }
+
+    .like-btn.liked {
+      background-color: var(--accent-soft);
+      border-color: var(--accent);
+      color: var(--accent-dark);
+    }
+
     .article-full p {
-      margin: 0 0 0.9rem;
-      font-size: 0.95rem;
+      margin: 0 0 0.95rem;
+      font-size: 0.97rem;
+    }
+
+    .article-related {
+      margin-top: 1.4rem;
+      border-top: 1px solid var(--border-soft);
+      padding-top: 0.9rem;
+    }
+
+    .article-related h3 {
+      margin: 0 0 0.5rem;
+      font-size: 1rem;
+    }
+
+    .article-related ul {
+      margin: 0;
+      padding-left: 1.1rem;
+      font-size: 0.9rem;
+      color: var(--text-muted);
     }
 
     .back-link {
       display: inline-flex;
       align-items: center;
-      gap: 0.2rem;
-      margin-top: 0.4rem;
+      gap: 0.25rem;
+      margin-top: 0.8rem;
       font-size: 0.9rem;
       color: var(--accent-dark);
       font-weight: 600;
@@ -409,7 +608,7 @@
       font-size: 0.9rem;
       color: var(--text-muted);
       padding: 0.8rem 0.9rem;
-      background-color: var(--bg-surface-soft);
+      background-color: var(--bg-soft);
       border-radius: var(--radius-md);
       border: 1px dashed var(--border-soft);
     }
@@ -442,6 +641,16 @@
     .footer-brand h2 {
       margin: 0 0 0.3rem;
       font-size: 1rem;
+      color: var(--text-main);
+    }
+
+    .footer-note {
+      max-width: 30rem;
+    }
+
+    .footer-legal {
+      margin-top: 0.6rem;
+      font-size: 0.8rem;
     }
 
     .footer-columns {
@@ -456,21 +665,12 @@
       color: var(--text-main);
     }
 
-    .footer-note {
-      max-width: 30rem;
-    }
-
-    .footer-legal {
-      margin-top: 0.6rem;
-      font-size: 0.8rem;
-    }
-
     @media (max-width: 900px) {
       .hero {
         grid-template-columns: minmax(0, 1fr);
         text-align: left;
       }
-      .hero-meta {
+      .hero-aside {
         justify-self: flex-start;
         text-align: left;
       }
@@ -483,14 +683,13 @@
     }
 
     @media (max-width: 640px) {
-      .site-header-inner {
-        padding-inline: 0.9rem;
-      }
-      .main {
-        padding-inline: 0.9rem;
-      }
+      .site-header-inner,
+      .main,
       .site-footer-inner {
         padding-inline: 0.9rem;
+      }
+      .main-nav {
+        justify-content: flex-end;
       }
     }
   </style>
@@ -504,109 +703,174 @@
           <div class="brand-mark" aria-hidden="true">SP</div>
           <div class="brand-text">
             <h1>Santé Planète</h1>
-            <span>Articles santé &amp; bien-être</span>
+            <span>Plateforme d’articles &amp; d’idées</span>
           </div>
         </a>
         <nav class="main-nav" aria-label="Navigation principale">
           <a href="#top" class="current">Accueil</a>
-          <a href="#articles-section">Articles</a>
+          <a href="#categories">Catégories</a>
+          <a href="#latest">Derniers articles</a>
+          <a href="#trends">Tendances</a>
           <a href="#apropos">À propos</a>
-          <a href="#footer">Contact</a>
+          <a href="#contact">Contact</a>
         </nav>
       </div>
     </header>
 
     <!-- MAIN -->
     <main class="main" id="top">
-      <!-- HERO -->
-      <section class="hero" aria-labelledby="hero-title">
-        <div>
-          <div class="hero-kicker">Magazine en ligne</div>
-          <h2 id="hero-title">Comprendre la santé avec des articles clairs et fiables</h2>
-          <p>
-            Santé Planète propose des articles pédagogiques sur la prévention, le bien-être
-            et les soins du quotidien. Des contenus pensés pour le grand public, sans jargon inutile.
-          </p>
-        </div>
-        <div class="hero-meta">
-          <span>Articles en ligne</span>
-          <strong id="stat-count">–</strong>
-          <span>mis à jour automatiquement</span>
-        </div>
-      </section>
-
-      <!-- LISTE D'ARTICLES -->
-      <section aria-labelledby="articles-title" id="articles-section">
-        <div class="section-head">
-          <h3 id="articles-title">Derniers articles</h3>
-          <span>Les publications les plus récentes apparaissent en premier.</span>
-        </div>
-
-        <div class="tools-row" aria-label="Outils de lecture">
-          <div class="search-box">
-            <label for="search" class="sr-only">Rechercher un article</label>
-            <input
-              type="search"
-              id="search"
-              placeholder="Rechercher un titre ou un thème (non fonctionnel pour l’instant)"
-              aria-disabled="true"
-            >
+      <!-- VUE ACCUEIL -->
+      <div class="home-view" id="home-view">
+        <!-- HERO -->
+        <section class="hero" aria-labelledby="hero-title">
+          <div>
+            <div class="hero-kicker">Partage de savoir</div>
+            <h2 id="hero-title">Partagez vos idées avec le monde</h2>
+            <p>
+              Une plateforme pour lire, comprendre et publier des articles clairs sur la santé,
+              le bien-être, la société et bien d’autres thèmes. Un endroit où la connaissance reste accessible.
+            </p>
+            <div class="hero-actions">
+              <button type="button" class="btn-primary">
+                Commencer à écrire
+              </button>
+              <button type="button" class="btn-secondary" onclick="document.getElementById('latest').scrollIntoView({behavior:'smooth'})">
+                Lire les articles
+              </button>
+            </div>
           </div>
-          <div class="filter-pill">
-            Flux général &nbsp;•&nbsp; Tous thèmes santé
+          <div class="hero-aside">
+            <span class="small">Articles publiés</span>
+            <strong id="stat-count">–</strong>
+            <span class="small">Mis à jour en continu</span>
           </div>
-        </div>
+        </section>
 
-        <div class="articles-grid" aria-live="polite">
-          <div id="articles">
-            <div class="empty-state">Chargement des articles…</div>
+        <!-- Recherche + filtres rapides -->
+        <section aria-label="Recherche et filtres">
+          <div class="tools-row">
+            <div class="search-box">
+              <label for="search" class="sr-only">Rechercher un article</label>
+              <input
+                type="search"
+                id="search"
+                placeholder="Rechercher un titre ou un sujet (recherche locale)"
+                oninput="filterArticles(this.value)"
+              >
+            </div>
+            <div class="quick-filters">
+              <span class="filter-pill">Tous les sujets</span>
+              <span class="filter-pill">Prévention</span>
+              <span class="filter-pill">Bien-être</span>
+            </div>
+          </div>
+        </section>
+
+        <!-- Tendances -->
+        <section aria-labelledby="trends-title" id="trends">
+          <div class="section-head">
+            <h3 id="trends-title">Articles à la une</h3>
+            <span>Une sélection de contenus mis en avant.</span>
+          </div>
+          <div class="trend-list" id="trends-container">
+            <div class="empty-state">En attente de contenus à la une…</div>
+          </div>
+        </section>
+
+        <!-- Derniers articles + sidebar -->
+        <section aria-labelledby="latest-title" id="latest">
+          <div class="section-head">
+            <h3 id="latest-title">Dernières publications</h3>
+            <span>Les articles les plus récents apparaissent ici.</span>
           </div>
 
-          <aside class="sidebar" aria-label="Informations complémentaires">
-            <h4>Comment lire ces articles&nbsp;?</h4>
-            <p>Chaque article est rédigé pour le grand public. Les informations sont vérifiées
-              mais ne remplacent jamais une consultation médicale.</p>
-            <p>En cas de doute sur votre santé, parlez toujours de vos symptômes à un professionnel.</p>
-          </aside>
-        </div>
-      </section>
+          <div class="articles-grid" aria-live="polite">
+            <div id="articles">
+              <div class="empty-state">Chargement des articles…</div>
+            </div>
 
-      <!-- ARTICLE COMPLET -->
-      <section class="article-full-wrapper" id="article-full-wrapper" aria-live="polite">
+            <aside class="sidebar" aria-label="Informations pour les lecteurs">
+              <h4>Une lecture confortable</h4>
+              <p>
+                Chaque article est structuré pour faciliter la lecture : titres, sous-titres,
+                paragraphes courts et exemples concrets.
+              </p>
+              <p>
+                Vous pouvez partager un article, le garder en favori dans votre navigateur
+                ou revenir plus tard : le contenu reste accessible sur tous vos appareils.
+              </p>
+            </aside>
+          </div>
+        </section>
+
+        <!-- Catégories visuelles -->
+        <section aria-labelledby="categories-title" id="categories">
+          <div class="section-head">
+            <h3 id="categories-title">Explorer par catégorie</h3>
+            <span>Choisissez un univers pour filtrer les articles.</span>
+          </div>
+          <div class="categories-grid">
+            <button type="button" class="category-card" onclick="filterByCategory('Santé générale')">
+              <span class="category-label">Santé générale</span>
+              <span class="category-desc">Comprendre les bases de la prévention et du soin.</span>
+            </button>
+            <button type="button" class="category-card" onclick="filterByCategory('Nutrition')">
+              <span class="category-label">Nutrition</span>
+              <span class="category-desc">Alimentation, énergie, équilibre de vie.</span>
+            </button>
+            <button type="button" class="category-card" onclick="filterByCategory('Psychologie')">
+              <span class="category-label">Psychologie</span>
+              <span class="category-desc">Esprit, émotions, santé mentale.</span>
+            </button>
+            <button type="button" class="category-card" onclick="filterByCategory('Voyage')">
+              <span class="category-label">Voyage &amp; santé</span>
+              <span class="category-desc">Se déplacer en restant en sécurité.</span>
+            </button>
+            <button type="button" class="category-card" onclick="filterByCategory('Technologie')">
+              <span class="category-label">Technologie &amp; santé</span>
+              <span class="category-desc">Outils numériques, télémédecine, accessibilité.</span>
+            </button>
+          </div>
+        </section>
+      </div>
+
+      <!-- VUE ARTICLE -->
+      <div class="article-view" id="article-view" aria-live="polite">
         <article id="article-full" class="article-full"></article>
-      </section>
+      </div>
     </main>
 
     <!-- FOOTER -->
     <footer class="site-footer" id="footer">
       <div class="site-footer-inner">
         <div class="footer-brand">
-          <h2>Santé Planète</h2>
+          <h2 id="apropos">À propos de Santé Planète</h2>
           <p class="footer-note">
-            Santé Planète est un espace d’information dédié au grand public. Les textes sont rédigés
-            avec un souci de clarté et de pédagogie, pour vous aider à mieux comprendre les enjeux
-            de prévention, de bien-être et de prise en charge.
+            Santé Planète est une plateforme éditoriale dédiée à la diffusion d’articles
+            clairs et sourcés. L’objectif : aider chacun à mieux comprendre les enjeux de santé,
+            les questions de société et les pratiques de bien-être, sans jargon inutile.
           </p>
           <p class="footer-legal">
-            Les contenus ne remplacent jamais l’avis d’un médecin ou d’un professionnel de santé.
-            En cas d’urgence, contactez immédiatement les services médicaux de votre pays.
+            Les contenus publiés restent informatifs et ne remplacent pas l’avis d’un professionnel
+            de santé. En cas d’urgence, contactez toujours les services médicaux compétents.
           </p>
         </div>
 
         <div class="footer-columns">
           <div>
-            <h3 id="apropos">À propos</h3>
+            <h3>Mentions</h3>
             <p>
-              Santé Planète – Ressources éducatives et prévention. Notre objectif est de rendre
-              l’information médicale plus accessible, sans dramatiser ni minimiser les risques.
+              Éditeur : Santé Planète – Ressources éducatives et prévention.
+              Données fournies « en l’état », sans garantie. Les auteurs restent responsables
+              du contenu qu’ils publient, sous réserve de modération.
             </p>
           </div>
           <div>
-            <h3>Mentions et contact</h3>
+            <h3 id="contact">Contact</h3>
             <p>
-              Éditeur&nbsp;: Santé Planète. Données fournies «&nbsp;en l’état&nbsp;», sans garantie.
-              Pour toute question liée au site, utilisez le formulaire de contact (à venir) ou
-              contactez l’éditeur par courriel.
+              Une page de contact ou un formulaire pourront être ajoutés ici. Pour toute
+              question éditoriale, il sera possible de joindre l’éditeur par courriel
+              ou via un formulaire sécurisé.
             </p>
           </div>
         </div>
@@ -615,9 +879,14 @@
   </div>
 
   <script>
+    // État global en mémoire
+    window.__ARTICLES__ = [];
+    let __FILTER_TEXT__ = "";
+    let __FILTER_CATEGORY__ = null;
+
     async function loadArticles() {
       const listContainer = document.getElementById("articles");
-      const wrapperFull = document.getElementById("article-full-wrapper");
+      const trendsContainer = document.getElementById("trends-container");
 
       try {
         const res = await fetch("/api/articles");
@@ -633,22 +902,23 @@
         const params = new URLSearchParams(window.location.search);
         const slug = params.get("article");
 
+        buildTrends();
+        buildList();
+
         if (slug) {
           showArticle(slug);
         } else {
-          showList();
+          showHome();
         }
       } catch (e) {
         console.error(e);
         window.__ARTICLES__ = [];
         listContainer.innerHTML =
           '<div class="empty-state error-state">Erreur lors du chargement des articles. Veuillez réessayer plus tard.</div>';
+        trendsContainer.innerHTML =
+          '<div class="empty-state">Impossible d’afficher les tendances.</div>';
         const stat = document.getElementById("stat-count");
         if (stat) stat.textContent = "0";
-
-        if (wrapperFull) {
-          wrapperFull.style.display = "none";
-        }
       }
     }
 
@@ -658,6 +928,13 @@
       if (el) {
         el.textContent = count || "0";
       }
+    }
+
+    function estimateReadingTime(text) {
+      if (!text) return "1 min de lecture";
+      const words = text.trim().split(/\s+/).length;
+      const minutes = Math.max(1, Math.round(words / 200));
+      return `${minutes} min de lecture`;
     }
 
     function formatDate(value) {
@@ -672,25 +949,81 @@
       });
     }
 
-    function showList() {
-      const container = document.getElementById("articles");
-      const fullWrapper = document.getElementById("article-full-wrapper");
-      const full = document.getElementById("article-full");
-
-      if (fullWrapper) fullWrapper.style.display = "none";
-      if (full) full.innerHTML = "";
-
-      container.style.display = "grid";
-
+    function buildTrends() {
+      const container = document.getElementById("trends-container");
       const articles = window.__ARTICLES__ || [];
+
+      if (!articles.length) {
+        container.innerHTML = '<div class="empty-state">Aucun article à la une pour le moment.</div>';
+        return;
+      }
+
+      // On prend les 3 premiers comme "tendances"
+      const trends = articles.slice(0, 3);
+      container.innerHTML = "";
+
+      for (const art of trends) {
+        const item = document.createElement("article");
+        item.className = "trend-card";
+
+        const meta = document.createElement("div");
+        meta.className = "trend-meta";
+        const cat = art.category || "Santé";
+        const dateText = formatDate(art.createdAt);
+        meta.textContent = dateText ? `${cat} • ${dateText}` : cat;
+
+        const title = document.createElement("h4");
+        title.className = "trend-title";
+        title.textContent = art.title || "Article sans titre";
+
+        const p = document.createElement("p");
+        p.className = "trend-snippet";
+        const raw = art.summary || art.content || "";
+        const preview = raw.slice(0, 140);
+        p.textContent = preview + (raw.length > 140 ? "…" : "");
+
+        const link = document.createElement("a");
+        link.href = "?article=" + encodeURIComponent(art.slug || "");
+        link.className = "read-more";
+        link.textContent = "Lire";
+
+        item.appendChild(meta);
+        item.appendChild(title);
+        item.appendChild(p);
+        item.appendChild(link);
+
+        container.appendChild(item);
+      }
+    }
+
+    function matchesFilters(art) {
+      const text = __FILTER_TEXT__.toLowerCase();
+      const cat = __FILTER_CATEGORY__;
+
+      if (text) {
+        const hay = ((art.title || "") + " " + (art.summary || art.content || "")).toLowerCase();
+        if (!hay.includes(text)) return false;
+      }
+
+      if (cat) {
+        const articleCat = (art.category || "").toLowerCase();
+        if (!articleCat.includes(cat.toLowerCase())) return false;
+      }
+
+      return true;
+    }
+
+    function buildList() {
+      const container = document.getElementById("articles");
+      const articles = (window.__ARTICLES__ || []).filter(matchesFilters);
+
       if (!articles.length) {
         container.innerHTML =
-          '<div class="empty-state">Aucun article publié pour le moment.</div>';
+          '<div class="empty-state">Aucun article ne correspond à votre recherche pour le moment.</div>';
         return;
       }
 
       container.innerHTML = "";
-
       for (const art of articles) {
         const card = document.createElement("article");
         card.className = "article-card";
@@ -702,11 +1035,13 @@
         cat.className = "article-category";
         cat.textContent = art.category || "Santé";
 
-        const date = document.createElement("span");
-        date.textContent = formatDate(art.createdAt);
+        const rightMeta = document.createElement("span");
+        const dateText = formatDate(art.createdAt);
+        const readTime = estimateReadingTime(art.content || art.summary || "");
+        rightMeta.textContent = dateText ? `${dateText} • ${readTime}` : readTime;
 
         meta.appendChild(cat);
-        meta.appendChild(date);
+        meta.appendChild(rightMeta);
 
         const title = document.createElement("h4");
         title.className = "article-title";
@@ -740,17 +1075,36 @@
 
         container.appendChild(card);
       }
+    }
 
-      window.scrollTo({ top: 0, behavior: "smooth" });
+    function filterArticles(text) {
+      __FILTER_TEXT__ = text || "";
+      buildList();
+    }
+
+    function filterByCategory(category) {
+      __FILTER_CATEGORY__ = category;
+      buildList();
+      const latest = document.getElementById("latest");
+      if (latest) {
+        latest.scrollIntoView({ behavior: "smooth" });
+      }
+    }
+
+    function showHome() {
+      const home = document.getElementById("home-view");
+      const articleView = document.getElementById("article-view");
+      if (home) home.style.display = "block";
+      if (articleView) articleView.style.display = "none";
     }
 
     function showArticle(slug) {
-      const container = document.getElementById("articles");
-      const fullWrapper = document.getElementById("article-full-wrapper");
+      const home = document.getElementById("home-view");
+      const articleView = document.getElementById("article-view");
       const full = document.getElementById("article-full");
 
-      container.style.display = "none";
-      if (fullWrapper) fullWrapper.style.display = "block";
+      if (home) home.style.display = "none";
+      if (articleView) articleView.style.display = "block";
 
       const articles = window.__ARTICLES__ || [];
       const art = articles.find((a) => a.slug === slug);
@@ -764,23 +1118,88 @@
         return;
       }
 
+      const contentText = (art.content || "").trim();
+      const chapo = art.summary || "";
+
       full.innerHTML = "";
 
       const title = document.createElement("h1");
       title.textContent = art.title || "Article sans titre";
 
+      const chapoEl = document.createElement("p");
+      chapoEl.className = "article-chapo";
+      chapoEl.textContent = chapo || "";
+
       const metaLine = document.createElement("p");
-      metaLine.className = "meta-line";
-      const cat = art.category || "Santé";
+      metaLine.className = "article-meta-line";
+
+      const author = document.createElement("span");
+      author.textContent = art.author || "Auteur invité";
+
+      const dateSpan = document.createElement("span");
       const dateText = formatDate(art.createdAt);
-      metaLine.textContent = dateText ? `${cat} · ${dateText}` : cat;
+      dateSpan.textContent = dateText || "";
+
+      const readTimeSpan = document.createElement("span");
+      readTimeSpan.textContent = estimateReadingTime(contentText || chapo);
+
+      const catSpan = document.createElement("span");
+      catSpan.textContent = art.category || "Santé";
+
+      metaLine.appendChild(author);
+      if (dateText) metaLine.appendChild(dateSpan);
+      metaLine.appendChild(readTimeSpan);
+      metaLine.appendChild(catSpan);
+
+      // Partage + like
+      const shareRow = document.createElement("div");
+      shareRow.className = "share-row";
+
+      const shareText = document.createElement("span");
+      shareText.textContent = "Partager cet article :";
+
+      const shareButtons = document.createElement("div");
+      shareButtons.className = "share-buttons";
+
+      const url = window.location.href;
+
+      const networks = [
+        { name: "Twitter", href: "https://twitter.com/intent/tweet?url=" + encodeURIComponent(url) },
+        { name: "Facebook", href: "https://www.facebook.com/sharer/sharer.php?u=" + encodeURIComponent(url) },
+        { name: "LinkedIn", href: "https://www.linkedin.com/sharing/share-offsite/?url=" + encodeURIComponent(url) },
+      ];
+
+      for (const n of networks) {
+        const btn = document.createElement("a");
+        btn.href = n.href;
+        btn.target = "_blank";
+        btn.rel = "noopener noreferrer";
+        btn.className = "share-btn";
+        btn.textContent = n.name;
+        shareButtons.appendChild(btn);
+      }
+
+      const likeBtn = document.createElement("button");
+      likeBtn.type = "button";
+      likeBtn.className = "like-btn";
+      likeBtn.textContent = "J’aime";
+      likeBtn.addEventListener("click", () => {
+        likeBtn.classList.toggle("liked");
+        likeBtn.textContent = likeBtn.classList.contains("liked") ? "Vous aimez" : "J’aime";
+      });
+
+      shareRow.appendChild(shareText);
+      shareRow.appendChild(shareButtons);
+      shareRow.appendChild(likeBtn);
 
       full.appendChild(title);
+      if (chapo) full.appendChild(chapoEl);
       full.appendChild(metaLine);
+      full.appendChild(shareRow);
 
-      const content = (art.content || "").trim();
-      if (content) {
-        const parts = content.split(/\n{2,}/);
+      // Corps de l'article
+      if (contentText) {
+        const parts = contentText.split(/\n{2,}/);
         for (const part of parts) {
           if (!part.trim()) continue;
           const p = document.createElement("p");
@@ -789,11 +1208,43 @@
         }
       }
 
+      // Articles connexes
+      const related = document.createElement("div");
+      related.className = "article-related";
+
+      const relatedTitle = document.createElement("h3");
+      relatedTitle.textContent = "Vous pourriez aussi aimer :";
+
+      const relatedList = document.createElement("ul");
+
+      const sameCat = (window.__ARTICLES__ || []).filter(
+        (a) => a.slug !== art.slug && (a.category || "") === (art.category || "")
+      ).slice(0, 3);
+
+      if (!sameCat.length) {
+        const li = document.createElement("li");
+        li.textContent = "D’autres articles seront proposés prochainement.";
+        relatedList.appendChild(li);
+      } else {
+        for (const r of sameCat) {
+          const li = document.createElement("li");
+          const link = document.createElement("a");
+          link.href = "?article=" + encodeURIComponent(r.slug || "");
+          link.textContent = r.title || "Article sans titre";
+          li.appendChild(link);
+          relatedList.appendChild(li);
+        }
+      }
+
+      related.appendChild(relatedTitle);
+      related.appendChild(relatedList);
+      full.appendChild(related);
+
+      // Lien retour
       const back = document.createElement("a");
       back.href = "/";
       back.className = "back-link";
       back.textContent = "Retour aux articles";
-
       full.appendChild(back);
 
       window.scrollTo({ top: 0, behavior: "smooth" });
