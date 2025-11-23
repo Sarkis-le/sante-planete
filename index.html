@@ -208,7 +208,7 @@
       margin: 0 auto;
     }
 
-    /* Features Section (pourquoi publier ici) */
+    /* Features Section */
     .features {
       padding: 3.5rem 0;
       background-color: white;
@@ -258,7 +258,7 @@
       color: var(--gray);
     }
 
-    /* Articles à la une (tendances) */
+    /* Tendances */
     .trends {
       padding: 3.5rem 0;
       background-color: #f1f5f9;
@@ -283,11 +283,11 @@
 
     .trend-thumb {
       width: 100%;
+      height: 140px;
       border-radius: var(--radius);
       object-fit: cover;
-      max-height: 170px;
       margin-bottom: 0.8rem;
-      display: block;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
     }
 
     .trend-meta {
@@ -330,18 +330,14 @@
     .article-card {
       background-color: white;
       border-radius: var(--radius);
-      padding: 1.1rem 1.2rem;
+      padding: 1.2rem 1.3rem;
       box-shadow: var(--shadow);
       border: 1px solid var(--border);
       transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
       display: grid;
-      grid-template-columns: 140px minmax(0, 1fr);
+      grid-template-columns: 120px minmax(0, 1fr);
       gap: 1rem;
       align-items: stretch;
-    }
-
-    .article-card.no-image {
-      grid-template-columns: minmax(0, 1fr);
     }
 
     .article-card:hover {
@@ -353,16 +349,10 @@
     .article-thumb {
       width: 100%;
       height: 100%;
-      max-height: 130px;
-      object-fit: cover;
+      max-height: 140px;
       border-radius: var(--radius);
-      background-color: #e5e7eb;
-    }
-
-    .article-content {
-      display: flex;
-      flex-direction: column;
-      gap: 0.35rem;
+      object-fit: cover;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
     }
 
     .article-meta {
@@ -371,6 +361,7 @@
       align-items: center;
       font-size: 0.82rem;
       color: var(--gray);
+      margin-bottom: 0.3rem;
       gap: 0.6rem;
       flex-wrap: wrap;
     }
@@ -383,13 +374,13 @@
     .article-title {
       font-size: 1.05rem;
       font-weight: 600;
-      margin-bottom: 0.1rem;
+      margin-bottom: 0.3rem;
     }
 
     .article-excerpt {
       font-size: 0.9rem;
       color: var(--gray);
-      margin-bottom: 0.3rem;
+      margin-bottom: 0.7rem;
     }
 
     .article-actions {
@@ -397,7 +388,6 @@
       justify-content: space-between;
       align-items: center;
       font-size: 0.86rem;
-      margin-top: 0.2rem;
     }
 
     .article-actions a {
@@ -522,19 +512,6 @@
       border: 1px solid var(--border);
     }
 
-    .article-detail-cover {
-      margin-bottom: 1rem;
-      border-radius: var(--radius);
-      overflow: hidden;
-    }
-
-    .article-detail-cover img {
-      width: 100%;
-      max-height: 320px;
-      object-fit: cover;
-      display: block;
-    }
-
     .article-detail h1 {
       font-size: 2rem;
       margin-bottom: 0.6rem;
@@ -557,6 +534,15 @@
       color: var(--gray);
       margin-bottom: 1rem;
       font-style: italic;
+    }
+
+    .detail-cover {
+      width: 100%;
+      max-height: 260px;
+      object-fit: cover;
+      border-radius: var(--radius);
+      margin-bottom: 1rem;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
     }
 
     .article-detail p {
@@ -672,29 +658,9 @@
       display: none;
       background: none;
       border: none;
-      font-size: 1.6rem;
+      font-size: 1.5rem;
       cursor: pointer;
       color: var(--dark);
-    }
-
-    .close-menu {
-      position: absolute;
-      top: 0.6rem;
-      right: 0.75rem;
-      background: transparent;
-      border: none;
-      font-size: 1.4rem;
-      cursor: pointer;
-      line-height: 1;
-      padding: 0.2rem 0.4rem;
-      border-radius: 999px;
-      color: var(--dark);
-    }
-
-    .close-menu:focus-visible,
-    .mobile-menu-btn:focus-visible {
-      outline: 2px solid var(--primary);
-      outline-offset: 2px;
     }
 
     @media (max-width: 768px) {
@@ -717,7 +683,7 @@
         box-shadow: -5px 0 15px rgba(0, 0, 0, 0.1);
         transition: right 0.3s;
         z-index: 1000;
-        padding: 2rem 1.5rem;
+        padding: 2rem;
       }
 
       nav.active {
@@ -726,7 +692,17 @@
 
       nav ul {
         flex-direction: column;
-        margin-top: 2.5rem;
+        margin-top: 2rem;
+      }
+
+      .close-menu {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        background: none;
+        border: none;
+        font-size: 1.5rem;
+        cursor: pointer;
       }
 
       .hero h2 {
@@ -746,7 +722,6 @@
       }
     }
 
-    /* Petite classe utilitaire pour accessibilité */
     .sr-only {
       position: absolute;
       width: 1px;
@@ -773,10 +748,10 @@
           </div>
         </a>
 
-        <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Ouvrir le menu">☰</button>
+        <button class="mobile-menu-btn" id="mobileMenuBtn">☰</button>
 
         <nav id="mainNav" aria-label="Navigation principale">
-          <button class="close-menu" id="closeMenuBtn" aria-label="Fermer le menu">×</button>
+          <button class="close-menu" id="closeMenuBtn">×</button>
           <ul>
             <li><a href="#top" class="active">Accueil</a></li>
             <li><a href="#trends">Tendances</a></li>
@@ -791,7 +766,7 @@
 
   <!-- Vue accueil -->
   <div id="home">
-    <!-- Hero Section -->
+    <!-- Hero -->
     <section class="hero" id="top">
       <div class="container">
         <h2>Partagez vos idées avec le monde</h2>
@@ -807,7 +782,7 @@
       </div>
     </section>
 
-    <!-- Pourquoi publier ici -->
+    <!-- Pourquoi publier -->
     <section class="features" id="about">
       <div class="container">
         <div class="section-title">
@@ -876,6 +851,8 @@
             <button type="button" class="filter-chip" onclick="filterByCategory('Santé')">Santé</button>
             <button type="button" class="filter-chip" onclick="filterByCategory('Nutrition')">Nutrition</button>
             <button type="button" class="filter-chip" onclick="filterByCategory('Psychologie')">Psychologie</button>
+            <button type="button" class="filter-chip" onclick="filterByCategory('Bien-être')">Bien-être</button>
+            <button type="button" class="filter-chip" onclick="filterByCategory('Vie quotidienne')">Vie quotidienne</button>
           </div>
         </div>
 
@@ -901,7 +878,7 @@
   <!-- Vue détail article -->
   <section class="article-detail-wrap" id="articleDetailWrap">
     <div class="container">
-      <article id="articleDetail" class="article-detail"></article>
+      <article class="article-detail" id="articleDetail"></article>
     </div>
   </section>
 
@@ -1053,7 +1030,7 @@
           const img = document.createElement("img");
           img.className = "trend-thumb";
           img.src = art.imageUrl;
-          img.alt = art.title || "Illustration de l’article";
+          img.alt = art.title || "Illustration";
           img.loading = "lazy";
           card.appendChild(img);
         }
@@ -1122,21 +1099,20 @@
         card.className = "article-card";
 
         const hasImage = !!art.imageUrl;
-        if (!hasImage) {
-          card.classList.add("no-image");
-        }
-
         if (hasImage) {
           const img = document.createElement("img");
           img.className = "article-thumb";
           img.src = art.imageUrl;
-          img.alt = art.title || "Illustration de l’article";
+          img.alt = art.title || "Illustration";
           img.loading = "lazy";
           card.appendChild(img);
+        } else {
+          const placeholder = document.createElement("div");
+          placeholder.className = "article-thumb";
+          card.appendChild(placeholder);
         }
 
-        const content = document.createElement("div");
-        content.className = "article-content";
+        const contentWrap = document.createElement("div");
 
         const meta = document.createElement("div");
         meta.className = "article-meta";
@@ -1172,17 +1148,18 @@
 
         const tag = document.createElement("span");
         tag.className = "article-tag";
-        tag.textContent = art.category || "Article";
+        tag.textContent = "Article";
 
         actions.appendChild(link);
         actions.appendChild(tag);
 
-        content.appendChild(meta);
-        content.appendChild(title);
-        content.appendChild(excerpt);
-        content.appendChild(actions);
+        contentWrap.appendChild(meta);
+        contentWrap.appendChild(title);
+        contentWrap.appendChild(excerpt);
+        contentWrap.appendChild(actions);
 
-        card.appendChild(content);
+        card.appendChild(contentWrap);
+
         container.appendChild(card);
       }
     }
@@ -1237,16 +1214,6 @@
 
       detail.innerHTML = "";
 
-      if (art.imageUrl) {
-        const cover = document.createElement("div");
-        cover.className = "article-detail-cover";
-        const img = document.createElement("img");
-        img.src = art.imageUrl;
-        img.alt = art.title || "Illustration de l’article";
-        cover.appendChild(img);
-        detail.appendChild(cover);
-      }
-
       const title = document.createElement("h1");
       title.textContent = art.title || "Article sans titre";
 
@@ -1271,8 +1238,14 @@
       metaLine.appendChild(readSpan);
       metaLine.appendChild(catSpan);
 
-      detail.appendChild(title);
-      detail.appendChild(metaLine);
+      if (art.imageUrl) {
+        const cover = document.createElement("img");
+        cover.className = "detail-cover";
+        cover.src = art.imageUrl;
+        cover.alt = art.title || "Illustration";
+        cover.loading = "lazy";
+        detail.appendChild(cover);
+      }
 
       if (chapo) {
         const chapoEl = document.createElement("p");
@@ -1280,6 +1253,9 @@
         chapoEl.textContent = chapo;
         detail.appendChild(chapoEl);
       }
+
+      detail.insertBefore(metaLine, detail.firstChild);
+      detail.insertBefore(title, detail.firstChild);
 
       if (contentText) {
         const parts = contentText.split(/\n{2,}/);
