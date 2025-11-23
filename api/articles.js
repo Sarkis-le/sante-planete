@@ -1,16 +1,16 @@
 // api/articles.js
 import { query } from "./db.js";
 
-export const DEFAULT_HEADERS = {
+const DEFAULT_HEADERS = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "Content-Type",
   "Access-Control-Allow-Methods": "GET,POST,PUT,DELETE,OPTIONS",
 };
 
 function applyCors(res) {
-  Object.entries(DEFAULT_HEADERS).forEach(([key, value]) => {
-    res.setHeader(key, value);
-  });
+  for (const [k, v] of Object.entries(DEFAULT_HEADERS)) {
+    res.setHeader(k, v);
+  }
 }
 
 function sendJson(res, status, payload) {
@@ -20,19 +20,11 @@ function sendJson(res, status, payload) {
   res.end(JSON.stringify(payload));
 }
 
-function sendText(res, status, text) {
-  applyCors(res);
-  res.statusCode = status;
-  res.setHeader("Content-Type", "text/plain; charset=utf-8");
-  res.end(text);
-}
-
-// lecture manuelle du body JSON si besoin (selon Vercel / Node)
 async function readJsonBody(req) {
+  // Sur Vercel, req.body peut déjà être parsé
   if (req.body && typeof req.body === "object") {
     return req.body;
   }
-
   return new Promise((resolve, reject) => {
     let data = "";
     req.on("data", (chunk) => {
@@ -41,20 +33,17 @@ async function readJsonBody(req) {
     req.on("end", () => {
       if (!data) return resolve({});
       try {
-        const parsed = JSON.parse(data);
-        resolve(parsed);
-      } catch (err) {
-        reject(err);
+        resolve(JSON.parse(data));
+      } catch (e) {
+        reject(e);
       }
     });
     req.on("error", reject);
   });
 }
 
-export default async function handler(req, res) {
+export default async (req, res) => {
   const { method, url } = req;
-  const fullUrl = new URL(url, "http://localhost"); // base fictive
-  const searchParams = fullUrl.searchParams;
 
   if (method === "OPTIONS") {
     applyCors(res);
@@ -62,15 +51,25 @@ export default async function handler(req, res) {
     return res.end();
   }
 
+  let searchParams;
   try {
-    // ----------- GET : liste ou un article -----------
+    const fullUrl = new URL(url, "http://localhost");
+    searchParams = fullUrl.searchParams;
+  } catch {
+    searchParams = new URLSearchParams();
+  }
+
+  try {
+    // =========================
+    // GET : liste ou un article
+    // =========================
     if (method === "GET") {
       const id = searchParams.get("id");
       const slug = searchParams.get("slug");
 
       if (id) {
         const result = await query(
-          "SELECT * FROM articles WHERE id = $1 ORDER BY created_at DESC;",
+          "SELECT * FROM articles WHERE id = $1;",
           [id]
         );
         if (!result.rows.length) {
@@ -96,19 +95,14 @@ export default async function handler(req, res) {
       return sendJson(res, 200, result.rows);
     }
 
-    // On lit le body JSON pour POST / PUT / DELETE
+    // Pour POST / PUT / DELETE : on lit le body JSON
     const body = await readJsonBody(req);
 
-    // ----------- POST : création -----------
+    // =========================
+    // POST : création
+    // =========================
     if (method === "POST") {
-      const {
-        title,
-        slug,
-        category,
-        summary,
-        content,
-        imageUrl, // envoyé par le front
-      } = body;
+      const { title, slug, category, summary, content, imageUrl } = body;
 
       if (!title || !slug) {
         return sendJson(res, 400, {
@@ -135,9 +129,10 @@ export default async function handler(req, res) {
       return sendJson(res, 201, result.rows[0]);
     }
 
-    // ----------- PUT : édition -----------
+    // =========================
+    // PUT : édition
+    // =========================
     if (method === "PUT") {
-      // id peut venir du body ou de la query string
       const idFromBody = body.id;
       const idFromQuery = searchParams.get("id");
       const id = idFromBody || idFromQuery;
@@ -148,36 +143,35 @@ export default async function handler(req, res) {
         });
       }
 
-      const {
-        title,
-        slug,
-        category,
-        summary,
-        content,
-        imageUrl, // toujours mappé sur image_url en BDD
-      } = body;
+      const { title, slug, category, summary, content, imageUrl } = body;
+
+      if (!title || !slug) {
+        return sendJson(res, 400, {
+          error: "Titre et slug sont obligatoires pour la mise à jour.",
+        });
+      }
 
       const result = await query(
         `
         UPDATE articles
         SET
-          title = COALESCE($1, title),
-          slug = COALESCE($2, slug),
-          category = COALESCE($3, category),
-          summary = COALESCE($4, summary),
-          content = COALESCE($5, content),
-          image_url = COALESCE($6, image_url),
+          title = $1,
+          slug = $2,
+          category = $3,
+          summary = $4,
+          content = $5,
+          image_url = $6,
           updated_at = NOW()
         WHERE id = $7
         RETURNING *;
         `,
         [
-          title ?? null,
-          slug ?? null,
-          category ?? null,
-          summary ?? null,
-          content ?? null,
-          imageUrl ?? null,
+          title,
+          slug,
+          category || null,
+          summary || "",
+          content || "",
+          imageUrl || null,
           id,
         ]
       );
@@ -189,7 +183,9 @@ export default async function handler(req, res) {
       return sendJson(res, 200, result.rows[0]);
     }
 
-    // ----------- DELETE : suppression -----------
+    // =========================
+    // DELETE : suppression
+    // =========================
     if (method === "DELETE") {
       const idFromBody = body.id;
       const idFromQuery = searchParams.get("id");
@@ -207,13 +203,17 @@ export default async function handler(req, res) {
       );
 
       if (!result.rows.length) {
-        return sendJson(res, 404, { error: "Article introuvable ou déjà supprimé." });
+        return sendJson(res, 404, {
+          error: "Article introuvable ou déjà supprimé.",
+        });
       }
 
       return sendJson(res, 200, { success: true, id: result.rows[0].id });
     }
 
-    // ----------- Méthode non gérée -----------
+    // =========================
+    // Méthode non gérée
+    // =========================
     return sendJson(res, 405, { error: "Méthode non autorisée." });
   } catch (err) {
     console.error("Erreur API /api/articles:", err);
@@ -222,4 +222,4 @@ export default async function handler(req, res) {
       details: err.message,
     });
   }
-}
+};
