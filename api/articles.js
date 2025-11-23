@@ -16,252 +16,210 @@ function applyCors(res) {
 function sendJson(res, status, payload) {
   applyCors(res);
   res.statusCode = status;
-  res.setHeader("Content-Type", "application/json");
+  res.setHeader("Content-Type", "application/json; charset=utf-8");
   res.end(JSON.stringify(payload));
 }
 
-export async function readJsonBody(req) {
-  // Si un middleware a déjà parsé le body
-  if (req.body !== undefined) {
-    if (typeof req.body === "string") {
-      return req.body ? JSON.parse(req.body) : {};
-    }
+function sendText(res, status, text) {
+  applyCors(res);
+  res.statusCode = status;
+  res.setHeader("Content-Type", "text/plain; charset=utf-8");
+  res.end(text);
+}
+
+// lecture manuelle du body JSON si besoin (selon Vercel / Node)
+async function readJsonBody(req) {
+  if (req.body && typeof req.body === "object") {
     return req.body;
   }
 
-  // Sinon : on lit le flux brut
   return new Promise((resolve, reject) => {
     let data = "";
-
     req.on("data", (chunk) => {
       data += chunk;
     });
-
     req.on("end", () => {
+      if (!data) return resolve({});
       try {
-        resolve(data ? JSON.parse(data) : {});
+        const parsed = JSON.parse(data);
+        resolve(parsed);
       } catch (err) {
         reject(err);
       }
     });
-
     req.on("error", reject);
   });
 }
 
-/**
- * Récupère éventuellement l'id dans /api/articles/:id
- * Compatible avec :
- *   - id numérique (1, 2, 3…)
- *   - id uuid (d0f0b8e4-1234-5678-9abc-abcdef012345)
- */
-function getArticleIdFromPath(pathname) {
-  // /api/articles  ou /api/articles/<id> (tout ce qui n'est pas un /)
-  const match = pathname.match(/^\/api\/articles\/?([^/]+)?$/);
-  if (!match || !match[1]) return null;
-  return match[1]; // on laisse tel quel (string) → ok pour uuid ou int
-}
-
-/**
- * Normalise une ligne retournée par Postgres en objet article
- * pour le front (toujours imageUrl côté JS).
- */
-function mapArticleRow(row) {
-  if (!row) return null;
-  return {
-    id: row.id,
-    title: row.title,
-    slug: row.slug,
-    summary: row.summary,
-    content: row.content,
-    category: row.category,
-    imageUrl: row.imageUrl || row.image_url || row.imageurl || null,
-  };
-}
-
 export default async function handler(req, res) {
-  applyCors(res);
+  const { method, url } = req;
+  const fullUrl = new URL(url, "http://localhost"); // base fictive
+  const searchParams = fullUrl.searchParams;
 
-  const url = req.url ? new URL(req.url, "http://localhost") : null;
-  const pathname = url ? url.pathname : "";
-
-  // On accepte /api/articles et /api/articles/:id
-  if (!pathname.startsWith("/api/articles")) {
-    sendJson(res, 404, { error: "Ressource non trouvée" });
-    return;
+  if (method === "OPTIONS") {
+    applyCors(res);
+    res.statusCode = 200;
+    return res.end();
   }
 
-  const articleId = getArticleIdFromPath(pathname);
+  try {
+    // ----------- GET : liste ou un article -----------
+    if (method === "GET") {
+      const id = searchParams.get("id");
+      const slug = searchParams.get("slug");
 
-  if (req.method === "OPTIONS") {
-    // Pré-flight CORS
-    res.statusCode = 204;
-    res.end();
-    return;
-  }
-
-  // --- GET ---
-  if (req.method === "GET") {
-    try {
-      if (articleId != null) {
-        const rows = await query("SELECT * FROM articles WHERE id = $1", [
-          articleId,
-        ]);
-        if (!rows.length) {
-          sendJson(res, 404, { error: "Article introuvable" });
-          return;
-        }
-        const article = mapArticleRow(rows[0]);
-        sendJson(res, 200, article);
-      } else {
-        const rows = await query(
-          'SELECT * FROM articles ORDER BY id DESC'
+      if (id) {
+        const result = await query(
+          "SELECT * FROM articles WHERE id = $1 ORDER BY created_at DESC;",
+          [id]
         );
-        const articles = rows.map(mapArticleRow);
-        sendJson(res, 200, articles);
+        if (!result.rows.length) {
+          return sendJson(res, 404, { error: "Article introuvable" });
+        }
+        return sendJson(res, 200, result.rows[0]);
       }
-    } catch (err) {
-      console.error("GET /api/articles error", err);
-      sendJson(res, 500, { error: "Erreur serveur" });
-    }
-    return;
-  }
 
-  // --- POST (création) ---
-  if (req.method === "POST") {
-    let body;
-    try {
-      body = await readJsonBody(req);
-    } catch (err) {
-      console.error("POST /api/articles body parse error", err);
-      sendJson(res, 400, { error: "Corps de requête invalide" });
-      return;
-    }
+      if (slug) {
+        const result = await query(
+          "SELECT * FROM articles WHERE slug = $1 LIMIT 1;",
+          [slug]
+        );
+        if (!result.rows.length) {
+          return sendJson(res, 404, { error: "Article introuvable" });
+        }
+        return sendJson(res, 200, result.rows[0]);
+      }
 
-    const {
-      title,
-      slug,
-      content,
-      summary = "",
-      category = "",
-      imageUrl = "",
-    } = body || {};
-
-    if (!title || !slug || !content) {
-      sendJson(res, 400, {
-        error: "Titre, slug et contenu sont requis.",
-      });
-      return;
+      const result = await query(
+        "SELECT * FROM articles ORDER BY created_at DESC;"
+      );
+      return sendJson(res, 200, result.rows);
     }
 
-    try {
-      const rows = await query(
-        `INSERT INTO articles (title, summary, content, category, slug, image_url)
-         VALUES ($1, $2, $3, $4, $5, $6)
-         RETURNING *`,
-        [title, summary, content, category, slug, imageUrl]
+    // On lit le body JSON pour POST / PUT / DELETE
+    const body = await readJsonBody(req);
+
+    // ----------- POST : création -----------
+    if (method === "POST") {
+      const {
+        title,
+        slug,
+        category,
+        summary,
+        content,
+        imageUrl, // envoyé par le front
+      } = body;
+
+      if (!title || !slug) {
+        return sendJson(res, 400, {
+          error: "Le titre et le slug sont obligatoires.",
+        });
+      }
+
+      const result = await query(
+        `
+        INSERT INTO articles (title, slug, category, summary, content, image_url, created_at)
+        VALUES ($1, $2, $3, $4, $5, $6, NOW())
+        RETURNING *;
+        `,
+        [
+          title,
+          slug,
+          category || null,
+          summary || "",
+          content || "",
+          imageUrl || null,
+        ]
       );
 
-      const article = mapArticleRow(rows[0]);
-      sendJson(res, 201, article);
-    } catch (err) {
-      console.error("POST /api/articles error", err);
-      if (err.code === "23505") {
-        // slug unique
-        sendJson(res, 400, { error: "Ce slug est déjà utilisé." });
-      } else {
-        sendJson(res, 500, { error: "Erreur serveur" });
-      }
+      return sendJson(res, 201, result.rows[0]);
     }
-    return;
-  }
 
-  // A partir d'ici, il faut un id
-  if (articleId == null) {
-    sendJson(res, 400, {
-      error: "Identifiant d’article manquant dans l’URL.",
+    // ----------- PUT : édition -----------
+    if (method === "PUT") {
+      // id peut venir du body ou de la query string
+      const idFromBody = body.id;
+      const idFromQuery = searchParams.get("id");
+      const id = idFromBody || idFromQuery;
+
+      if (!id) {
+        return sendJson(res, 400, {
+          error: "ID manquant pour la mise à jour de l’article.",
+        });
+      }
+
+      const {
+        title,
+        slug,
+        category,
+        summary,
+        content,
+        imageUrl, // toujours mappé sur image_url en BDD
+      } = body;
+
+      const result = await query(
+        `
+        UPDATE articles
+        SET
+          title = COALESCE($1, title),
+          slug = COALESCE($2, slug),
+          category = COALESCE($3, category),
+          summary = COALESCE($4, summary),
+          content = COALESCE($5, content),
+          image_url = COALESCE($6, image_url),
+          updated_at = NOW()
+        WHERE id = $7
+        RETURNING *;
+        `,
+        [
+          title ?? null,
+          slug ?? null,
+          category ?? null,
+          summary ?? null,
+          content ?? null,
+          imageUrl ?? null,
+          id,
+        ]
+      );
+
+      if (!result.rows.length) {
+        return sendJson(res, 404, { error: "Article introuvable." });
+      }
+
+      return sendJson(res, 200, result.rows[0]);
+    }
+
+    // ----------- DELETE : suppression -----------
+    if (method === "DELETE") {
+      const idFromBody = body.id;
+      const idFromQuery = searchParams.get("id");
+      const id = idFromBody || idFromQuery;
+
+      if (!id) {
+        return sendJson(res, 400, {
+          error: "ID manquant pour la suppression de l’article.",
+        });
+      }
+
+      const result = await query(
+        "DELETE FROM articles WHERE id = $1 RETURNING id;",
+        [id]
+      );
+
+      if (!result.rows.length) {
+        return sendJson(res, 404, { error: "Article introuvable ou déjà supprimé." });
+      }
+
+      return sendJson(res, 200, { success: true, id: result.rows[0].id });
+    }
+
+    // ----------- Méthode non gérée -----------
+    return sendJson(res, 405, { error: "Méthode non autorisée." });
+  } catch (err) {
+    console.error("Erreur API /api/articles:", err);
+    return sendJson(res, 500, {
+      error: "Erreur interne du serveur",
+      details: err.message,
     });
-    return;
   }
-
-  // --- PUT (mise à jour) ---
-  if (req.method === "PUT") {
-    let body;
-    try {
-      body = await readJsonBody(req);
-    } catch (err) {
-      console.error("PUT /api/articles body parse error", err);
-      sendJson(res, 400, { error: "Corps de requête invalide" });
-      return;
-    }
-
-    const {
-      title,
-      slug,
-      content,
-      summary = "",
-      category = "",
-      imageUrl = "",
-    } = body || {};
-
-    if (!title || !slug || !content) {
-      sendJson(res, 400, {
-        error: "Titre, slug et contenu sont requis.",
-      });
-      return;
-    }
-
-    try {
-      const rows = await query(
-        `UPDATE articles
-         SET title      = $1,
-             summary    = $2,
-             content    = $3,
-             category   = $4,
-             slug       = $5,
-             image_url  = $6
-         WHERE id = $7
-         RETURNING *`,
-        [title, summary, content, category, slug, imageUrl, articleId]
-      );
-
-      if (!rows.length) {
-        sendJson(res, 404, { error: "Article introuvable" });
-        return;
-      }
-
-      const article = mapArticleRow(rows[0]);
-      sendJson(res, 200, article);
-    } catch (err) {
-      console.error("PUT /api/articles error", err);
-      if (err.code === "23505") {
-        sendJson(res, 400, { error: "Ce slug est déjà utilisé." });
-      } else {
-        sendJson(res, 500, { error: "Erreur serveur" });
-      }
-    }
-    return;
-  }
-
-  // --- DELETE ---
-  if (req.method === "DELETE") {
-    try {
-      const rows = await query(
-        "DELETE FROM articles WHERE id = $1 RETURNING id",
-        [articleId]
-      );
-      if (!rows.length) {
-        sendJson(res, 404, { error: "Article introuvable" });
-        return;
-      }
-      sendJson(res, 200, { success: true });
-    } catch (err) {
-      console.error("DELETE /api/articles error", err);
-      sendJson(res, 500, { error: "Erreur serveur" });
-    }
-    return;
-  }
-
-  // Méthode non gérée
-  sendJson(res, 405, { error: "Méthode non autorisée" });
 }
