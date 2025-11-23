@@ -3,11 +3,16 @@
 <head>
   <meta charset="utf-8">
   <title>Santé Planète – Articles</title>
-<meta name="monetag" content="7829d23ba4a1542e7b69d76a78b9f27d">
+  <meta name="monetag" content="7829d23ba4a1542e7b69d76a78b9f27d">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8529764196804634"
+
+  <!-- Google AdSense -->
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8529764196804634"
      crossorigin="anonymous"></script>
+
+  <!-- Monetag / autre script pub -->
   <script src="https://fpyf8.com/88/tag.min.js" data-zone="187598" async data-cfasync="false"></script>
+
   <!-- Favicon -->
   <link
     rel="icon"
@@ -724,13 +729,14 @@
         grid-template-columns: minmax(0, 1fr);
       }
     }
-.logo-img {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  object-fit: cover;
-  box-shadow: 0 0 0 2px rgba(14, 165, 233, 0.4);
-}
+
+    .logo-img {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      object-fit: cover;
+      box-shadow: 0 0 0 2px rgba(14, 165, 233, 0.4);
+    }
 
     .sr-only {
       position: absolute;
@@ -751,12 +757,12 @@
     <div class="container">
       <div class="header-content">
         <a href="/" class="logo">
-  <img src="logo.png" alt="Logo Santé Planète" class="logo-img">
-  <div class="logo-text">
-    <h1>Santé Planète</h1>
-    <p>Plateforme d’articles &amp; de savoir</p>
-  </div>
-</a>
+          <img src="logo.png" alt="Logo Santé Planète" class="logo-img">
+          <div class="logo-text">
+            <h1>Santé Planète</h1>
+            <p>Plateforme d’articles &amp; de savoir</p>
+          </div>
+        </a>
 
         <button class="mobile-menu-btn" id="mobileMenuBtn">☰</button>
 
@@ -1002,9 +1008,16 @@
       if (el) el.textContent = count || "0";
     }
 
+    // supprime les balises HTML pour les préviews et le temps de lecture
+    function stripHtml(raw) {
+      if (!raw) return "";
+      return raw.replace(/<[^>]+>/g, " ");
+    }
+
     function estimateReadingTime(text) {
-      if (!text) return "1 min de lecture";
-      const words = text.trim().split(/\s+/).length;
+      const clean = stripHtml(text || "");
+      if (!clean.trim()) return "1 min de lecture";
+      const words = clean.trim().split(/\s+/).length;
       const minutes = Math.max(1, Math.round(words / 200));
       return minutes + " min de lecture";
     }
@@ -1058,8 +1071,9 @@
         const p = document.createElement("p");
         p.className = "trend-snippet";
         const raw = art.summary || art.content || "";
-        const preview = raw.slice(0, 140);
-        p.textContent = preview + (raw.length > 140 ? "…" : "");
+        const clean = stripHtml(raw);
+        const preview = clean.slice(0, 140);
+        p.textContent = preview + (clean.length > 140 ? "…" : "");
 
         const link = document.createElement("a");
         link.href = "?article=" + encodeURIComponent(art.slug || "");
@@ -1146,8 +1160,9 @@
         const excerpt = document.createElement("p");
         excerpt.className = "article-excerpt";
         const raw = art.summary || art.content || "";
-        const preview = raw.slice(0, 220);
-        excerpt.textContent = preview + (raw.length > 220 ? "…" : "");
+        const clean = stripHtml(raw);
+        const preview = clean.slice(0, 220);
+        excerpt.textContent = preview + (clean.length > 220 ? "…" : "");
 
         const actions = document.createElement("div");
         actions.className = "article-actions";
@@ -1200,6 +1215,7 @@
       if (detailWrap) detailWrap.style.display = "none";
     }
 
+    // 👉 Affiche le HTML EXACT stocké dans content
     function showArticle(slug) {
       const home = document.getElementById("home");
       const detailWrap = document.getElementById("articleDetailWrap");
@@ -1219,14 +1235,16 @@
         return;
       }
 
-      const contentText = (art.content || "").trim();
+      const contentHtml = (art.content || "").trim();
       const chapo = art.summary || "";
 
       detail.innerHTML = "";
 
+      // Titre
       const title = document.createElement("h1");
       title.textContent = art.title || "Article sans titre";
 
+      // Ligne méta
       const metaLine = document.createElement("p");
       metaLine.className = "meta-line";
 
@@ -1238,7 +1256,7 @@
       if (dateText) dateSpan.textContent = dateText;
 
       const readSpan = document.createElement("span");
-      readSpan.textContent = estimateReadingTime(contentText || chapo);
+      readSpan.textContent = estimateReadingTime(contentHtml || chapo);
 
       const catSpan = document.createElement("span");
       catSpan.textContent = art.category || "Santé";
@@ -1248,6 +1266,7 @@
       metaLine.appendChild(readSpan);
       metaLine.appendChild(catSpan);
 
+      // Image
       if (art.imageUrl) {
         const cover = document.createElement("img");
         cover.className = "detail-cover";
@@ -1257,6 +1276,7 @@
         detail.appendChild(cover);
       }
 
+      // Chapo
       if (chapo) {
         const chapoEl = document.createElement("p");
         chapoEl.className = "chapo";
@@ -1264,19 +1284,18 @@
         detail.appendChild(chapoEl);
       }
 
+      // On met titre + méta au début
       detail.insertBefore(metaLine, detail.firstChild);
       detail.insertBefore(title, detail.firstChild);
 
-      if (contentText) {
-        const parts = contentText.split(/\n{2,}/);
-        for (const part of parts) {
-          if (!part.trim()) continue;
-          const p = document.createElement("p");
-          p.textContent = part.trim();
-          detail.appendChild(p);
-        }
+      // 🔥 Contenu HTML EXACT de l’admin
+      if (contentHtml) {
+        const contentWrapper = document.createElement("div");
+        contentWrapper.innerHTML = contentHtml;
+        detail.appendChild(contentWrapper);
       }
 
+      // Articles connexes
       const related = document.createElement("div");
       related.className = "related";
 
@@ -1318,15 +1337,17 @@
 
     document.addEventListener("DOMContentLoaded", loadArticles);
   </script>
+
+  <!-- autre script pub -->
   <script type="text/javascript">
-	atOptions = {
-		'key' : 'c8f6fe03fa0be119b2a3477767248bac',
-		'format' : 'iframe',
-		'height' : 300,
-		'width' : 160,
-		'params' : {}
-	};
-</script>
-<script type="text/javascript" src="//www.highperformanceformat.com/c8f6fe03fa0be119b2a3477767248bac/invoke.js"></script>
+    atOptions = {
+      'key' : 'c8f6fe03fa0be119b2a3477767248bac',
+      'format' : 'iframe',
+      'height' : 300,
+      'width' : 160,
+      'params' : {}
+    };
+  </script>
+  <script type="text/javascript" src="//www.highperformanceformat.com/c8f6fe03fa0be119b2a3477767248bac/invoke.js"></script>
 </body>
 </html>
