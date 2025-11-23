@@ -41,7 +41,7 @@
     }
 
     .page {
-      max-width: 960px;
+      max-width: 1100px;
       margin: 0 auto;
       padding: 24px 16px 40px;
     }
@@ -88,11 +88,11 @@
 
     .card-grid {
       display: grid;
-      grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
+      grid-template-columns: minmax(0, 3fr) minmax(0, 1.5fr);
       gap: 20px;
     }
 
-    @media (max-width: 800px) {
+    @media (max-width: 900px) {
       .card-grid {
         grid-template-columns: minmax(0, 1fr);
       }
@@ -112,16 +112,277 @@
     }
 
     .card p.desc {
-      margin: 0 0 16px;
+      margin: 0 0 12px;
       color: var(--text-muted);
       font-size: 0.86rem;
     }
 
-    form {
+    .top-link {
+      margin-top: 8px;
+      font-size: 0.85rem;
+    }
+
+    /* Toolbar / tableau */
+    .table-toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 10px;
+      flex-wrap: wrap;
+    }
+
+    .table-toolbar-title {
+      font-weight: 600;
+      font-size: 0.98rem;
+    }
+
+    .btn-primary {
+      border: none;
+      border-radius: 999px;
+      padding: 7px 16px;
+      font-size: 0.86rem;
+      font-weight: 600;
+      cursor: pointer;
+      background: linear-gradient(135deg, #22c55e, #16a34a);
+      color: #022c22;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: transform 0.08s ease, box-shadow 0.12s ease,
+        filter 0.12s ease;
+      box-shadow: 0 12px 25px rgba(22, 163, 74, 0.45);
+      white-space: nowrap;
+    }
+
+    .btn-primary span.icon {
+      font-size: 1rem;
+    }
+
+    .btn-primary:hover {
+      filter: brightness(1.05);
+      transform: translateY(-1px);
+      box-shadow: 0 16px 32px rgba(22, 163, 74, 0.55);
+    }
+
+    .article-list {
+      border-radius: 12px;
+      border: 1px solid var(--border-subtle);
+      background: rgba(15, 23, 42, 0.9);
+      max-height: 430px;
+      overflow: auto;
+    }
+
+    .empty {
+      padding: 16px;
+      font-size: 0.86rem;
+      color: var(--text-muted);
+      text-align: center;
+    }
+
+    .article-header-row {
+      display: grid;
+      grid-template-columns: 60px minmax(0, 2.3fr) minmax(0, 1.6fr) 130px;
+      gap: 10px;
+      padding: 8px 12px;
+      border-bottom: 1px solid #111827;
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #6b7280;
+      background: rgba(15, 23, 42, 0.8);
+      position: sticky;
+      top: 0;
+      z-index: 1;
+    }
+
+    @media (max-width: 800px) {
+      .article-header-row {
+        display: none;
+      }
+    }
+
+    .article-item {
+      padding: 10px 12px;
+      border-bottom: 1px solid #111827;
+      font-size: 0.86rem;
+      display: grid;
+      grid-template-columns: 60px minmax(0, 2.3fr) minmax(0, 1.6fr) 130px;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .article-item:last-child {
+      border-bottom: none;
+    }
+
+    @media (max-width: 800px) {
+      .article-item {
+        grid-template-columns: 60px minmax(0, 1fr);
+        grid-template-rows: auto auto auto;
+      }
+    }
+
+    .thumb-mini {
+      width: 100%;
+      height: 46px;
+      border-radius: 8px;
+      object-fit: cover;
+      background: #020617;
+    }
+
+    .thumb-mini.placeholder {
+      border: 1px dashed #1f2937;
+      font-size: 0.7rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #4b5563;
+    }
+
+    .article-item-title {
+      font-weight: 600;
+      line-height: 1.3;
+    }
+
+    .article-item-meta {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      border-radius: 999px;
+      padding: 2px 8px;
+      border: 1px solid #1f2937;
+      background: #020617;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    .chip strong {
+      color: var(--accent);
+      margin-right: 4px;
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      justify-content: flex-end;
+    }
+
+    .btn-sm {
+      border-radius: 999px;
+      border: 1px solid #1f2937;
+      background: #020617;
+      color: var(--text-main);
+      font-size: 0.75rem;
+      padding: 4px 10px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .btn-sm.edit {
+      border-color: #4ade80;
+      color: #bbf7d0;
+    }
+
+    .btn-sm.delete {
+      border-color: #fecaca;
+      color: #fecaca;
+    }
+
+    .btn-sm:hover {
+      background: #020617;
+      filter: brightness(1.05);
+    }
+
+    .count-label {
+      color: var(--text-muted);
+      font-size: 0.8rem;
+    }
+
+    /* Carte info droite */
+    .info-list {
+      margin-top: 8px;
+      padding-left: 16px;
+      color: var(--text-muted);
+      font-size: 0.85rem;
+    }
+
+    /* Modal */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: radial-gradient(circle at top, rgba(15, 23, 42, 0.8), rgba(2, 6, 23, 0.9));
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+    }
+
+    .modal-backdrop.active {
+      display: flex;
+    }
+
+    .modal {
+      width: 100%;
+      max-width: 620px;
+      background: radial-gradient(circle at top right, #111827, #020617 60%);
+      border-radius: 20px;
+      border: 1px solid var(--border-subtle);
+      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.75);
+      padding: 18px 18px 20px;
+      position: relative;
+    }
+
+    .modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 8px;
+    }
+
+    .modal-title {
+      font-size: 1rem;
+      font-weight: 600;
+    }
+
+    .modal-close {
+      border: none;
+      background: transparent;
+      color: var(--text-muted);
+      font-size: 1.4rem;
+      cursor: pointer;
+      line-height: 1;
+      padding: 2px 6px;
+      border-radius: 999px;
+    }
+
+    .modal-close:hover {
+      background: #0b1120;
+      color: #f9fafb;
+    }
+
+    .hint {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    .form-grid {
       display: flex;
       flex-direction: column;
-      gap: 12px;
-      margin-top: 4px;
+      gap: 10px;
+      margin-top: 6px;
     }
 
     label {
@@ -173,59 +434,34 @@
       }
     }
 
-    .hint {
-      font-size: 0.78rem;
-      color: var(--text-muted);
-      margin-top: 2px;
-    }
-
-    .actions {
+    .modal-actions {
       display: flex;
       align-items: center;
-      justify-content: flex-start;
+      justify-content: space-between;
       gap: 10px;
-      margin-top: 10px;
+      margin-top: 12px;
       flex-wrap: wrap;
     }
 
-    button[type="submit"] {
-      border: none;
+    .btn-secondary {
       border-radius: 999px;
-      padding: 8px 18px;
-      font-size: 0.9rem;
-      font-weight: 600;
-      cursor: pointer;
-      background: linear-gradient(135deg, #22c55e, #16a34a);
-      color: #022c22;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      transition: transform 0.08s ease, box-shadow 0.12s ease,
-        filter 0.12s ease;
-      box-shadow: 0 12px 25px rgba(22, 163, 74, 0.45);
-    }
-
-    button[type="submit"]:hover {
-      filter: brightness(1.05);
-      transform: translateY(-1px);
-      box-shadow: 0 16px 32px rgba(22, 163, 74, 0.55);
-    }
-
-    button[type="submit"]:disabled {
-      opacity: 0.6;
-      cursor: wait;
-      transform: none;
-      box-shadow: none;
-    }
-
-    .pill {
-      font-size: 0.8rem;
+      border: 1px solid #1f2937;
+      background: #020617;
       color: var(--text-muted);
+      font-size: 0.78rem;
+      padding: 6px 12px;
+      cursor: pointer;
+    }
+
+    .btn-secondary:hover {
+      background: #020617;
+      filter: brightness(1.05);
     }
 
     #message {
       font-size: 0.85rem;
       min-height: 1.1em;
+      margin-top: 4px;
     }
 
     #message.ok {
@@ -234,107 +470,6 @@
 
     #message.err {
       color: #fca5a5;
-    }
-
-    .list-header {
-      display: flex;
-      align-items: baseline;
-      justify-content: space-between;
-      gap: 8px;
-      margin-bottom: 10px;
-    }
-
-    .list-header small {
-      color: var(--text-muted);
-      font-size: 0.8rem;
-    }
-
-    .article-list {
-      border-radius: 12px;
-      border: 1px solid var(--border-subtle);
-      background: rgba(15, 23, 42, 0.9);
-      max-height: 360px;
-      overflow: auto;
-    }
-
-    .empty {
-      padding: 16px;
-      font-size: 0.86rem;
-      color: var(--text-muted);
-      text-align: center;
-    }
-
-    .article-item {
-      padding: 10px 14px;
-      border-bottom: 1px solid #111827;
-      font-size: 0.86rem;
-      display: grid;
-      grid-template-columns: 60px minmax(0, 1.7fr) minmax(0, 1.5fr);
-      gap: 10px;
-      align-items: center;
-    }
-
-    @media (max-width: 600px) {
-      .article-item {
-        grid-template-columns: 50px minmax(0, 1fr);
-        grid-template-rows: auto auto;
-      }
-    }
-
-    .article-item:last-child {
-      border-bottom: none;
-    }
-
-    .article-item-title {
-      font-weight: 600;
-    }
-
-    .article-item-meta {
-      margin-top: 0;
-      font-size: 0.78rem;
-      color: var(--text-muted);
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-      justify-content: flex-end;
-    }
-
-    .chip {
-      display: inline-flex;
-      align-items: center;
-      border-radius: 999px;
-      padding: 2px 8px;
-      border: 1px solid #1f2937;
-      background: #020617;
-      font-size: 0.75rem;
-      color: var(--text-muted);
-    }
-
-    .chip strong {
-      color: var(--accent);
-      margin-right: 4px;
-    }
-
-    .top-link {
-      margin-bottom: 12px;
-      font-size: 0.85rem;
-    }
-
-    .thumb-mini {
-      width: 100%;
-      height: 46px;
-      border-radius: 8px;
-      object-fit: cover;
-      background: #020617;
-    }
-
-    .thumb-mini.placeholder {
-      border: 1px dashed #1f2937;
-      font-size: 0.7rem;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: #4b5563;
     }
   </style>
 </head>
@@ -348,8 +483,7 @@
       </div>
       <div class="title">Administration – Santé Planète</div>
       <p class="subtitle">
-        Ajoutez ici les articles de conseils santé et d’actualités. Ils seront
-        automatiquement affichés sur le site public.
+        Gérez ici les articles de conseils santé et d’actualités publiés sur Santé Planète.
       </p>
       <div class="top-link">
         ← <a href="/">Retour au site public</a>
@@ -357,15 +491,62 @@
     </header>
 
     <main class="card-grid">
-      <!-- Colonne gauche : formulaire -->
+      <!-- Colonne gauche : liste des articles -->
       <section class="card">
-        <h2>Nouvel article</h2>
+        <div class="table-toolbar">
+          <div class="table-toolbar-title">
+            Articles publiés
+          </div>
+          <div style="display:flex;align-items:center;gap:10px;">
+            <span id="articles-count" class="count-label"></span>
+            <button type="button" class="btn-primary" id="openCreateBtn">
+              <span class="icon">＋</span> Nouvel article
+            </button>
+          </div>
+        </div>
         <p class="desc">
-          Renseignez le titre, le slug (pour l’URL), la catégorie, une image illustrative,
-          un éventuel résumé et le contenu détaillé de l’article.
+          Retrouvez ici tous les articles enregistrés dans la base, avec la possibilité
+          de les modifier ou de les supprimer.
         </p>
 
-        <form id="article-form" autocomplete="off">
+        <div class="article-list" id="articles-list">
+          <div class="empty">Chargement des articles…</div>
+        </div>
+      </section>
+
+      <!-- Colonne droite : infos / aide -->
+      <section class="card">
+        <h2>Infos pratiques</h2>
+        <p class="desc">
+          Les modifications sont immédiatement prises en compte sur le site public
+          dès que l’enregistrement a réussi.
+        </p>
+        <ul class="info-list">
+          <li><strong>Slug</strong> : utilisé pour l’URL de l’article, évitez les espaces.</li>
+          <li><strong>Catégorie</strong> : sert aux filtres (Santé, Nutrition, Psychologie…).</li>
+          <li><strong>Image</strong> : collez pour l’instant un lien vers une image (hébergement externe).</li>
+          <li>Vous pouvez revenir modifier un article ultérieurement sans le recréer.</li>
+        </ul>
+      </section>
+    </main>
+  </div>
+
+  <!-- MODAL : Création / édition d'article -->
+  <div class="modal-backdrop" id="articleModal" aria-hidden="true">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <div class="modal-header">
+        <div class="modal-title" id="modalTitle">Nouvel article</div>
+        <button type="button" class="modal-close" id="modalCloseBtn" aria-label="Fermer">
+          ×
+        </button>
+      </div>
+      <p class="desc" id="modalSubtitle">
+        Renseignez le titre, le slug (URL), la catégorie, une image illustrative,
+        un éventuel résumé et le contenu détaillé de l’article.
+      </p>
+
+      <form id="article-form" autocomplete="off">
+        <div class="form-grid">
           <div>
             <label for="title">Titre de l’article *</label>
             <input id="title" name="title" type="text" required />
@@ -394,9 +575,6 @@
                 type="text"
                 placeholder="Santé, nutrition, psychologie…"
               />
-              <div class="hint">
-                Sert pour les filtres et l’affichage (ex. : Santé, Nutrition…).
-              </div>
             </div>
           </div>
 
@@ -409,8 +587,7 @@
               placeholder="https://…/mon-image.jpg"
             />
             <div class="hint">
-              Pour l’instant, collez ici un lien direct vers une image (JPG, PNG, WEBP).
-              L’upload de fichier pourra être ajouté plus tard côté serveur.
+              Collez ici un lien direct vers une image (JPG, PNG, WEBP).
             </div>
           </div>
 
@@ -429,107 +606,109 @@
             <textarea
               id="content"
               name="content"
-              rows="8"
+              rows="7"
               required
               placeholder="Rédigez ici le contenu complet de l’article (conseils, explications, etc.)…"
             ></textarea>
           </div>
+        </div>
 
-          <div class="actions">
-            <button type="submit" id="submit-btn">
-              Publier l’article
+        <div class="modal-actions">
+          <button type="button" class="btn-secondary" id="cancelBtn">Annuler</button>
+          <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;">
+            <button type="submit" class="btn-primary" id="submit-btn">
+              Enregistrer l’article
             </button>
-            <span class="pill">Les champs marqués d’une * sont obligatoires.</span>
+            <span class="hint">Les champs marqués d’une * sont obligatoires.</span>
           </div>
-
-          <div id="message" aria-live="polite"></div>
-        </form>
-      </section>
-
-      <!-- Colonne droite : liste des articles -->
-      <section class="card">
-        <div class="list-header">
-          <h2>Articles récents</h2>
-          <small id="articles-count"></small>
         </div>
 
-        <div id="articles-list" class="article-list">
-          <div class="empty">Chargement des articles…</div>
-        </div>
-      </section>
-    </main>
+        <div id="message" aria-live="polite"></div>
+      </form>
+    </div>
   </div>
 
   <script>
-    const form = document.getElementById("article-form");
-    const message = document.getElementById("message");
-    const submitBtn = document.getElementById("submit-btn");
-    const listContainer = document.getElementById("articles-list");
-    const countLabel = document.getElementById("articles-count");
+    const listContainer   = document.getElementById("articles-list");
+    const countLabel      = document.getElementById("articles-count");
+    const openCreateBtn   = document.getElementById("openCreateBtn");
+    const modalBackdrop   = document.getElementById("articleModal");
+    const modalCloseBtn   = document.getElementById("modalCloseBtn");
+    const cancelBtn       = document.getElementById("cancelBtn");
+    const modalTitle      = document.getElementById("modalTitle");
+    const articleForm     = document.getElementById("article-form");
+    const submitBtn       = document.getElementById("submit-btn");
+    const message         = document.getElementById("message");
+
+    let ARTICLES = [];
+    let currentMode = "create"; // "create" | "edit"
+    let currentId = null;
+
+    function openModal(mode = "create", article = null) {
+      currentMode = mode;
+      currentId = article && article.id != null ? article.id : null;
+
+      if (mode === "create") {
+        modalTitle.textContent = "Nouvel article";
+        submitBtn.textContent  = "Publier l’article";
+        articleForm.reset();
+      } else {
+        modalTitle.textContent = "Modifier l’article";
+        submitBtn.textContent  = "Enregistrer les modifications";
+
+        // Pré-remplit le formulaire
+        articleForm.title.value    = article.title    || "";
+        articleForm.slug.value     = article.slug     || "";
+        articleForm.category.value = article.category || "";
+        articleForm.imageUrl.value = article.imageUrl || "";
+        articleForm.summary.value  = article.summary  || "";
+        articleForm.content.value  = article.content  || "";
+      }
+
+      message.textContent = "";
+      message.className   = "";
+
+      modalBackdrop.classList.add("active");
+      modalBackdrop.setAttribute("aria-hidden", "false");
+      // focus titre
+      setTimeout(() => {
+        articleForm.title.focus();
+      }, 10);
+    }
+
+    function closeModal() {
+      modalBackdrop.classList.remove("active");
+      modalBackdrop.setAttribute("aria-hidden", "true");
+      currentId = null;
+      currentMode = "create";
+    }
+
+    openCreateBtn.addEventListener("click", () => openModal("create"));
+    modalCloseBtn.addEventListener("click", closeModal);
+    cancelBtn.addEventListener("click", closeModal);
+
+    // Fermer sur clic hors de la boîte
+    modalBackdrop.addEventListener("click", (e) => {
+      if (e.target === modalBackdrop) {
+        closeModal();
+      }
+    });
+
+    // Fermer sur ESC
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape" && modalBackdrop.classList.contains("active")) {
+        closeModal();
+      }
+    });
 
     async function loadArticles() {
       try {
         const res = await fetch("/api/articles");
         if (!res.ok) throw new Error("Erreur HTTP");
         const articles = await res.json();
+        ARTICLES = Array.isArray(articles) ? articles : [];
 
-        if (!Array.isArray(articles) || articles.length === 0) {
-          listContainer.innerHTML =
-            '<div class="empty">Aucun article pour le moment.</div>';
-          countLabel.textContent = "";
-          return;
-        }
-
-        countLabel.textContent =
-          articles.length + (articles.length > 1 ? " articles" : " article");
-
-        listContainer.innerHTML = "";
-        for (const art of articles) {
-          const div = document.createElement("div");
-          div.className = "article-item";
-
-          // Colonne 1 : image mini
-          let thumb;
-          if (art.imageUrl) {
-            thumb = document.createElement("img");
-            thumb.className = "thumb-mini";
-            thumb.src = art.imageUrl;
-            thumb.alt = art.title || "Illustration";
-            thumb.loading = "lazy";
-          } else {
-            thumb = document.createElement("div");
-            thumb.className = "thumb-mini placeholder";
-            thumb.textContent = "Aucune image";
-          }
-          div.appendChild(thumb);
-
-          // Colonne 2 : titre
-          const title = document.createElement("div");
-          title.className = "article-item-title";
-          title.textContent = art.title || "(sans titre)";
-          div.appendChild(title);
-
-          // Colonne 3 : slug + catégorie (ta « colonne catégories »)
-          const meta = document.createElement("div");
-          meta.className = "article-item-meta";
-
-          const slugChip = document.createElement("span");
-          slugChip.className = "chip";
-          slugChip.innerHTML =
-            "<strong>Slug</strong>" + (art.slug || "—");
-
-          const catChip = document.createElement("span");
-          catChip.className = "chip";
-          catChip.innerHTML =
-            "<strong>Cat.</strong>" + (art.category || "non définie");
-
-          meta.appendChild(slugChip);
-          meta.appendChild(catChip);
-
-          div.appendChild(meta);
-
-          listContainer.appendChild(div);
-        }
+        renderArticles();
       } catch (err) {
         console.error(err);
         listContainer.innerHTML =
@@ -538,19 +717,139 @@
       }
     }
 
-    form.addEventListener("submit", async (e) => {
+    function renderArticles() {
+      if (!ARTICLES.length) {
+        listContainer.innerHTML =
+          '<div class="empty">Aucun article pour le moment.</div>';
+        countLabel.textContent = "";
+        return;
+      }
+
+      countLabel.textContent =
+        ARTICLES.length + (ARTICLES.length > 1 ? " articles" : " article");
+
+      listContainer.innerHTML = "";
+
+      // En-tête
+      const header = document.createElement("div");
+      header.className = "article-header-row";
+      header.innerHTML = `
+        <div>Image</div>
+        <div>Titre</div>
+        <div>Slug / Catégorie</div>
+        <div style="text-align:right;">Actions</div>
+      `;
+      listContainer.appendChild(header);
+
+      for (const art of ARTICLES) {
+        const div = document.createElement("div");
+        div.className = "article-item";
+
+        // Colonne 1 : image mini
+        let thumb;
+        if (art.imageUrl) {
+          thumb = document.createElement("img");
+          thumb.className = "thumb-mini";
+          thumb.src = art.imageUrl;
+          thumb.alt = art.title || "Illustration";
+          thumb.loading = "lazy";
+        } else {
+          thumb = document.createElement("div");
+          thumb.className = "thumb-mini placeholder";
+          thumb.textContent = "Aucune image";
+        }
+        div.appendChild(thumb);
+
+        // Colonne 2 : titre
+        const title = document.createElement("div");
+        title.className = "article-item-title";
+        title.textContent = art.title || "(sans titre)";
+        div.appendChild(title);
+
+        // Colonne 3 : slug + catégorie
+        const meta = document.createElement("div");
+        meta.className = "article-item-meta";
+
+        const slugChip = document.createElement("span");
+        slugChip.className = "chip";
+        slugChip.innerHTML =
+          "<strong>Slug</strong>" + (art.slug || "—");
+
+        const catChip = document.createElement("span");
+        catChip.className = "chip";
+        catChip.innerHTML =
+          "<strong>Cat.</strong>" + (art.category || "non définie");
+
+        meta.appendChild(slugChip);
+        meta.appendChild(catChip);
+        div.appendChild(meta);
+
+        // Colonne 4 : actions
+        const actions = document.createElement("div");
+        actions.className = "actions";
+
+        const editBtn = document.createElement("button");
+        editBtn.type = "button";
+        editBtn.className = "btn-sm edit";
+        editBtn.textContent = "Modifier";
+        editBtn.addEventListener("click", () => {
+          if (art.id == null) {
+            alert("Impossible de modifier : aucun identifiant (id) renvoyé par l’API.");
+            return;
+          }
+          openModal("edit", art);
+        });
+
+        const deleteBtn = document.createElement("button");
+        deleteBtn.type = "button";
+        deleteBtn.className = "btn-sm delete";
+        deleteBtn.textContent = "Supprimer";
+        deleteBtn.addEventListener("click", async () => {
+          if (art.id == null) {
+            alert("Impossible de supprimer : aucun identifiant (id) renvoyé par l’API.");
+            return;
+          }
+          const ok = confirm("Supprimer cet article ? Cette action est définitive.");
+          if (!ok) return;
+
+          try {
+            const res = await fetch("/api/articles/" + encodeURIComponent(art.id), {
+              method: "DELETE",
+            });
+            if (!res.ok) {
+              const data = await res.json().catch(() => ({}));
+              throw new Error(data.error || "Erreur serveur");
+            }
+            // Retire localement
+            ARTICLES = ARTICLES.filter(a => a.id !== art.id);
+            renderArticles();
+          } catch (err) {
+            console.error(err);
+            alert("Impossible de supprimer l’article.");
+          }
+        });
+
+        actions.appendChild(editBtn);
+        actions.appendChild(deleteBtn);
+        div.appendChild(actions);
+
+        listContainer.appendChild(div);
+      }
+    }
+
+    articleForm.addEventListener("submit", async (e) => {
       e.preventDefault();
       message.textContent = "";
       message.className = "";
       submitBtn.disabled = true;
 
       const payload = {
-        title: form.title.value.trim(),
-        slug: form.slug.value.trim(),
-        summary: form.summary.value.trim(),
-        category: form.category.value.trim(),
-        imageUrl: form.imageUrl.value.trim(),
-        content: form.content.value.trim(),
+        title: articleForm.title.value.trim(),
+        slug: articleForm.slug.value.trim(),
+        summary: articleForm.summary.value.trim(),
+        category: articleForm.category.value.trim(),
+        imageUrl: articleForm.imageUrl.value.trim(),
+        content: articleForm.content.value.trim(),
       };
 
       if (!payload.title || !payload.slug || !payload.content) {
@@ -562,8 +861,16 @@
       }
 
       try {
-        const res = await fetch("/api/articles", {
-          method: "POST",
+        let url = "/api/articles";
+        let method = "POST";
+
+        if (currentMode === "edit" && currentId != null) {
+          url = "/api/articles/" + encodeURIComponent(currentId);
+          method = "PUT";
+        }
+
+        const res = await fetch(url, {
+          method,
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(payload),
         });
@@ -573,11 +880,16 @@
           throw new Error(data.error || "Erreur serveur");
         }
 
-        message.textContent = "Article enregistré avec succès.";
+        message.textContent =
+          currentMode === "create"
+            ? "Article enregistré avec succès."
+            : "Article modifié avec succès.";
         message.classList.add("ok");
 
-        form.reset();
+        // Recharge la liste
         await loadArticles();
+        // Ferme le modal au bout d’un petit délai
+        setTimeout(closeModal, 400);
       } catch (err) {
         console.error(err);
         message.textContent =
@@ -588,7 +900,7 @@
       }
     });
 
-    // Chargement initial de la liste
+    // Chargement initial
     loadArticles();
   </script>
 </body>
