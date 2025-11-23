@@ -746,28 +746,42 @@
             ></textarea>
           </div>
 
-          <!-- NOUVEL ÉDITEUR RICHE -->
+          <!-- ÉDITEUR RICHE -->
           <div class="editor-wrapper">
             <label for="contentEditor">Contenu de l’article *</label>
 
             <div class="editor-toolbar" aria-label="Barre d’édition du contenu">
+              <!-- style texte -->
               <button type="button" class="editor-btn" data-cmd="bold"><strong>B</strong></button>
               <button type="button" class="editor-btn" data-cmd="italic"><em>I</em></button>
-              <button type="button" class="editor-btn" data-cmd="underline"><span style="text-decoration:underline;">U</span></button>
+              <button type="button" class="editor-btn" data-cmd="underline">
+                <span style="text-decoration:underline;">U</span>
+              </button>
 
               <div class="editor-divider"></div>
 
-              <button type="button" class="editor-btn" data-block="p" data-cmd="formatBlock" data-value="p">Parag.</button>
+              <!-- titres / blocs -->
+              <button type="button" class="editor-btn" data-block="p"  data-cmd="formatBlock" data-value="p">Parag.</button>
               <button type="button" class="editor-btn" data-block="h2" data-cmd="formatBlock" data-value="h2">H2</button>
               <button type="button" class="editor-btn" data-block="h3" data-cmd="formatBlock" data-value="h3">H3</button>
 
               <div class="editor-divider"></div>
 
+              <!-- listes -->
               <button type="button" class="editor-btn" data-cmd="insertUnorderedList">• Liste</button>
               <button type="button" class="editor-btn" data-cmd="insertOrderedList">1. Liste</button>
 
               <div class="editor-divider"></div>
 
+              <!-- alignement -->
+              <button type="button" class="editor-btn" data-cmd="justifyLeft">⟸</button>
+              <button type="button" class="editor-btn" data-cmd="justifyCenter">≡</button>
+              <button type="button" class="editor-btn" data-cmd="justifyRight">⟹</button>
+              <button type="button" class="editor-btn" data-cmd="justifyFull">☰</button>
+
+              <div class="editor-divider"></div>
+
+              <!-- lien + nettoyage -->
               <button type="button" class="editor-btn" data-cmd="createLink" data-link="true">Lien</button>
               <button type="button" class="editor-btn" data-cmd="removeFormat">Effacer style</button>
             </div>
@@ -776,13 +790,13 @@
               id="contentEditor"
               class="rich-editor empty"
               contenteditable="true"
-              data-placeholder="Rédigez ici le contenu complet de l’article (vous pouvez mettre du gras, des titres, des listes, des liens…)."
+              data-placeholder="Rédigez ici le contenu complet de l’article (gras, titres, listes, alignement, liens…)."
             ></div>
 
             <!-- Champ caché pour envoyer le HTML au serveur -->
             <input type="hidden" id="contentInput" name="content" />
             <div class="hint">
-              Vous pouvez sélectionner le texte et utiliser la barre d’outils comme dans un traitement de texte.
+              Le HTML exact saisi ici sera enregistré et affiché tel quel sur le site public.
             </div>
           </div>
         </div>
@@ -828,7 +842,7 @@
     let currentId = null;
     let currentImageUrl = "";   // stocke l'image actuelle (URL ou dataURL) en mode édition
 
-    // ----------- RICH TEXT : gestion du placeholder -----------
+    // ---------- RICH TEXT : placeholder ----------
     function refreshEditorPlaceholder() {
       const txt = contentEditor.textContent.replace(/\u200B/g, "").trim();
       if (!txt && !contentEditor.innerHTML.match(/<img|<br|<p|<h[1-6]|<ul|<ol/i)) {
@@ -844,19 +858,16 @@
       contentEditor.classList.remove("empty");
     });
 
-    // ----------- RICH TEXT : gestion de la toolbar -----------
+    // ---------- RICH TEXT : toolbar ----------
     toolbarButtons.forEach(btn => {
       btn.addEventListener("click", (e) => {
         e.preventDefault();
         const cmd = btn.dataset.cmd;
         const value = btn.dataset.value || null;
 
-        // Commande spéciale pour les liens
         if (btn.dataset.link === "true") {
           const url = prompt("Adresse du lien (URL) :", "https://");
-          if (!url) {
-            return;
-          }
+          if (!url) return;
           document.execCommand("createLink", false, url);
         } else if (cmd === "formatBlock") {
           document.execCommand("formatBlock", false, value || "p");
@@ -869,7 +880,7 @@
       });
     });
 
-    // ----------- MODAL -----------
+    // ---------- MODAL ----------
     function openModal(mode = "create", article = null) {
       currentMode = mode;
       currentId = article && article.id != null ? article.id : null;
@@ -881,6 +892,7 @@
         currentImageUrl = "";
         currentImageHint.textContent = "Aucune image sélectionnée pour le moment.";
         contentEditor.innerHTML = "";
+        contentInput.value = "";
         refreshEditorPlaceholder();
       } else {
         modalTitle.textContent = "Modifier l’article";
@@ -906,14 +918,15 @@
 
         currentImageUrl = article.imageUrl || "";
         if (currentImageUrl) {
-          currentImageHint.textContent = "Une image est déjà associée à cet article. Vous pouvez en choisir une nouvelle pour la remplacer.";
+          currentImageHint.textContent =
+            "Une image est déjà associée à cet article. Vous pouvez en choisir une nouvelle pour la remplacer.";
         } else {
-          currentImageHint.textContent = "Aucune image enregistrée pour cet article. Vous pouvez en sélectionner une.";
+          currentImageHint.textContent =
+            "Aucune image enregistrée pour cet article. Vous pouvez en sélectionner une.";
         }
 
         imageFileInput.value = "";
 
-        // contenu HTML
         const htmlContent = article.content || "";
         contentEditor.innerHTML = htmlContent;
         contentInput.value = htmlContent;
@@ -954,7 +967,7 @@
       }
     });
 
-    // ----------- CHARGEMENT / AFFICHAGE DES ARTICLES -----------
+    // ---------- CHARGEMENT DES ARTICLES ----------
     async function loadArticles() {
       try {
         const res = await fetch("/api/articles");
@@ -998,7 +1011,6 @@
         const div = document.createElement("div");
         div.className = "article-item";
 
-        // Image
         let thumb;
         if (art.imageUrl) {
           thumb = document.createElement("img");
@@ -1013,13 +1025,11 @@
         }
         div.appendChild(thumb);
 
-        // Titre
         const title = document.createElement("div");
         title.className = "article-item-title";
         title.textContent = art.title || "(sans titre)";
         div.appendChild(title);
 
-        // Slug + catégorie
         const meta = document.createElement("div");
         meta.className = "article-item-meta";
 
@@ -1037,7 +1047,6 @@
         meta.appendChild(catChip);
         div.appendChild(meta);
 
-        // Actions
         const actions = document.createElement("div");
         actions.className = "actions";
 
@@ -1099,7 +1108,7 @@
       }
     }
 
-    // ----------- UTIL : fichier -> dataURL -----------
+    // ---------- FICHIER -> DATA URL ----------
     function fileToDataUrl(file) {
       return new Promise((resolve, reject) => {
         const reader = new FileReader();
@@ -1109,7 +1118,7 @@
       });
     }
 
-    // ----------- SUBMIT FORM -----------
+    // ---------- SUBMIT ----------
     articleForm.addEventListener("submit", async (e) => {
       e.preventDefault();
       message.textContent = "";
@@ -1121,7 +1130,6 @@
       const summary = articleForm.summary.value.trim();
       const category = articleForm.category.value;
 
-      // On récupère le HTML + le texte brut de l’éditeur
       const htmlContent = contentEditor.innerHTML.trim();
       const textContent = contentEditor.textContent.replace(/\u200B/g, "").trim();
 
@@ -1137,7 +1145,6 @@
 
       let imageUrlToSave = currentImageUrl;
 
-      // Si un fichier est sélectionné, on le convertit en Data URL
       const file = imageFileInput.files && imageFileInput.files[0];
       if (file) {
         try {
