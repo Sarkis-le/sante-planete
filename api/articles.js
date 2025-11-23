@@ -94,15 +94,9 @@ export default async function handler(req, res) {
   }
 
   // id depuis le chemin : /api/articles/:id
-  let articleId = getArticleIdFromPath(pathname);
-
-  // si pas trouvé, on regarde dans la query string : /api/articles?id=123
-  if (!articleId && url) {
-    const qsId = url.searchParams.get("id");
-    if (qsId) {
-      articleId = qsId;
-    }
-  }
+  const pathId = getArticleIdFromPath(pathname);
+  // id depuis la query string : /api/articles?id=123
+  const queryId = url ? url.searchParams.get("id") : null;
 
   if (req.method === "OPTIONS") {
     // Pré-flight CORS
@@ -111,8 +105,12 @@ export default async function handler(req, res) {
     return;
   }
 
-  // --- GET ---
+  //
+  // -------- GET : liste ou un article --------
+  //
   if (req.method === "GET") {
+    const articleId = pathId || queryId;
+
     try {
       if (articleId != null) {
         const rows = await query("SELECT * FROM articles WHERE id = $1", [
@@ -138,17 +136,26 @@ export default async function handler(req, res) {
     return;
   }
 
-  // --- POST (création) ---
-  if (req.method === "POST") {
-    let body;
-    try {
-      body = await readJsonBody(req);
-    } catch (err) {
-      console.error("POST /api/articles body parse error", err);
-      sendJson(res, 400, { error: "Corps de requête invalide" });
-      return;
-    }
+  //
+  // Pour POST / PUT / DELETE : on lit d'abord le body
+  //
+  let body = {};
+  try {
+    body = await readJsonBody(req);
+  } catch (err) {
+    console.error(`${req.method} /api/articles body parse error`, err);
+    sendJson(res, 400, { error: "Corps de requête invalide" });
+    return;
+  }
 
+  // id possible dans le body pour PUT/DELETE
+  const bodyId = body && (body.id || body.articleId || null);
+  const articleIdForWrite = pathId || queryId || bodyId;
+
+  //
+  // -------- POST (création) --------
+  //
+  if (req.method === "POST") {
     const {
       title,
       slug,
@@ -187,25 +194,20 @@ export default async function handler(req, res) {
     return;
   }
 
-  // À partir d'ici, il faut un id (dans l’URL ou la query)
-  if (articleId == null) {
+  //
+  // À partir d’ici (PUT / DELETE), il nous faut un id
+  //
+  if (articleIdForWrite == null) {
     sendJson(res, 400, {
-      error: "Identifiant d’article manquant (URL ou ?id=).",
+      error: "Identifiant d’article manquant (URL, ?id= ou body.id).",
     });
     return;
   }
 
-  // --- PUT (mise à jour) ---
+  //
+  // -------- PUT (mise à jour) --------
+  //
   if (req.method === "PUT") {
-    let body;
-    try {
-      body = await readJsonBody(req);
-    } catch (err) {
-      console.error("PUT /api/articles body parse error", err);
-      sendJson(res, 400, { error: "Corps de requête invalide" });
-      return;
-    }
-
     const {
       title,
       slug,
@@ -234,7 +236,7 @@ export default async function handler(req, res) {
              updated_at = NOW()
          WHERE id = $7
          RETURNING *`,
-        [title, summary, content, category, slug, imageUrl, articleId]
+        [title, summary, content, category, slug, imageUrl, articleIdForWrite]
       );
 
       if (!rows.length) {
@@ -255,12 +257,14 @@ export default async function handler(req, res) {
     return;
   }
 
-  // --- DELETE ---
+  //
+  // -------- DELETE --------
+  //
   if (req.method === "DELETE") {
     try {
       const rows = await query(
         "DELETE FROM articles WHERE id = $1 RETURNING id",
-        [articleId]
+        [articleIdForWrite]
       );
       if (!rows.length) {
         sendJson(res, 404, { error: "Article introuvable" });
