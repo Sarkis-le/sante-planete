@@ -381,20 +381,25 @@
       display: flex;
     }
 
-    .modal {
-      width: 100%;
-      max-width: 620px;
-      background:
-        radial-gradient(circle at top right, rgba(56, 189, 248, 0.12), transparent 60%),
-        radial-gradient(circle at bottom left, rgba(168, 85, 247, 0.10), transparent 60%),
-        rgba(15, 23, 42, 0.96);
-      border-radius: 22px;
-      border: 1px solid var(--border-subtle);
-      box-shadow: var(--shadow-strong);
-      padding: 18px 18px 20px;
-      position: relative;
-      backdrop-filter: blur(var(--glass-blur));
-    }
+   .modal {
+  width: 100%;
+  max-width: 620px;
+  background:
+    radial-gradient(circle at top right, rgba(56, 189, 248, 0.12), transparent 60%),
+    radial-gradient(circle at bottom left, rgba(168, 85, 247, 0.10), transparent 60%),
+    rgba(15, 23, 42, 0.96);
+  border-radius: 22px;
+  border: 1px solid var(--border-subtle);
+  box-shadow: var(--shadow-strong);
+  padding: 18px 18px 20px;
+  position: relative;
+  backdrop-filter: blur(var(--glass-blur));
+
+  
+  max-height: calc(100vh - 40px);
+  overflow-y: auto;
+}
+
 
     .modal-header {
       display: flex;
