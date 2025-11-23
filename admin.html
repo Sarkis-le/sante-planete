@@ -531,6 +531,86 @@
     #message.err {
       color: #fca5a5;
     }
+
+    /* ---------- ÉDITEUR RICHE ---------- */
+
+    .editor-wrapper {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .editor-toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+      padding: 4px;
+      border-radius: 10px;
+      border: 1px solid rgba(31, 41, 55, 0.95);
+      background: linear-gradient(
+        135deg,
+        rgba(15, 23, 42, 0.98),
+        rgba(15, 23, 42, 0.9)
+      );
+    }
+
+    .editor-btn {
+      border-radius: 999px;
+      border: 1px solid rgba(55, 65, 81, 0.9);
+      background: rgba(15, 23, 42, 0.95);
+      color: #e5e7eb;
+      font-size: 0.78rem;
+      padding: 4px 10px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      transition: background 0.12s ease, border-color 0.12s ease,
+        transform 0.06s ease;
+    }
+
+    .editor-btn:hover {
+      background: rgba(15, 23, 42, 0.98);
+      border-color: rgba(56, 189, 248, 0.6);
+      transform: translateY(-0.5px);
+    }
+
+    .editor-btn[data-block] {
+      font-weight: 600;
+    }
+
+    .editor-divider {
+      width: 1px;
+      align-self: stretch;
+      background: rgba(55, 65, 81, 0.9);
+      margin: 0 2px;
+    }
+
+    .rich-editor {
+      border-radius: 10px;
+      border: 1px solid var(--border-subtle);
+      background: rgba(15, 23, 42, 0.9);
+      padding: 10px 11px;
+      min-height: 180px;
+      max-height: 420px;
+      overflow-y: auto;
+      font-size: 0.94rem;
+      line-height: 1.6;
+      outline: none;
+    }
+
+    .rich-editor:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 1px rgba(56, 189, 248, 0.4);
+      background: #020617;
+    }
+
+    .rich-editor.empty::before {
+      content: attr(data-placeholder);
+      color: var(--text-muted);
+      pointer-events: none;
+      display: block;
+    }
   </style>
 </head>
 
@@ -666,15 +746,44 @@
             ></textarea>
           </div>
 
-          <div>
-            <label for="content">Contenu de l’article *</label>
-            <textarea
-              id="content"
-              name="content"
-              rows="7"
-              required
-              placeholder="Rédigez ici le contenu complet de l’article…"
-            ></textarea>
+          <!-- NOUVEL ÉDITEUR RICHE -->
+          <div class="editor-wrapper">
+            <label for="contentEditor">Contenu de l’article *</label>
+
+            <div class="editor-toolbar" aria-label="Barre d’édition du contenu">
+              <button type="button" class="editor-btn" data-cmd="bold"><strong>B</strong></button>
+              <button type="button" class="editor-btn" data-cmd="italic"><em>I</em></button>
+              <button type="button" class="editor-btn" data-cmd="underline"><span style="text-decoration:underline;">U</span></button>
+
+              <div class="editor-divider"></div>
+
+              <button type="button" class="editor-btn" data-block="p" data-cmd="formatBlock" data-value="p">Parag.</button>
+              <button type="button" class="editor-btn" data-block="h2" data-cmd="formatBlock" data-value="h2">H2</button>
+              <button type="button" class="editor-btn" data-block="h3" data-cmd="formatBlock" data-value="h3">H3</button>
+
+              <div class="editor-divider"></div>
+
+              <button type="button" class="editor-btn" data-cmd="insertUnorderedList">• Liste</button>
+              <button type="button" class="editor-btn" data-cmd="insertOrderedList">1. Liste</button>
+
+              <div class="editor-divider"></div>
+
+              <button type="button" class="editor-btn" data-cmd="createLink" data-link="true">Lien</button>
+              <button type="button" class="editor-btn" data-cmd="removeFormat">Effacer style</button>
+            </div>
+
+            <div
+              id="contentEditor"
+              class="rich-editor empty"
+              contenteditable="true"
+              data-placeholder="Rédigez ici le contenu complet de l’article (vous pouvez mettre du gras, des titres, des listes, des liens…)."
+            ></div>
+
+            <!-- Champ caché pour envoyer le HTML au serveur -->
+            <input type="hidden" id="contentInput" name="content" />
+            <div class="hint">
+              Vous pouvez sélectionner le texte et utiliser la barre d’outils comme dans un traitement de texte.
+            </div>
           </div>
         </div>
 
@@ -710,11 +819,57 @@
     const imageFileInput  = document.getElementById("imageFile");
     const currentImageHint = document.getElementById("currentImageHint");
 
+    const contentEditor   = document.getElementById("contentEditor");
+    const contentInput    = document.getElementById("contentInput");
+    const toolbarButtons  = document.querySelectorAll(".editor-btn");
+
     let ARTICLES = [];
     let currentMode = "create"; // "create" | "edit"
     let currentId = null;
     let currentImageUrl = "";   // stocke l'image actuelle (URL ou dataURL) en mode édition
 
+    // ----------- RICH TEXT : gestion du placeholder -----------
+    function refreshEditorPlaceholder() {
+      const txt = contentEditor.textContent.replace(/\u200B/g, "").trim();
+      if (!txt && !contentEditor.innerHTML.match(/<img|<br|<p|<h[1-6]|<ul|<ol/i)) {
+        contentEditor.classList.add("empty");
+      } else {
+        contentEditor.classList.remove("empty");
+      }
+    }
+
+    contentEditor.addEventListener("input", refreshEditorPlaceholder);
+    contentEditor.addEventListener("blur", refreshEditorPlaceholder);
+    contentEditor.addEventListener("focus", () => {
+      contentEditor.classList.remove("empty");
+    });
+
+    // ----------- RICH TEXT : gestion de la toolbar -----------
+    toolbarButtons.forEach(btn => {
+      btn.addEventListener("click", (e) => {
+        e.preventDefault();
+        const cmd = btn.dataset.cmd;
+        const value = btn.dataset.value || null;
+
+        // Commande spéciale pour les liens
+        if (btn.dataset.link === "true") {
+          const url = prompt("Adresse du lien (URL) :", "https://");
+          if (!url) {
+            return;
+          }
+          document.execCommand("createLink", false, url);
+        } else if (cmd === "formatBlock") {
+          document.execCommand("formatBlock", false, value || "p");
+        } else {
+          document.execCommand(cmd, false, value);
+        }
+
+        contentEditor.focus();
+        refreshEditorPlaceholder();
+      });
+    });
+
+    // ----------- MODAL -----------
     function openModal(mode = "create", article = null) {
       currentMode = mode;
       currentId = article && article.id != null ? article.id : null;
@@ -725,6 +880,8 @@
         articleForm.reset();
         currentImageUrl = "";
         currentImageHint.textContent = "Aucune image sélectionnée pour le moment.";
+        contentEditor.innerHTML = "";
+        refreshEditorPlaceholder();
       } else {
         modalTitle.textContent = "Modifier l’article";
         submitBtn.textContent  = "Enregistrer les modifications";
@@ -732,7 +889,6 @@
         articleForm.title.value    = article.title    || "";
         articleForm.slug.value     = article.slug     || "";
         articleForm.summary.value  = article.summary  || "";
-        articleForm.content.value  = article.content  || "";
 
         const catSelect  = articleForm.category;
         const currentCat = article.category || "";
@@ -756,6 +912,12 @@
         }
 
         imageFileInput.value = "";
+
+        // contenu HTML
+        const htmlContent = article.content || "";
+        contentEditor.innerHTML = htmlContent;
+        contentInput.value = htmlContent;
+        refreshEditorPlaceholder();
       }
 
       message.textContent = "";
@@ -792,6 +954,7 @@
       }
     });
 
+    // ----------- CHARGEMENT / AFFICHAGE DES ARTICLES -----------
     async function loadArticles() {
       try {
         const res = await fetch("/api/articles");
@@ -936,6 +1099,7 @@
       }
     }
 
+    // ----------- UTIL : fichier -> dataURL -----------
     function fileToDataUrl(file) {
       return new Promise((resolve, reject) => {
         const reader = new FileReader();
@@ -945,6 +1109,7 @@
       });
     }
 
+    // ----------- SUBMIT FORM -----------
     articleForm.addEventListener("submit", async (e) => {
       e.preventDefault();
       message.textContent = "";
@@ -955,15 +1120,20 @@
       const slug    = articleForm.slug.value.trim();
       const summary = articleForm.summary.value.trim();
       const category = articleForm.category.value;
-      const content = articleForm.content.value.trim();
 
-      if (!title || !slug || !content) {
+      // On récupère le HTML + le texte brut de l’éditeur
+      const htmlContent = contentEditor.innerHTML.trim();
+      const textContent = contentEditor.textContent.replace(/\u200B/g, "").trim();
+
+      if (!title || !slug || !textContent) {
         message.textContent =
           "Merci de remplir au minimum le titre, le slug et le contenu.";
         message.classList.add("err");
         submitBtn.disabled = false;
         return;
       }
+
+      contentInput.value = htmlContent;
 
       let imageUrlToSave = currentImageUrl;
 
@@ -986,7 +1156,7 @@
         summary,
         category,
         imageUrl: imageUrlToSave,
-        content,
+        content: htmlContent,
       };
 
       try {
