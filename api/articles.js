@@ -49,14 +49,34 @@ export async function readJsonBody(req) {
   });
 }
 
-// Récupère éventuellement l'id dans /api/articles/:id
+/**
+ * Récupère éventuellement l'id dans /api/articles/:id
+ * Compatible avec :
+ *   - id numérique (1, 2, 3…)
+ *   - id uuid (d0f0b8e4-1234-5678-9abc-abcdef012345)
+ */
 function getArticleIdFromPath(pathname) {
-  // /api/articles  ou /api/articles/123
-  const match = pathname.match(/^\/api\/articles\/?(\d+)?$/);
-  if (!match) return null;
-  if (!match[1]) return null;
-  const id = Number.parseInt(match[1], 10);
-  return Number.isNaN(id) ? null : id;
+  // /api/articles  ou /api/articles/<id> (tout ce qui n'est pas un /)
+  const match = pathname.match(/^\/api\/articles\/?([^/]+)?$/);
+  if (!match || !match[1]) return null;
+  return match[1]; // on laisse tel quel (string) → ok pour uuid ou int
+}
+
+/**
+ * Normalise une ligne retournée par Postgres en objet article
+ * pour le front (toujours imageUrl côté JS).
+ */
+function mapArticleRow(row) {
+  if (!row) return null;
+  return {
+    id: row.id,
+    title: row.title,
+    slug: row.slug,
+    summary: row.summary,
+    content: row.content,
+    category: row.category,
+    imageUrl: row.imageUrl || row.image_url || row.imageurl || null,
+  };
 }
 
 export default async function handler(req, res) {
@@ -84,17 +104,21 @@ export default async function handler(req, res) {
   if (req.method === "GET") {
     try {
       if (articleId != null) {
-        const rows = await query("SELECT * FROM articles WHERE id = $1", [articleId]);
+        const rows = await query("SELECT * FROM articles WHERE id = $1", [
+          articleId,
+        ]);
         if (!rows.length) {
           sendJson(res, 404, { error: "Article introuvable" });
           return;
         }
-        sendJson(res, 200, rows[0]);
+        const article = mapArticleRow(rows[0]);
+        sendJson(res, 200, article);
       } else {
         const rows = await query(
           'SELECT * FROM articles ORDER BY id DESC'
         );
-        sendJson(res, 200, rows);
+        const articles = rows.map(mapArticleRow);
+        sendJson(res, 200, articles);
       }
     } catch (err) {
       console.error("GET /api/articles error", err);
@@ -132,16 +156,18 @@ export default async function handler(req, res) {
 
     try {
       const rows = await query(
-        `INSERT INTO articles (title, summary, content, category, slug, "imageUrl")
+        `INSERT INTO articles (title, summary, content, category, slug, image_url)
          VALUES ($1, $2, $3, $4, $5, $6)
          RETURNING *`,
         [title, summary, content, category, slug, imageUrl]
       );
-      sendJson(res, 201, rows[0]);
+
+      const article = mapArticleRow(rows[0]);
+      sendJson(res, 201, article);
     } catch (err) {
       console.error("POST /api/articles error", err);
-      // Conflit slug unique par exemple
       if (err.code === "23505") {
+        // slug unique
         sendJson(res, 400, { error: "Ce slug est déjà utilisé." });
       } else {
         sendJson(res, 500, { error: "Erreur serveur" });
@@ -152,7 +178,9 @@ export default async function handler(req, res) {
 
   // A partir d'ici, il faut un id
   if (articleId == null) {
-    sendJson(res, 400, { error: "Identifiant d’article manquant dans l’URL." });
+    sendJson(res, 400, {
+      error: "Identifiant d’article manquant dans l’URL.",
+    });
     return;
   }
 
@@ -186,12 +214,12 @@ export default async function handler(req, res) {
     try {
       const rows = await query(
         `UPDATE articles
-         SET title = $1,
-             summary = $2,
-             content = $3,
-             category = $4,
-             slug = $5,
-             "imageUrl" = $6
+         SET title      = $1,
+             summary    = $2,
+             content    = $3,
+             category   = $4,
+             slug       = $5,
+             image_url  = $6
          WHERE id = $7
          RETURNING *`,
         [title, summary, content, category, slug, imageUrl, articleId]
@@ -202,7 +230,8 @@ export default async function handler(req, res) {
         return;
       }
 
-      sendJson(res, 200, rows[0]);
+      const article = mapArticleRow(rows[0]);
+      sendJson(res, 200, article);
     } catch (err) {
       console.error("PUT /api/articles error", err);
       if (err.code === "23505") {
@@ -218,7 +247,7 @@ export default async function handler(req, res) {
   if (req.method === "DELETE") {
     try {
       const rows = await query(
-        "DELETE FROM articles WHERE id = $1 RETURNING *",
+        "DELETE FROM articles WHERE id = $1 RETURNING id",
         [articleId]
       );
       if (!rows.length) {
