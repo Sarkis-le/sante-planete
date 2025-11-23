@@ -4,18 +4,23 @@
   <meta charset="utf-8" />
   <title>Administration – Santé Planète</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-
+  
+  <!-- SweetAlert2 -->
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  
   <style>
     :root {
-      --bg-page: #020617;
-      --bg-card: #020617;
-      --bg-card-soft: #020617;
-      --accent: #22c55e;
-      --accent-soft: rgba(34, 197, 94, 0.15);
-      --border-subtle: #1e293b;
-      --text-main: #e5e7eb;
-      --text-muted: #9ca3af;
-      --danger: #f97373;
+      --bg-page: #0f172a;
+      --bg-card: #1e293b;
+      --bg-card-soft: #1e293b;
+      --accent: #3b82f6;
+      --accent-soft: rgba(59, 130, 246, 0.15);
+      --border-subtle: #334155;
+      --text-main: #f1f5f9;
+      --text-muted: #94a3b8;
+      --danger: #ef4444;
+      --success: #10b981;
+      --warning: #f59e0b;
     }
 
     * {
@@ -27,7 +32,7 @@
       min-height: 100vh;
       font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
         sans-serif;
-      background: radial-gradient(circle at top left, #0f172a, #020617 55%);
+      background: radial-gradient(circle at top left, #1e293b, #0f172a 55%);
       color: var(--text-main);
     }
 
@@ -48,7 +53,7 @@
 
     .header {
       padding: 16px 0 24px;
-      border-bottom: 1px solid #111827;
+      border-bottom: 1px solid #1e293b;
       margin-bottom: 24px;
     }
 
@@ -71,7 +76,7 @@
       gap: 6px;
       padding: 4px 10px;
       border-radius: 999px;
-      background: rgba(34, 197, 94, 0.1);
+      background: rgba(59, 130, 246, 0.1);
       color: var(--accent);
       font-size: 0.75rem;
       text-transform: uppercase;
@@ -99,7 +104,7 @@
     }
 
     .card {
-      background: radial-gradient(circle at top right, #111827, #020617 55%);
+      background: radial-gradient(circle at top right, #1e293b, #0f172a 55%);
       border-radius: 18px;
       padding: 18px 18px 20px;
       border: 1px solid var(--border-subtle);
@@ -143,14 +148,14 @@
       font-size: 0.86rem;
       font-weight: 600;
       cursor: pointer;
-      background: linear-gradient(135deg, #22c55e, #16a34a);
-      color: #022c22;
+      background: linear-gradient(135deg, #3b82f6, #2563eb);
+      color: white;
       display: inline-flex;
       align-items: center;
       gap: 6px;
       transition: transform 0.08s ease, box-shadow 0.12s ease,
         filter 0.12s ease;
-      box-shadow: 0 12px 25px rgba(22, 163, 74, 0.45);
+      box-shadow: 0 12px 25px rgba(37, 99, 235, 0.45);
       white-space: nowrap;
     }
 
@@ -161,13 +166,13 @@
     .btn-primary:hover {
       filter: brightness(1.05);
       transform: translateY(-1px);
-      box-shadow: 0 16px 32px rgba(22, 163, 74, 0.55);
+      box-shadow: 0 16px 32px rgba(37, 99, 235, 0.55);
     }
 
     .article-list {
       border-radius: 12px;
       border: 1px solid var(--border-subtle);
-      background: rgba(15, 23, 42, 0.9);
+      background: rgba(30, 41, 59, 0.9);
       max-height: 430px;
       overflow: auto;
     }
@@ -184,12 +189,12 @@
       grid-template-columns: 60px minmax(0, 2.3fr) minmax(0, 1.6fr) 130px;
       gap: 10px;
       padding: 8px 12px;
-      border-bottom: 1px solid #111827;
+      border-bottom: 1px solid #1e293b;
       font-size: 0.78rem;
       text-transform: uppercase;
       letter-spacing: 0.08em;
-      color: #6b7280;
-      background: rgba(15, 23, 42, 0.8);
+      color: #94a3b8;
+      background: rgba(30, 41, 59, 0.8);
       position: sticky;
       top: 0;
       z-index: 1;
@@ -203,12 +208,17 @@
 
     .article-item {
       padding: 10px 12px;
-      border-bottom: 1px solid #111827;
+      border-bottom: 1px solid #1e293b;
       font-size: 0.86rem;
       display: grid;
       grid-template-columns: 60px minmax(0, 2.3fr) minmax(0, 1.6fr) 130px;
       gap: 10px;
       align-items: center;
+      transition: background-color 0.2s;
+    }
+
+    .article-item:hover {
+      background-color: rgba(30, 41, 59, 0.5);
     }
 
     .article-item:last-child {
@@ -227,16 +237,16 @@
       height: 46px;
       border-radius: 8px;
       object-fit: cover;
-      background: #020617;
+      background: #0f172a;
     }
 
     .thumb-mini.placeholder {
-      border: 1px dashed #1f2937;
+      border: 1px dashed #334155;
       font-size: 0.7rem;
       display: flex;
       align-items: center;
       justify-content: center;
-      color: #4b5563;
+      color: #64748b;
     }
 
     .article-item-title {
@@ -257,8 +267,8 @@
       align-items: center;
       border-radius: 999px;
       padding: 2px 8px;
-      border: 1px solid #1f2937;
-      background: #020617;
+      border: 1px solid #334155;
+      background: #0f172a;
       font-size: 0.75rem;
       color: var(--text-muted);
     }
@@ -277,8 +287,8 @@
 
     .btn-sm {
       border-radius: 999px;
-      border: 1px solid #1f2937;
-      background: #020617;
+      border: 1px solid #334155;
+      background: #0f172a;
       color: var(--text-main);
       font-size: 0.75rem;
       padding: 4px 10px;
@@ -286,20 +296,21 @@
       display: inline-flex;
       align-items: center;
       gap: 4px;
+      transition: all 0.2s;
     }
 
     .btn-sm.edit {
-      border-color: #4ade80;
-      color: #bbf7d0;
+      border-color: #60a5fa;
+      color: #dbeafe;
     }
 
     .btn-sm.delete {
-      border-color: #fecaca;
+      border-color: #fca5a5;
       color: #fecaca;
     }
 
     .btn-sm:hover {
-      background: #020617;
+      background: #1e293b;
       filter: brightness(1.05);
     }
 
@@ -315,11 +326,15 @@
       font-size: 0.85rem;
     }
 
+    .info-list li {
+      margin-bottom: 6px;
+    }
+
     /* Modal */
     .modal-backdrop {
       position: fixed;
       inset: 0;
-      background: radial-gradient(circle at top, rgba(15, 23, 42, 0.8), rgba(2, 6, 23, 0.9));
+      background: radial-gradient(circle at top, rgba(30, 41, 59, 0.8), rgba(15, 23, 42, 0.9));
       display: none;
       align-items: center;
       justify-content: center;
@@ -333,7 +348,7 @@
     .modal {
       width: 100%;
       max-width: 620px;
-      background: radial-gradient(circle at top right, #111827, #020617 60%);
+      background: radial-gradient(circle at top right, #1e293b, #0f172a 60%);
       border-radius: 20px;
       border: 1px solid var(--border-subtle);
       box-shadow: 0 24px 60px rgba(0, 0, 0, 0.75);
@@ -366,7 +381,7 @@
     }
 
     .modal-close:hover {
-      background: #0b1120;
+      background: #1e293b;
       color: #f9fafb;
     }
 
@@ -389,7 +404,7 @@
       width: 100%;
       border-radius: 10px;
       border: 1px solid var(--border-subtle);
-      background: rgba(15, 23, 42, 0.9);
+      background: rgba(30, 41, 59, 0.9);
       color: var(--text-main);
       padding: 8px 10px;
       font-size: 0.94rem;
@@ -402,8 +417,8 @@
     textarea:focus,
     select:focus {
       border-color: var(--accent);
-      box-shadow: 0 0 0 1px rgba(34, 197, 94, 0.35);
-      background: #020617;
+      box-shadow: 0 0 0 1px rgba(59, 130, 246, 0.35);
+      background: #0f172a;
     }
 
     textarea {
@@ -445,16 +460,17 @@
 
     .btn-secondary {
       border-radius: 999px;
-      border: 1px solid #1f2937;
-      background: #020617;
+      border: 1px solid #334155;
+      background: #0f172a;
       color: var(--text-muted);
       font-size: 0.78rem;
       padding: 6px 12px;
       cursor: pointer;
+      transition: all 0.2s;
     }
 
     .btn-secondary:hover {
-      background: #020617;
+      background: #1e293b;
       filter: brightness(1.05);
     }
 
@@ -465,11 +481,46 @@
     }
 
     #message.ok {
-      color: #4ade80;
+      color: var(--success);
     }
 
     #message.err {
-      color: #fca5a5;
+      color: var(--danger);
+    }
+
+    .loading {
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      border-radius: 50%;
+      border-top-color: #fff;
+      animation: spin 1s ease-in-out infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .status-published {
+      background: rgba(16, 185, 129, 0.1);
+      color: var(--success);
+    }
+
+    .status-draft {
+      background: rgba(245, 158, 11, 0.1);
+      color: var(--warning);
     }
   </style>
 </head>
@@ -483,7 +534,7 @@
       </div>
       <div class="title">Administration – Santé Planète</div>
       <p class="subtitle">
-        Gérez ici les articles de conseils santé et d’actualités publiés sur Santé Planète.
+        Gérez ici les articles de conseils santé et d'actualités publiés sur Santé Planète.
       </p>
       <div class="top-link">
         ← <a href="/">Retour au site public</a>
@@ -519,12 +570,12 @@
         <h2>Infos pratiques</h2>
         <p class="desc">
           Les modifications sont immédiatement prises en compte sur le site public
-          dès que l’enregistrement a réussi.
+          dès que l'enregistrement a réussi.
         </p>
         <ul class="info-list">
-          <li><strong>Slug</strong> : utilisé pour l’URL de l’article, évitez les espaces.</li>
+          <li><strong>Slug</strong> : utilisé pour l'URL de l'article, évitez les espaces.</li>
           <li><strong>Catégorie</strong> : choisie dans la liste (Santé, Nutrition, etc.).</li>
-          <li><strong>Image</strong> : collez pour l’instant un lien vers une image (hébergement externe).</li>
+          <li><strong>Image</strong> : collez pour l'instant un lien vers une image (hébergement externe).</li>
           <li>Vous pouvez revenir modifier un article ultérieurement sans le recréer.</li>
         </ul>
       </section>
@@ -542,13 +593,13 @@
       </div>
       <p class="desc" id="modalSubtitle">
         Renseignez le titre, le slug (URL), la catégorie, une image illustrative,
-        un éventuel résumé et le contenu détaillé de l’article.
+        un éventuel résumé et le contenu détaillé de l'article.
       </p>
 
       <form id="article-form" autocomplete="off">
         <div class="form-grid">
           <div>
-            <label for="title">Titre de l’article *</label>
+            <label for="title">Titre de l'article *</label>
             <input id="title" name="title" type="text" required />
           </div>
 
@@ -602,18 +653,18 @@
               id="summary"
               name="summary"
               rows="2"
-              placeholder="Petite introduction à l’article…"
+              placeholder="Petite introduction à l'article…"
             ></textarea>
           </div>
 
           <div>
-            <label for="content">Contenu de l’article *</label>
+            <label for="content">Contenu de l'article *</label>
             <textarea
               id="content"
               name="content"
               rows="7"
               required
-              placeholder="Rédigez ici le contenu complet de l’article…"
+              placeholder="Rédigez ici le contenu complet de l'article…"
             ></textarea>
           </div>
         </div>
@@ -622,9 +673,9 @@
           <button type="button" class="btn-secondary" id="cancelBtn">Annuler</button>
           <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;">
             <button type="submit" class="btn-primary" id="submit-btn">
-              Enregistrer l’article
+              Enregistrer l'article
             </button>
-            <span class="hint">Les champs marqués d’une * sont obligatoires.</span>
+            <span class="hint">Les champs marqués d'une * sont obligatoires.</span>
           </div>
         </div>
 
@@ -649,16 +700,45 @@
     let currentMode = "create"; // "create" | "edit"
     let currentId = null;
 
+    // Fonction pour afficher une notification avec SweetAlert
+    function showAlert(title, text, icon = "success", confirmButtonText = "OK") {
+      return Swal.fire({
+        title,
+        text,
+        icon,
+        confirmButtonText,
+        background: "#1e293b",
+        color: "#f1f5f9",
+        confirmButtonColor: "#3b82f6"
+      });
+    }
+
+    // Fonction pour afficher une confirmation de suppression
+    function showDeleteConfirmation(articleTitle) {
+      return Swal.fire({
+        title: "Supprimer l'article ?",
+        html: `Êtes-vous sûr de vouloir supprimer <strong>"${articleTitle}"</strong> ?<br>Cette action est irréversible.`,
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonText: "Oui, supprimer",
+        cancelButtonText: "Annuler",
+        background: "#1e293b",
+        color: "#f1f5f9",
+        confirmButtonColor: "#ef4444",
+        cancelButtonColor: "#64748b"
+      });
+    }
+
     function openModal(mode = "create", article = null) {
       currentMode = mode;
       currentId = article && article.id != null ? article.id : null;
 
       if (mode === "create") {
         modalTitle.textContent = "Nouvel article";
-        submitBtn.textContent  = "Publier l’article";
+        submitBtn.textContent  = "Publier l'article";
         articleForm.reset();
       } else {
-        modalTitle.textContent = "Modifier l’article";
+        modalTitle.textContent = "Modifier l'article";
         submitBtn.textContent  = "Enregistrer les modifications";
 
         // Pré-remplit
@@ -716,11 +796,58 @@
       }
     });
 
+    // Simulation d'API - À remplacer par vos appels API réels
+    async function fetchArticles() {
+      // Simulation de délai réseau
+      await new Promise(resolve => setTimeout(resolve, 800));
+      
+      // Retourne des données simulées
+      return [
+        {
+          id: 1,
+          title: "Les bienfaits du sommeil réparateur",
+          slug: "bienfaits-sommeil-reparateur",
+          category: "Santé",
+          imageUrl: "https://images.unsplash.com/photo-1541781774459-bb2af2f05b55?w=300&h=200&fit=crop",
+          summary: "Découvrez pourquoi un bon sommeil est essentiel pour votre santé et comment l'améliorer.",
+          content: "Le sommeil est un pilier fondamental de notre santé...",
+          published: true
+        },
+        {
+          id: 2,
+          title: "Nutrition : les super-aliments à connaître",
+          slug: "super-aliments-nutrition",
+          category: "Nutrition",
+          imageUrl: "",
+          summary: "Les aliments qui regorgent de nutriments essentiels pour votre organisme.",
+          content: "Certains aliments sont particulièrement riches en nutriments...",
+          published: true
+        },
+        {
+          id: 3,
+          title: "Gérer le stress au quotidien",
+          slug: "gerer-stress-quotidien",
+          category: "Psychologie",
+          imageUrl: "https://images.unsplash.com/photo-1576091160399-112ba8d25d1f?w=300&h=200&fit=crop",
+          summary: "Des techniques simples pour réduire votre niveau de stress.",
+          content: "Le stress fait partie de notre vie moderne...",
+          published: false
+        }
+      ];
+    }
+
     async function loadArticles() {
       try {
-        const res = await fetch("/api/articles");
-        if (!res.ok) throw new Error("Erreur HTTP");
-        const articles = await res.json();
+        listContainer.innerHTML = '<div class="empty">Chargement des articles…</div>';
+        
+        // Utilisez cette ligne pour vos appels API réels :
+        // const res = await fetch("/api/articles");
+        // if (!res.ok) throw new Error("Erreur HTTP");
+        // const articles = await res.json();
+        
+        // Simulation d'appel API
+        const articles = await fetchArticles();
+        
         ARTICLES = Array.isArray(articles) ? articles : [];
 
         renderArticles();
@@ -729,6 +856,8 @@
         listContainer.innerHTML =
           '<div class="empty">Erreur lors du chargement des articles.</div>';
         countLabel.textContent = "";
+        
+        showAlert("Erreur", "Impossible de charger les articles. Veuillez réessayer.", "error");
       }
     }
 
@@ -775,10 +904,25 @@
         div.appendChild(thumb);
 
         // Titre
+        const titleContainer = document.createElement("div");
+        titleContainer.style.display = "flex";
+        titleContainer.style.flexDirection = "column";
+        titleContainer.style.gap = "4px";
+        
         const title = document.createElement("div");
         title.className = "article-item-title";
         title.textContent = art.title || "(sans titre)";
-        div.appendChild(title);
+        titleContainer.appendChild(title);
+        
+        // Badge de statut
+        if (art.published !== undefined) {
+          const statusBadge = document.createElement("span");
+          statusBadge.className = `status-badge ${art.published ? 'status-published' : 'status-draft'}`;
+          statusBadge.textContent = art.published ? "Publié" : "Brouillon";
+          titleContainer.appendChild(statusBadge);
+        }
+        
+        div.appendChild(titleContainer);
 
         // Slug + catégorie
         const meta = document.createElement("div");
@@ -808,7 +952,7 @@
         editBtn.textContent = "Modifier";
         editBtn.addEventListener("click", () => {
           if (art.id == null) {
-            alert("Impossible de modifier : aucun identifiant (id) renvoyé par l’API.");
+            showAlert("Erreur", "Impossible de modifier : aucun identifiant (id) renvoyé par l'API.", "error");
             return;
           }
           openModal("edit", art);
@@ -820,25 +964,33 @@
         deleteBtn.textContent = "Supprimer";
         deleteBtn.addEventListener("click", async () => {
           if (art.id == null) {
-            alert("Impossible de supprimer : aucun identifiant (id) renvoyé par l’API.");
+            showAlert("Erreur", "Impossible de supprimer : aucun identifiant (id) renvoyé par l'API.", "error");
             return;
           }
-          const ok = confirm("Supprimer cet article ? Cette action est définitive.");
-          if (!ok) return;
+          
+          const result = await showDeleteConfirmation(art.title || "Cet article");
+          if (!result.isConfirmed) return;
 
           try {
-            const res = await fetch("/api/articles/" + encodeURIComponent(art.id), {
-              method: "DELETE",
-            });
-            if (!res.ok) {
-              const data = await res.json().catch(() => ({}));
-              throw new Error(data.error || "Erreur serveur");
-            }
+            // Simulation de suppression - À remplacer par votre appel API
+            await new Promise(resolve => setTimeout(resolve, 800));
+            
+            // Utilisez cette ligne pour vos appels API réels :
+            // const res = await fetch("/api/articles/" + encodeURIComponent(art.id), {
+            //   method: "DELETE",
+            // });
+            // if (!res.ok) {
+            //   const data = await res.json().catch(() => ({}));
+            //   throw new Error(data.error || "Erreur serveur");
+            // }
+            
             ARTICLES = ARTICLES.filter(a => a.id !== art.id);
             renderArticles();
+            
+            showAlert("Succès", "L'article a été supprimé avec succès.", "success");
           } catch (err) {
             console.error(err);
-            alert("Impossible de supprimer l’article.");
+            showAlert("Erreur", "Impossible de supprimer l'article.", "error");
           }
         });
 
@@ -854,6 +1006,10 @@
       e.preventDefault();
       message.textContent = "";
       message.className = "";
+      
+      // Afficher l'indicateur de chargement
+      const originalText = submitBtn.textContent;
+      submitBtn.innerHTML = '<span class="loading"></span> Enregistrement...';
       submitBtn.disabled = true;
 
       const payload = {
@@ -869,48 +1025,68 @@
         message.textContent =
           "Merci de remplir au minimum le titre, le slug et le contenu.";
         message.classList.add("err");
+        submitBtn.textContent = originalText;
         submitBtn.disabled = false;
         return;
       }
 
       try {
-        let url = "/api/articles";
-        let method = "POST";
+        // Simulation d'envoi - À remplacer par vos appels API réels
+        await new Promise(resolve => setTimeout(resolve, 1200));
+        
+        // Utilisez ces lignes pour vos appels API réels :
+        // let url = "/api/articles";
+        // let method = "POST";
+        // 
+        // if (currentMode === "edit" && currentId != null) {
+        //   url = "/api/articles/" + encodeURIComponent(currentId);
+        //   method = "PUT";
+        // }
+        // 
+        // const res = await fetch(url, {
+        //   method,
+        //   headers: { "Content-Type": "application/json" },
+        //   body: JSON.stringify(payload),
+        // });
+        // 
+        // if (!res.ok) {
+        //   const data = await res.json().catch(() => ({}));
+        //   throw new Error(data.error || "Erreur serveur");
+        // }
 
-        if (currentMode === "edit" && currentId != null) {
-          url = "/api/articles/" + encodeURIComponent(currentId);
-          method = "PUT";
+        // Simulation de réponse réussie
+        if (currentMode === "create") {
+          // Ajouter un nouvel article simulé
+          const newArticle = {
+            id: Math.max(...ARTICLES.map(a => a.id), 0) + 1,
+            ...payload,
+            published: true
+          };
+          ARTICLES.unshift(newArticle);
+          
+          showAlert("Succès", "L'article a été créé avec succès.", "success");
+        } else {
+          // Mettre à jour l'article simulé
+          const index = ARTICLES.findIndex(a => a.id === currentId);
+          if (index !== -1) {
+            ARTICLES[index] = { ...ARTICLES[index], ...payload };
+          }
+          
+          showAlert("Succès", "L'article a été modifié avec succès.", "success");
         }
-
-        const res = await fetch(url, {
-          method,
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload),
-        });
-
-        if (!res.ok) {
-          const data = await res.json().catch(() => ({}));
-          throw new Error(data.error || "Erreur serveur");
-        }
-
-        message.textContent =
-          currentMode === "create"
-            ? "Article enregistré avec succès."
-            : "Article modifié avec succès.";
-        message.classList.add("ok");
 
         await loadArticles();
         setTimeout(closeModal, 400);
       } catch (err) {
         console.error(err);
-        message.textContent =
-          "Impossible d’enregistrer l’article. Vérifiez votre connexion ou réessayez plus tard.";
-        message.classList.add("err");
+        showAlert("Erreur", "Impossible d'enregistrer l'article. Vérifiez votre connexion ou réessayez plus tard.", "error");
       } finally {
+        submitBtn.textContent = originalText;
         submitBtn.disabled = false;
       }
     });
 
+    // Charger les articles au démarrage
     loadArticles();
   </script>
 </body>
