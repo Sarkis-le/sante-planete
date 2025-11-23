@@ -16,7 +16,7 @@ function applyCors(res) {
 function sendJson(res, status, payload) {
   applyCors(res);
   res.statusCode = status;
-  res.setHeader("Content-Type", "application/json");
+  res.setHeader("Content-Type", "application/json; charset=utf-8");
   res.end(JSON.stringify(payload));
 }
 
@@ -26,7 +26,9 @@ export async function readJsonBody(req) {
     if (typeof req.body === "string") {
       return req.body ? JSON.parse(req.body) : {};
     }
-    return req.body;
+    if (typeof req.body === "object") {
+      return req.body;
+    }
   }
 
   // Sinon : on lit le flux brut
@@ -53,13 +55,13 @@ export async function readJsonBody(req) {
  * Récupère éventuellement l'id dans /api/articles/:id
  * Compatible avec :
  *   - id numérique (1, 2, 3…)
- *   - id uuid (d0f0b8e4-1234-5678-9abc-abcdef012345)
+ *   - id uuid
  */
 function getArticleIdFromPath(pathname) {
   // /api/articles  ou /api/articles/<id> (tout ce qui n'est pas un /)
   const match = pathname.match(/^\/api\/articles\/?([^/]+)?$/);
   if (!match || !match[1]) return null;
-  return match[1]; // on laisse tel quel (string) → ok pour uuid ou int
+  return match[1]; // string (ok pour int ou uuid)
 }
 
 /**
@@ -91,7 +93,16 @@ export default async function handler(req, res) {
     return;
   }
 
-  const articleId = getArticleIdFromPath(pathname);
+  // id depuis le chemin : /api/articles/:id
+  let articleId = getArticleIdFromPath(pathname);
+
+  // si pas trouvé, on regarde dans la query string : /api/articles?id=123
+  if (!articleId && url) {
+    const qsId = url.searchParams.get("id");
+    if (qsId) {
+      articleId = qsId;
+    }
+  }
 
   if (req.method === "OPTIONS") {
     // Pré-flight CORS
@@ -115,7 +126,7 @@ export default async function handler(req, res) {
         sendJson(res, 200, article);
       } else {
         const rows = await query(
-          'SELECT * FROM articles ORDER BY id DESC'
+          "SELECT * FROM articles ORDER BY id DESC"
         );
         const articles = rows.map(mapArticleRow);
         sendJson(res, 200, articles);
@@ -176,10 +187,10 @@ export default async function handler(req, res) {
     return;
   }
 
-  // A partir d'ici, il faut un id
+  // À partir d'ici, il faut un id (dans l’URL ou la query)
   if (articleId == null) {
     sendJson(res, 400, {
-      error: "Identifiant d’article manquant dans l’URL.",
+      error: "Identifiant d’article manquant (URL ou ?id=).",
     });
     return;
   }
@@ -219,7 +230,8 @@ export default async function handler(req, res) {
              content    = $3,
              category   = $4,
              slug       = $5,
-             image_url  = $6
+             image_url  = $6,
+             updated_at = NOW()
          WHERE id = $7
          RETURNING *`,
         [title, summary, content, category, slug, imageUrl, articleId]
