@@ -122,7 +122,6 @@
       font-size: 0.85rem;
     }
 
-    /* Toolbar / tableau */
     .table-toolbar {
       display: flex;
       align-items: center;
@@ -309,7 +308,6 @@
       font-size: 0.8rem;
     }
 
-    /* Carte info droite */
     .info-list {
       margin-top: 8px;
       padding-left: 16px;
@@ -378,13 +376,6 @@
       margin-top: 2px;
     }
 
-    .form-grid {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      margin-top: 6px;
-    }
-
     label {
       font-size: 0.88rem;
       color: var(--text-muted);
@@ -393,7 +384,8 @@
     }
 
     input[type="text"],
-    textarea {
+    textarea,
+    select {
       width: 100%;
       border-radius: 10px;
       border: 1px solid var(--border-subtle);
@@ -407,7 +399,8 @@
     }
 
     input[type="text"]:focus,
-    textarea:focus {
+    textarea:focus,
+    select:focus {
       border-color: var(--accent);
       box-shadow: 0 0 0 1px rgba(34, 197, 94, 0.35);
       background: #020617;
@@ -432,6 +425,13 @@
       .row {
         flex-direction: column;
       }
+    }
+
+    .form-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-top: 6px;
     }
 
     .modal-actions {
@@ -514,7 +514,7 @@
         </div>
       </section>
 
-      <!-- Colonne droite : infos / aide -->
+      <!-- Colonne droite : infos -->
       <section class="card">
         <h2>Infos pratiques</h2>
         <p class="desc">
@@ -523,7 +523,7 @@
         </p>
         <ul class="info-list">
           <li><strong>Slug</strong> : utilisé pour l’URL de l’article, évitez les espaces.</li>
-          <li><strong>Catégorie</strong> : sert aux filtres (Santé, Nutrition, Psychologie…).</li>
+          <li><strong>Catégorie</strong> : choisie dans la liste (Santé, Nutrition, etc.).</li>
           <li><strong>Image</strong> : collez pour l’instant un lien vers une image (hébergement externe).</li>
           <li>Vous pouvez revenir modifier un article ultérieurement sans le recréer.</li>
         </ul>
@@ -531,7 +531,7 @@
     </main>
   </div>
 
-  <!-- MODAL : Création / édition d'article -->
+  <!-- Modal création / édition -->
   <div class="modal-backdrop" id="articleModal" aria-hidden="true">
     <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
       <div class="modal-header">
@@ -569,12 +569,17 @@
             </div>
             <div>
               <label for="category">Catégorie</label>
-              <input
-                id="category"
-                name="category"
-                type="text"
-                placeholder="Santé, nutrition, psychologie…"
-              />
+              <select id="category" name="category">
+                <option value="">— Choisir une catégorie —</option>
+                <option value="Santé">Santé</option>
+                <option value="Nutrition">Nutrition</option>
+                <option value="Psychologie">Psychologie</option>
+                <option value="Bien-être">Bien-être</option>
+                <option value="Vie quotidienne">Vie quotidienne</option>
+              </select>
+              <div class="hint">
+                Choisissez une catégorie parmi la liste proposée.
+              </div>
             </div>
           </div>
 
@@ -608,7 +613,7 @@
               name="content"
               rows="7"
               required
-              placeholder="Rédigez ici le contenu complet de l’article (conseils, explications, etc.)…"
+              placeholder="Rédigez ici le contenu complet de l’article…"
             ></textarea>
           </div>
         </div>
@@ -656,13 +661,26 @@
         modalTitle.textContent = "Modifier l’article";
         submitBtn.textContent  = "Enregistrer les modifications";
 
-        // Pré-remplit le formulaire
+        // Pré-remplit
         articleForm.title.value    = article.title    || "";
         articleForm.slug.value     = article.slug     || "";
-        articleForm.category.value = article.category || "";
         articleForm.imageUrl.value = article.imageUrl || "";
         articleForm.summary.value  = article.summary  || "";
         articleForm.content.value  = article.content  || "";
+
+        const catSelect  = articleForm.category;
+        const currentCat = article.category || "";
+
+        if (
+          currentCat &&
+          ![...catSelect.options].some(opt => opt.value === currentCat)
+        ) {
+          const opt = document.createElement("option");
+          opt.value = currentCat;
+          opt.textContent = currentCat;
+          catSelect.appendChild(opt);
+        }
+        catSelect.value = currentCat;
       }
 
       message.textContent = "";
@@ -670,7 +688,6 @@
 
       modalBackdrop.classList.add("active");
       modalBackdrop.setAttribute("aria-hidden", "false");
-      // focus titre
       setTimeout(() => {
         articleForm.title.focus();
       }, 10);
@@ -687,14 +704,12 @@
     modalCloseBtn.addEventListener("click", closeModal);
     cancelBtn.addEventListener("click", closeModal);
 
-    // Fermer sur clic hors de la boîte
     modalBackdrop.addEventListener("click", (e) => {
       if (e.target === modalBackdrop) {
         closeModal();
       }
     });
 
-    // Fermer sur ESC
     document.addEventListener("keydown", (e) => {
       if (e.key === "Escape" && modalBackdrop.classList.contains("active")) {
         closeModal();
@@ -730,7 +745,6 @@
 
       listContainer.innerHTML = "";
 
-      // En-tête
       const header = document.createElement("div");
       header.className = "article-header-row";
       header.innerHTML = `
@@ -745,7 +759,7 @@
         const div = document.createElement("div");
         div.className = "article-item";
 
-        // Colonne 1 : image mini
+        // Image
         let thumb;
         if (art.imageUrl) {
           thumb = document.createElement("img");
@@ -760,13 +774,13 @@
         }
         div.appendChild(thumb);
 
-        // Colonne 2 : titre
+        // Titre
         const title = document.createElement("div");
         title.className = "article-item-title";
         title.textContent = art.title || "(sans titre)";
         div.appendChild(title);
 
-        // Colonne 3 : slug + catégorie
+        // Slug + catégorie
         const meta = document.createElement("div");
         meta.className = "article-item-meta";
 
@@ -784,7 +798,7 @@
         meta.appendChild(catChip);
         div.appendChild(meta);
 
-        // Colonne 4 : actions
+        // Actions
         const actions = document.createElement("div");
         actions.className = "actions";
 
@@ -820,7 +834,6 @@
               const data = await res.json().catch(() => ({}));
               throw new Error(data.error || "Erreur serveur");
             }
-            // Retire localement
             ARTICLES = ARTICLES.filter(a => a.id !== art.id);
             renderArticles();
           } catch (err) {
@@ -847,7 +860,7 @@
         title: articleForm.title.value.trim(),
         slug: articleForm.slug.value.trim(),
         summary: articleForm.summary.value.trim(),
-        category: articleForm.category.value.trim(),
+        category: articleForm.category.value,
         imageUrl: articleForm.imageUrl.value.trim(),
         content: articleForm.content.value.trim(),
       };
@@ -886,9 +899,7 @@
             : "Article modifié avec succès.";
         message.classList.add("ok");
 
-        // Recharge la liste
         await loadArticles();
-        // Ferme le modal au bout d’un petit délai
         setTimeout(closeModal, 400);
       } catch (err) {
         console.error(err);
@@ -900,7 +911,6 @@
       }
     });
 
-    // Chargement initial
     loadArticles();
   </script>
 </body>
