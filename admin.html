@@ -853,7 +853,8 @@
             if (!result.isConfirmed) return;
 
             try {
-              const res = await fetch("/api/articles/" + encodeURIComponent(art.id), {
+              // 🔴 ICI CHANGEMENT : on passe l'id en query string, pas dans l'URL /3
+              const res = await fetch("/api/articles?id=" + encodeURIComponent(art.id), {
                 method: "DELETE",
               });
               if (!res.ok) {
@@ -936,7 +937,8 @@
         let method = "POST";
 
         if (currentMode === "edit" && currentId != null) {
-          url = "/api/articles/" + encodeURIComponent(currentId);
+          // 🔴 ICI CHANGEMENT : on passe l'id en query string pour PUT aussi
+          url = "/api/articles?id=" + encodeURIComponent(currentId);
           method = "PUT";
         }
 
