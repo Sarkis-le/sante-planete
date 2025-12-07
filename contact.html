@@ -1,0 +1,586 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <title>Contact – Santé Planète</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- Favicon -->
+  <link
+    rel="icon"
+    type="image/svg+xml"
+    href="/logo.png"
+  />
+
+  <style>
+    :root {
+      --primary: #0ea5e9;
+      --primary-dark: #0284c7;
+      --secondary: #6366f1;
+      --dark: #1e293b;
+      --darker: #0f172a;
+      --light: #f8fafc;
+      --gray: #64748b;
+      --border: #e2e8f0;
+      --radius: 8px;
+      --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--dark);
+      line-height: 1.6;
+      background-color: var(--light);
+    }
+
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 1.5rem;
+    }
+
+    /* Header */
+    header {
+      background-color: white;
+      box-shadow: var(--shadow);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .header-content {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.2rem 0;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+      text-decoration: none;
+      color: var(--dark);
+    }
+
+    .logo-img {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      object-fit: cover;
+      box-shadow: 0 0 0 2px rgba(14, 165, 233, 0.4);
+    }
+
+    .logo-text h1 {
+      font-size: 1.5rem;
+      font-weight: 700;
+    }
+
+    .logo-text p {
+      font-size: 0.85rem;
+      color: var(--gray);
+    }
+
+    nav ul {
+      display: flex;
+      list-style: none;
+      gap: 1.5rem;
+    }
+
+    nav a {
+      text-decoration: none;
+      color: var(--dark);
+      font-weight: 500;
+      transition: color 0.2s;
+      padding: 0.5rem 0;
+      position: relative;
+    }
+
+    nav a:hover {
+      color: var(--primary);
+    }
+
+    nav a.active {
+      color: var(--primary);
+    }
+
+    nav a.active::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 2px;
+      background-color: var(--primary);
+    }
+
+    .mobile-menu-btn {
+      display: none;
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      cursor: pointer;
+      color: var(--dark);
+    }
+
+    @media (max-width: 768px) {
+      .header-content {
+        padding: 1rem 0;
+      }
+
+      .mobile-menu-btn {
+        display: block;
+      }
+
+      nav {
+        position: fixed;
+        top: 0;
+        right: -100%;
+        width: 80%;
+        max-width: 300px;
+        height: 100vh;
+        background-color: white;
+        box-shadow: -5px 0 15px rgba(0, 0, 0, 0.1);
+        transition: right 0.3s;
+        z-index: 1000;
+        padding: 2rem;
+      }
+
+      nav.active {
+        right: 0;
+      }
+
+      nav ul {
+        flex-direction: column;
+        margin-top: 2rem;
+      }
+
+      .close-menu {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        background: none;
+        border: none;
+        font-size: 1.5rem;
+        cursor: pointer;
+      }
+    }
+
+    /* Section contact */
+    .page-hero {
+      padding: 3rem 0 1.5rem;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      color: white;
+      text-align: center;
+    }
+
+    .page-hero h1 {
+      font-size: 2.2rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .page-hero p {
+      max-width: 600px;
+      margin: 0.5rem auto 0;
+      opacity: 0.95;
+    }
+
+    .contact-wrapper {
+      padding: 3rem 0 4rem;
+    }
+
+    .contact-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 2fr) minmax(0, 1.3fr);
+      gap: 2rem;
+      align-items: flex-start;
+    }
+
+    @media (max-width: 900px) {
+      .contact-grid {
+        grid-template-columns: minmax(0, 1fr);
+      }
+    }
+
+    .card {
+      background-color: white;
+      border-radius: var(--radius);
+      padding: 2rem;
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border);
+    }
+
+    .card h2 {
+      font-size: 1.4rem;
+      margin-bottom: 0.8rem;
+    }
+
+    .card p {
+      font-size: 0.95rem;
+      color: var(--gray);
+      margin-bottom: 0.8rem;
+    }
+
+    .card ul {
+      list-style: none;
+      margin-top: 0.5rem;
+    }
+
+    .card ul li {
+      margin-bottom: 0.45rem;
+      font-size: 0.95rem;
+    }
+
+    .card a {
+      color: var(--primary-dark);
+      text-decoration: none;
+    }
+
+    .card a:hover {
+      text-decoration: underline;
+    }
+
+    /* Formulaire */
+    form {
+      display: grid;
+      gap: 1rem;
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 1rem;
+    }
+
+    @media (max-width: 600px) {
+      .form-row {
+        grid-template-columns: minmax(0, 1fr);
+      }
+    }
+
+    label {
+      display: block;
+      font-size: 0.9rem;
+      font-weight: 500;
+      margin-bottom: 0.3rem;
+    }
+
+    input[type="text"],
+    input[type="email"],
+    textarea {
+      width: 100%;
+      padding: 0.65rem 0.9rem;
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      font-size: 0.95rem;
+      font-family: inherit;
+      resize: vertical;
+      min-height: 44px;
+    }
+
+    textarea {
+      min-height: 140px;
+    }
+
+    input:focus,
+    textarea:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 1px rgba(14, 165, 233, 0.25);
+    }
+
+    .helper-text {
+      font-size: 0.8rem;
+      color: var(--gray);
+      margin-top: 0.2rem;
+    }
+
+    .btn {
+      display: inline-block;
+      background-color: var(--primary);
+      color: white;
+      padding: 0.8rem 1.6rem;
+      border-radius: var(--radius);
+      text-decoration: none;
+      font-weight: 600;
+      border: none;
+      cursor: pointer;
+      font-size: 0.95rem;
+      transition: background-color 0.2s, transform 0.1s, box-shadow 0.2s;
+      justify-self: flex-start;
+    }
+
+    .btn:hover {
+      background-color: var(--primary-dark);
+      transform: translateY(-1px);
+      box-shadow: 0 10px 20px rgba(15, 23, 42, 0.15);
+    }
+
+    .btn:active {
+      transform: translateY(0);
+      box-shadow: none;
+    }
+
+    .info-badge {
+      display: inline-block;
+      font-size: 0.8rem;
+      padding: 0.1rem 0.5rem;
+      border-radius: 999px;
+      background-color: #eff6ff;
+      color: var(--primary-dark);
+      margin-bottom: 0.5rem;
+    }
+
+    /* Footer */
+    footer {
+      background-color: var(--darker);
+      color: white;
+      padding: 3rem 0 2rem;
+      margin-top: 1rem;
+    }
+
+    .footer-content {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 2rem;
+      margin-bottom: 2rem;
+    }
+
+    .footer-column h3 {
+      font-size: 1.2rem;
+      margin-bottom: 1.2rem;
+      position: relative;
+      padding-bottom: 0.5rem;
+    }
+
+    .footer-column h3::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 40px;
+      height: 2px;
+      background-color: var(--primary);
+    }
+
+    .footer-column ul {
+      list-style: none;
+    }
+
+    .footer-column ul li {
+      margin-bottom: 0.7rem;
+      font-size: 0.9rem;
+    }
+
+    .footer-column a {
+      color: #cbd5e1;
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    .footer-column a:hover {
+      color: white;
+    }
+
+    .copyright {
+      text-align: center;
+      padding-top: 2rem;
+      border-top: 1px solid #334155;
+      color: #94a3b8;
+      font-size: 0.9rem;
+    }
+  </style>
+</head>
+<body>
+  <!-- Header -->
+  <header>
+    <div class="container">
+      <div class="header-content">
+        <a href="/" class="logo">
+          <img src="/logo.png" alt="Logo Santé Planète" class="logo-img">
+          <div class="logo-text">
+            <h1>Santé Planète</h1>
+            <p>Articles santé rédigés par Bio Bienvenu</p>
+          </div>
+        </a>
+
+        <button class="mobile-menu-btn" id="mobileMenuBtn">☰</button>
+
+        <nav id="mainNav" aria-label="Navigation principale">
+          <button class="close-menu" id="closeMenuBtn">×</button>
+          <ul>
+            <li><a href="/">Accueil</a></li>
+            <li><a href="/#trends">Tendances</a></li>
+            <li><a href="/#articles">Derniers articles</a></li>
+            <li><a href="/#about">À propos</a></li>
+            <li><a href="/contact" class="active">Contact</a></li>
+          </ul>
+        </nav>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero -->
+  <section class="page-hero">
+    <div class="container">
+      <h1>Me contacter</h1>
+      <p>
+        Une question sur un article, une suggestion de sujet ou une demande de collaboration&nbsp;?
+        Utilisez le formulaire ci-dessous pour m’écrire.
+      </p>
+    </div>
+  </section>
+
+  <!-- Contenu principal -->
+  <main class="contact-wrapper">
+    <div class="container">
+      <div class="contact-grid">
+        <!-- Formulaire -->
+        <section class="card" aria-labelledby="contact-form-title">
+          <span class="info-badge">Formulaire de contact</span>
+          <h2 id="contact-form-title">Envoyer un message</h2>
+          <p>
+            Je lis personnellement chaque message. Essayez d’être précis dans votre demande
+            afin que je puisse vous répondre plus facilement.
+          </p>
+
+          <!--
+            ACTION À ADAPTER :
+            - Si tu utilises un backend : remplace action="/api/contact" par ta route.
+            - Si tu utilises un service externe (Formspree, Getform, etc.), mets l’URL ici.
+          -->
+          <form method="post" action="/api/contact">
+            <div class="form-row">
+              <div>
+                <label for="name">Nom et prénom</label>
+                <input type="text" id="name" name="name" required autocomplete="name">
+              </div>
+              <div>
+                <label for="email">Adresse e-mail</label>
+                <input type="email" id="email" name="email" required autocomplete="email">
+              </div>
+            </div>
+
+            <div>
+              <label for="subject">Objet du message</label>
+              <input type="text" id="subject" name="subject" required>
+            </div>
+
+            <div>
+              <label for="message">Votre message</label>
+              <textarea id="message" name="message" required></textarea>
+              <p class="helper-text">
+                Merci de ne pas utiliser cette page pour des urgences médicales.
+                En cas de problème de santé grave, contactez un professionnel ou les services d’urgence.
+              </p>
+            </div>
+
+            <button type="submit" class="btn">Envoyer le message</button>
+          </form>
+        </section>
+
+        <!-- Infos de contact -->
+        <aside class="card" aria-labelledby="contact-info-title">
+          <span class="info-badge">Informations</span>
+          <h2 id="contact-info-title">Autres moyens de contact</h2>
+          <p>
+            Vous pouvez également me joindre ou suivre l’actualité de Santé Planète par les moyens suivants.
+          </p>
+
+          <ul>
+            <li>
+              <strong>E-mail :</strong><br>
+              <a href="mailto:lprod4610@gmail.com">lprod4610@gmail.com</a>
+            </li>
+            <li>
+              <strong>Objectif du site :</strong><br>
+              Diffuser une information santé claire, accessible et vulgarisée,
+              qui ne remplace jamais la consultation médicale.
+            </li>
+            <li>
+              <strong>Délai de réponse :</strong><br>
+              Je fais de mon mieux pour répondre dans un délai raisonnable,
+              en fonction du volume de messages reçus.
+            </li>
+          </ul>
+
+          <p class="helper-text">
+            En m’écrivant, vous acceptez que les informations fournies soient utilisées
+            uniquement pour vous répondre. Aucun message n’est partagé avec des tiers.
+          </p>
+        </aside>
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer>
+    <div class="container">
+      <div class="footer-content">
+        <div class="footer-column">
+          <h3>Santé Planète</h3>
+          <p>Votre partenaire pour une information santé claire et accessible.</p>
+        </div>
+
+        <div class="footer-column">
+          <h3>Liens rapides</h3>
+          <ul>
+            <li><a href="/">Accueil</a></li>
+            <li><a href="/#trends">Tendances</a></li>
+            <li><a href="/#articles">Derniers articles</a></li>
+            <li><a href="/#about">À propos</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-column">
+          <h3>Mentions</h3>
+          <ul>
+            <li>Contenus à visée informative.</li>
+            <li>Ne remplace pas une consultation médicale.</li>
+            <li>Responsabilité éditoriale limitée.</li>
+          </ul>
+        </div>
+
+        <div class="footer-column">
+          <h3>Contact</h3>
+          <ul>
+            <li><a href="mailto:lprod4610@gmail.com">lprod4610@gmail.com</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="copyright">
+        <p>&copy; 2025 Santé Planète. Tous droits réservés.</p>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // Menu mobile
+    const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+    const closeMenuBtn = document.getElementById('closeMenuBtn');
+    const mainNav = document.getElementById('mainNav');
+
+    mobileMenuBtn.addEventListener('click', () => {
+      mainNav.classList.add('active');
+    });
+
+    closeMenuBtn.addEventListener('click', () => {
+      mainNav.classList.remove('active');
+    });
+
+    const navLinks = document.querySelectorAll('nav a');
+    navLinks.forEach(link => {
+      link.addEventListener('click', () => {
+        mainNav.classList.remove('active');
+      });
+    });
+  </script>
+</body>
+</html>
