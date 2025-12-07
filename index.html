@@ -157,6 +157,10 @@
     .hero-meta {
       font-size: 0.95rem;
       opacity: 0.9;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 0.75rem;
     }
 
     .hero-meta strong {
@@ -760,7 +764,7 @@
           <img src="logo.png" alt="Logo Santé Planète" class="logo-img">
           <div class="logo-text">
             <h1>Santé Planète</h1>
-            <p>Plateforme d’articles &amp; de savoir</p>
+            <p>Articles santé rédigés par Bio Bienvenu</p>
           </div>
         </a>
 
@@ -773,7 +777,8 @@
             <li><a href="#trends">Tendances</a></li>
             <li><a href="#articles">Derniers articles</a></li>
             <li><a href="#about">À propos</a></li>
-            <li><a href="#contact">Contact</a></li>
+            <!-- Contact vers une page dédiée -->
+            <li><a href="/contact">Contact</a></li>
           </ul>
         </nav>
       </div>
@@ -785,10 +790,15 @@
     <!-- Hero -->
     <section class="hero" id="top">
       <div class="container">
-        <h2>Partagez vos idées avec le monde</h2>
-        <p>Découvrez, lisez et publiez des articles clairs et fiables sur la santé, le bien-être et la vie quotidienne.</p>
-        <div class="hero-meta">
-          <span><strong id="articleCount">–</strong> articles publiés et mis à jour automatiquement</span>
+        <h2>Bienvenue sur Santé Planète</h2>
+        <p>
+          Je vous propose des articles clairs et fiables sur la santé, la nutrition,
+          le bien-être et la vie quotidienne, rédigés avec soin et mis à jour régulièrement.
+        </p>
+        <div class="hero-meta" aria-live="polite">
+          <span><strong id="articleCount">–</strong> articles publiés sur Santé Planète</span>
+          <span>|</span>
+          <span><strong id="visitorCount">–</strong> visites au total</span>
         </div>
         <div class="hero-actions">
           <button class="btn" type="button" onclick="document.getElementById('articles').scrollIntoView({behavior:'smooth'})">
@@ -802,8 +812,8 @@
     <section class="features" id="about">
       <div class="container">
         <div class="section-title">
-          <h2>Pourquoi utiliser Santé Planète&nbsp;?</h2>
-          <p>Une plateforme pensée pour rendre l’écriture et la lecture d’articles aussi simples que possible.</p>
+          <h2>Pourquoi lire Santé Planète&nbsp;?</h2>
+          <p>Une plateforme pensée pour rendre la lecture d’articles santé simple, agréable et accessible.</p>
         </div>
 
         <div class="features-grid">
@@ -926,7 +936,7 @@
           </ul>
         </div>
 
-        <div class="footer-column" id="contact">
+        <div class="footer-column">
           <h3>Contact</h3>
           <ul>
             <li>lprod4610@gmail.com</li>
@@ -1022,8 +1032,10 @@
       return minutes + " min de lecture";
     }
 
+    // ✅ NE PLUS UTILISER LA DATE DU JOUR PAR DÉFAUT
     function formatDate(value) {
-      const date = value ? new Date(value) : new Date();
+      if (!value) return "";
+      const date = new Date(value);
       if (isNaN(date.getTime())) return "";
       return date.toLocaleDateString("fr-FR", {
         day: "2-digit",
@@ -1249,7 +1261,8 @@
       metaLine.className = "meta-line";
 
       const author = document.createElement("span");
-      author.textContent = art.author || "Auteur invité";
+      // Comme c'est toi qui publies : valeur par défaut
+      author.textContent = art.author || "Bio Bienvenu";
 
       const dateSpan = document.createElement("span");
       const dateText = formatDate(art.createdAt);
@@ -1335,7 +1348,41 @@
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
 
-    document.addEventListener("DOMContentLoaded", loadArticles);
+    // --- Statistiques visiteurs ---
+    async function loadStats() {
+      const visitorEl = document.getElementById("visitorCount");
+      if (!visitorEl) return;
+
+      // 1. Si tu crées plus tard une route /api/stats, on essaie d'abord
+      try {
+        const res = await fetch("/api/stats");
+        if (res.ok) {
+          const data = await res.json();
+          if (data && typeof data.totalVisitors === "number") {
+            visitorEl.textContent = data.totalVisitors;
+            return;
+          }
+        }
+      } catch (e) {
+        console.error("Erreur stats API (fallback localStorage) :", e);
+      }
+
+      // 2. Fallback simple avec localStorage (compte les visites sur CE navigateur)
+      try {
+        let localViews = Number(localStorage.getItem("__SANTE_PLANETE_VIEWS__") || "0");
+        localViews += 1;
+        localStorage.setItem("__SANTE_PLANETE_VIEWS__", String(localViews));
+        visitorEl.textContent = localViews;
+      } catch (e) {
+        // Si localStorage indisponible
+        visitorEl.textContent = "1";
+      }
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      loadArticles();
+      loadStats();
+    });
   </script>
 
   <!-- autre script pub -->
