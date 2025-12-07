@@ -406,7 +406,7 @@
           <img src="/logo.png" alt="Logo Santé Planète" class="logo-img">
           <div class="logo-text">
             <h1>Santé Planète</h1>
-            <p>Articles santé rédigés par Bio Bienvenu</p>
+            <p>Articles santé</p>
           </div>
         </a>
 
@@ -429,7 +429,7 @@
   <!-- Hero -->
   <section class="page-hero">
     <div class="container">
-      <h1>Me contacter</h1>
+      <h1>Nous contacter</h1>
       <p>
         Une question sur un article, une suggestion de sujet ou une demande de collaboration&nbsp;?
         Utilisez le formulaire ci-dessous pour m’écrire.
@@ -455,34 +455,36 @@
             - Si tu utilises un backend : remplace action="/api/contact" par ta route.
             - Si tu utilises un service externe (Formspree, Getform, etc.), mets l’URL ici.
           -->
-          <form method="post" action="/api/contact">
-            <div class="form-row">
-              <div>
-                <label for="name">Nom et prénom</label>
-                <input type="text" id="name" name="name" required autocomplete="name">
-              </div>
-              <div>
-                <label for="email">Adresse e-mail</label>
-                <input type="email" id="email" name="email" required autocomplete="email">
-              </div>
-            </div>
+          <form method="post" action="https://formspree.io/f/xyzrdkne">
+  <div class="form-row">
+    <div>
+      <label for="name">Nom et prénom</label>
+      <input type="text" id="name" name="name" required autocomplete="name">
+    </div>
+    <div>
+      <label for="email">Adresse e-mail</label>
+      <input type="email" id="email" name="email" required autocomplete="email">
+    </div>
+  </div>
 
-            <div>
-              <label for="subject">Objet du message</label>
-              <input type="text" id="subject" name="subject" required>
-            </div>
+  <div>
+    <label for="subject">Objet du message</label>
+    <input type="text" id="subject" name="subject" required>
+  </div>
 
-            <div>
-              <label for="message">Votre message</label>
-              <textarea id="message" name="message" required></textarea>
-              <p class="helper-text">
-                Merci de ne pas utiliser cette page pour des urgences médicales.
-                En cas de problème de santé grave, contactez un professionnel ou les services d’urgence.
-              </p>
-            </div>
+  <div>
+    <label for="message">Votre message</label>
+    <textarea id="message" name="message" required></textarea>
+    
+  </div>
 
-            <button type="submit" class="btn">Envoyer le message</button>
-          </form>
+  <!-- options Formspree (facultatif mais utile) -->
+  <input type="hidden" name="_subject" value="Nouveau message Santé Planète">
+  <input type="hidden" name="_language" value="fr">
+
+  <button type="submit" class="btn">Envoyer le message</button>
+</form>
+
         </section>
 
         <!-- Infos de contact -->
