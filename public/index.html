@@ -94,21 +94,23 @@
       </div>
     </div>
   </section>
-
-  <section class="page-section" style="background:#f1f5f9;">
-    <div class="container">
-      <div class="section-title">
-        <h2>Histoires & BD</h2>
-        <p>Des histoires en épisodes, parfois en images.</p>
-      </div>
-      <div class="grid-cards" id="homeStories">
-        <div class="empty-state">Chargement…</div>
-      </div>
-      <div style="text-align:center; margin-top:1.2rem;">
-        <a class="btn btn-primary" href="/stories.html">Voir toutes les histoires</a>
-      </div>
+<section class="home-stories" id="stories">
+  <div class="container">
+    <div class="section-title">
+      <h2>Histoires & BD</h2>
+      <p>Des séries en épisodes, du texte ou des BD — avec une couverture toujours visible en entier.</p>
     </div>
-  </section>
+
+    <div class="home-stories__grid" id="homeStories">
+      <div class="empty-state">Chargement…</div>
+    </div>
+
+    <div class="home-stories__cta">
+      <a class="btn btn-primary" href="/stories.html">Voir toutes les histoires</a>
+    </div>
+  </div>
+</section>
+
 
   <div id="siteFooter"></div>
 
@@ -276,6 +278,54 @@
         }));
       }
     }
+    function buildHomeStories(stories){
+  const container = document.getElementById("homeStories");
+  const list = Array.isArray(stories) ? stories.slice(0,6) : [];
+
+  if(!list.length){
+    container.innerHTML = '<div class="empty-state">Aucune histoire.</div>';
+    return;
+  }
+
+  container.innerHTML = "";
+
+  for(const st of list){
+    const cover = st.coverUrl || st.cover_url || "";
+    const cat = st.category || "Histoire";
+    const date = SP.formatDate(st.createdAt || st.created_at) || "";
+    const title = st.title || "Sans titre";
+    const excerpt = (st.summary || "Cliquez pour ouvrir…").slice(0,220);
+
+    const href = "/story.html?slug=" + encodeURIComponent(st.slug || "");
+
+    const tile = document.createElement("article");
+    tile.className = "story-tile";
+
+    tile.innerHTML = `
+      <a class="story-tile__media" href="${href}" aria-label="Ouvrir ${title}">
+        ${cover ? `<img src="${cover}" alt="${title}" loading="lazy">` : `<div style="color:#fff;opacity:.85;font-size:2rem">📚</div>`}
+        <div class="story-tile__shade"></div>
+        <div class="story-tile__badges">
+          <span class="story-badge">${cat}</span>
+          <span class="story-badge">Santé Planète</span>
+        </div>
+      </a>
+
+      <div class="story-tile__content">
+        <h3 class="story-tile__title">${title}</h3>
+        <div class="story-tile__meta">${date}</div>
+        <div class="story-tile__excerpt">${excerpt}</div>
+
+        <div class="story-tile__actions">
+          <a class="story-link" href="${href}">Voir les épisodes</a>
+        </div>
+      </div>
+    `;
+
+    container.appendChild(tile);
+  }
+}
+
   </script>
 
   <!-- scripts pub (inchangés) -->
