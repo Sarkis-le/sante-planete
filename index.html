@@ -1635,16 +1635,18 @@ function showStory(slug) {
     detail.appendChild(pagesWrap);
   } else {
     // Mode HTML texte (si tu veux stocker du HTML comme art.content)
-    if (st.contentHtml) {
-      const content = document.createElement("div");
-      content.innerHTML = st.contentHtml;
-      detail.appendChild(content);
-    } else {
-      const empty = document.createElement("div");
-      empty.className = "empty-state";
-      empty.textContent = "Contenu en cours de rédaction.";
-      detail.appendChild(empty);
-    }
+   // Mode texte (HTML)
+if (st.content) {
+  const content = document.createElement("div");
+  content.innerHTML = st.content;
+  detail.appendChild(content);
+} else {
+  const empty = document.createElement("div");
+  empty.className = "empty-state";
+  empty.textContent = "Contenu en cours de rédaction.";
+  detail.appendChild(empty);
+}
+
   }
 
   const back = document.createElement("a");
