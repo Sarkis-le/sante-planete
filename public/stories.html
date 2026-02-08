@@ -191,23 +191,28 @@
   line-height: 1.55;
   opacity: .95;
 }
-
 .story-media{
   position: relative;
   width: 100%;
-  aspect-ratio: 16/9;
   background: rgba(2,6,23,.65);
   overflow: hidden;
   display:block;
   text-decoration:none;
+
+  /* ✅ on retire le crop 16/9 */
+  aspect-ratio: auto;
+  max-height: 520px;   /* ajuste si tu veux 600px */
 }
 
 .story-media img{
   width: 100%;
-  height: 100%;
-  object-fit: cover;
+  height: 520px;       /* même valeur que max-height */
+  object-fit: contain; /* ✅ affiche tout l'image */
   display:block;
+  background: rgba(2,6,23,.65); /* bandes noires soft si besoin */
 }
+
+
 
 .story-media__fallback{
   width: 100%;
@@ -301,7 +306,7 @@
           </div>
 
           <div class="stories-filters" role="group" aria-label="Filtres">
-            <button type="button" class="filter-chip is-active" data-kind="" onclick="StoriesPage.onStoryFilter('')">Toutes</button>
+            <button type="button" class="filter-chip" data-kind="" onclick="StoriesPage.onStoryFilter('')">Toutes</button>
             <button type="button" class="filter-chip" data-kind="BD" onclick="StoriesPage.onStoryFilter('BD')">BD</button>
             <button type="button" class="filter-chip" data-kind="Histoire" onclick="StoriesPage.onStoryFilter('Histoire')">Histoire</button>
             <button type="button" class="filter-chip" data-kind="Épisode" onclick="StoriesPage.onStoryFilter('Épisode')">Épisode</button>
@@ -543,24 +548,31 @@ const StoriesPage = (() => {
 
   // ---- Public API ----
   async function loadStoriesPage() {
-    // header/footer (si ton app.js expose SP)
-    try {
-      if (window.SP?.mountHeader) SP.mountHeader("stories");
-      if (window.SP?.mountFooter) SP.mountFooter();
-    } catch (_) {}
+  try {
+    if (window.SP?.mountHeader) SP.mountHeader("stories");
+    if (window.SP?.mountFooter) SP.mountFooter();
+  } catch (_) {}
 
-    setEmpty("Chargement…");
+  // ✅ 1) État par défaut : toutes + champ recherche vide
+  state.filterKind = "";
+  state.search = "";
 
-    try {
-      const stories = await loadStories();
-      state.all = stories || [];
-      setActiveChip("");
-      applyView();
-    } catch (e) {
-      console.error(e);
-      setError("Impossible de charger les histoires. Vérifie ton endpoint /api/stories et ta base.");
-    }
+  // ✅ 2) Active visuellement le chip "Toutes"
+  setActiveChip("");
+
+  setEmpty("Chargement…");
+
+  try {
+    const stories = await loadStories();
+    state.all = stories || [];
+
+    // ✅ 3) Applique la vue : donc "Toutes"
+    applyView();
+  } catch (e) {
+    console.error(e);
+    setError("Impossible de charger les histoires. Vérifie ton endpoint /api/stories et ta base.");
   }
+}
 
   function onStoryFilter(kind) {
     state.filterKind = kind || "";
