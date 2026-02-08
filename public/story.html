@@ -152,6 +152,18 @@
             const a = document.createElement("a");
             a.href = "/episode.html?id=" + encodeURIComponent(ep.id);
             a.textContent = "Lire";
+            const kind = (ep.kind || "").toString().toUpperCase();
+const imgUrl = ep.imageUrl || ep.image_url || "";
+
+if (kind === "BD" && imgUrl) {
+  const img = document.createElement("img");
+  img.className = "card-cover";
+  img.src = imgUrl;
+  img.alt = ep.title || "Épisode BD";
+  img.loading = "lazy";
+  card.appendChild(img);
+}
+
 
             card.appendChild(meta2);
             card.appendChild(t);

@@ -86,14 +86,14 @@ export default async function handler(req, res) {
       if (!storyRows.length) return sendJson(res, 404, { error: "Histoire introuvable" });
 
       const storyId = storyRows[0].id;
+const eps = await query(
+  `SELECT id, story_id, title, slug, episode_number, summary, kind, image_url, created_at, updated_at
+     FROM episodes
+    WHERE story_id=$1
+    ORDER BY episode_number ASC, created_at ASC`,
+  [storyId]
+);
 
-      const eps = await query(
-        `SELECT id, story_id, title, slug, episode_number, summary, created_at, updated_at
-           FROM episodes
-          WHERE story_id=$1
-          ORDER BY episode_number ASC, created_at ASC`,
-        [storyId]
-      );
 
       return sendJson(res, 200, eps);
     } catch (err) {

@@ -951,12 +951,24 @@
             <label for="episodeSummary">Résumé (facultatif)</label>
             <textarea id="episodeSummary" name="summary" rows="2" placeholder="Résumé…"></textarea>
           </div>
+<div class="row">
+  <div>
+    <label for="episodeImageFile">Image (BD = obligatoire, Texte = optionnel)</label>
+    <input id="episodeImageFile" name="imageFile" type="file" accept="image/*" />
+    <div class="hint" id="episodeImageHint">Aucune image sélectionnée.</div>
+  </div>
 
-          <div>
-            <label for="episodePagesFile">Pages BD (multi-images)</label>
-            <input id="episodePagesFile" name="pagesFiles" type="file" accept="image/*" multiple />
-            <div class="hint" id="episodePagesHint">Aucune page ajoutée.</div>
-          </div>
+  <div>
+    <label for="episodeKind">Type d’épisode</label>
+    <select id="episodeKind" name="kind">
+      <option value="">Auto (selon l’histoire)</option>
+      <option value="BD">BD (1 image)</option>
+      <option value="Texte">Texte (HTML)</option>
+    </select>
+    <div class="hint">Laisse “Auto” pour suivre le type de l’histoire.</div>
+  </div>
+</div>
+
 
           <div class="editor-wrapper">
             <label for="episodeContentEditor">Contenu texte (si pas BD)</label>
@@ -1000,8 +1012,7 @@
 
 
   <!-- SweetAlert2 -->
-  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script><script>
 /* ===================== HELPERS ===================== */
 function fileToDataUrl(file) {
   return new Promise((resolve, reject) => {
@@ -1616,7 +1627,7 @@ storyForm?.addEventListener("submit", async (e) => {
   }
 });
 
-/* ===================== EPISODES ADMIN ===================== */
+/* ===================== EPISODES ADMIN (1 épisode BD = 1 image) ===================== */
 const episodesModal = document.getElementById("episodesModal");
 const episodesModalCloseBtn = document.getElementById("episodesModalCloseBtn");
 const episodesList = document.getElementById("episodes-list");
@@ -1630,8 +1641,14 @@ const episodeForm = document.getElementById("episode-form");
 const episodeSubmitBtn = document.getElementById("episodeSubmitBtn");
 const episodeMessage = document.getElementById("episodeMessage");
 
-const episodePagesFile = document.getElementById("episodePagesFile");
-const episodePagesHint = document.getElementById("episodePagesHint");
+// ✅ Nouveau: image unique
+const episodeImageFile = document.getElementById("episodeImageFile"); // (nouvel id recommandé)
+const episodeImageHint = document.getElementById("episodeImageHint");
+const episodeKindSel   = document.getElementById("episodeKind");
+
+// 🔙 Compat: si tu n’as pas encore changé le HTML, on supporte l’ancien champ "pages"
+const legacyPagesInput = document.getElementById("episodePagesFile");
+const legacyPagesHint  = document.getElementById("episodePagesHint");
 
 const episodeContentEditor = document.getElementById("episodeContentEditor");
 const episodeContentInput = document.getElementById("episodeContentInput");
@@ -1643,7 +1660,8 @@ let CURRENT_STORY = null;
 let EPISODES = [];
 let episodeMode = "create";
 let currentEpisodeId = null;
-let currentEpisodePages = [];
+
+let currentEpisodeImageUrl = ""; // image unique (BD ou optionnelle texte)
 
 function refreshEpisodePlaceholder(){
   const txt = episodeContentEditor.textContent.replace(/\u200B/g, "").trim();
@@ -1752,13 +1770,18 @@ function renderEpisodes(){
     slugChip.className = "chip";
     slugChip.innerHTML = "<strong>Slug</strong>" + (ep.slug || "—");
 
-    const pagesChip = document.createElement("span");
-    pagesChip.className = "chip";
-    const nb = Array.isArray(ep.pages) ? ep.pages.length : (typeof ep.pages === "string" ? (()=>{try{return JSON.parse(ep.pages).length}catch{return 0}})() : 0);
-    pagesChip.innerHTML = "<strong>Pages</strong>" + nb;
+    const kindChip = document.createElement("span");
+    kindChip.className = "chip";
+    kindChip.innerHTML = "<strong>Type</strong>" + (ep.kind || "—");
+
+    const imgChip = document.createElement("span");
+    imgChip.className = "chip";
+    const hasImg = !!(ep.imageUrl ?? ep.image_url);
+    imgChip.innerHTML = "<strong>Image</strong>" + (hasImg ? "oui" : "non");
 
     meta.appendChild(slugChip);
-    meta.appendChild(pagesChip);
+    meta.appendChild(kindChip);
+    meta.appendChild(imgChip);
     row.appendChild(meta);
 
     const actions = document.createElement("div");
@@ -1814,25 +1837,38 @@ function openEpisodeModal(mode="create", ep=null){
   currentEpisodeId = ep?.id ?? null;
 
   episodeForm.reset();
-  episodePagesFile.value = "";
   episodeMessage.textContent = "";
   episodeMessage.className = "";
 
-  // pages normalisation
-  const rawPages = ep?.pages;
-  currentEpisodePages =
-    Array.isArray(rawPages) ? rawPages :
-    (typeof rawPages === "string" ? (()=>{try{return JSON.parse(rawPages)}catch{return []}})() : []);
+  // reset inputs
+  if (episodeImageFile) episodeImageFile.value = "";
+  if (legacyPagesInput) legacyPagesInput.value = "";
 
-  episodePagesHint.textContent = currentEpisodePages.length
-    ? `${currentEpisodePages.length} page(s) déjà enregistrée(s).`
-    : "Aucune page ajoutée.";
+  // image existante (edit)
+  currentEpisodeImageUrl = ep?.imageUrl ?? ep?.image_url ?? "";
+
+  // hints
+  if (episodeImageHint) {
+    episodeImageHint.textContent = currentEpisodeImageUrl
+      ? "Une image est déjà associée. Vous pouvez la remplacer."
+      : "Aucune image sélectionnée.";
+  }
+  if (legacyPagesHint) {
+    legacyPagesHint.textContent = currentEpisodeImageUrl
+      ? "Une image est déjà associée (ancien champ pages). Vous pouvez la remplacer."
+      : "Aucune image ajoutée.";
+  }
+
+  // auto type
+  if (episodeKindSel) episodeKindSel.value = ""; // Auto
 
   if (mode === "create") {
     document.getElementById("episodeModalTitle").textContent = "Nouvel épisode";
     episodeSubmitBtn.textContent = "Enregistrer";
     episodeContentEditor.innerHTML = "";
     episodeContentInput.value = "";
+    currentEpisodeImageUrl = "";
+    if (episodeImageHint) episodeImageHint.textContent = "Aucune image sélectionnée.";
     document.getElementById("episodeNumber").value = String((EPISODES.length || 0) + 1);
     refreshEpisodePlaceholder();
   } else {
@@ -1857,7 +1893,7 @@ function closeEpisodeModal(){
   episodeModal.setAttribute("aria-hidden","true");
   episodeMode = "create";
   currentEpisodeId = null;
-  currentEpisodePages = [];
+  currentEpisodeImageUrl = "";
 }
 
 episodeModalCloseBtn?.addEventListener("click", closeEpisodeModal);
@@ -1880,25 +1916,52 @@ episodeForm?.addEventListener("submit", async (e) => {
   const htmlContent = (episodeContentEditor.innerHTML || "").trim();
   const textContent = (episodeContentEditor.textContent || "").trim();
 
-  // pages
-  let pagesToSave = currentEpisodePages;
-  const files = episodePagesFile.files;
-  if (files && files.length) {
-    try { pagesToSave = await filesToDataUrls(files); }
-    catch(err){
+  // Déterminer le type (BD ou TEXTE)
+  const storyType = (CURRENT_STORY?.category || "").toLowerCase(); // "bd" ou "histoire"
+  let kind = (episodeKindSel?.value || "").toLowerCase(); // "bd" | "texte" | ""
+  if (!kind) kind = (storyType === "bd") ? "bd" : "texte";
+
+  // Lire image si upload (nouveau champ)
+  let imageUrlToSave = currentEpisodeImageUrl;
+
+  const imgFile =
+    (episodeImageFile?.files && episodeImageFile.files[0]) ||
+    // compat si HTML pas changé: on prend le 1er fichier de l'ancien input (même si multiple)
+    (legacyPagesInput?.files && legacyPagesInput.files[0]) ||
+    null;
+
+  if (imgFile) {
+    try { imageUrlToSave = await fileToDataUrl(imgFile); }
+    catch (err) {
       console.error(err);
-      Swal.fire("Erreur", "Impossible de lire les pages BD.", "error");
+      Swal.fire("Erreur", "Impossible de lire l’image de l’épisode.", "error");
       episodeSubmitBtn.disabled = false;
       return;
     }
   }
 
-  // validation: au moins pages OU texte
-  if ((!pagesToSave || pagesToSave.length === 0) && !textContent) {
-    episodeMessage.textContent = "Ajoutez soit des pages BD, soit un contenu texte.";
+  // Validations
+  if (!title) {
+    episodeMessage.textContent = "Le titre est obligatoire.";
     episodeMessage.classList.add("err");
     episodeSubmitBtn.disabled = false;
     return;
+  }
+
+  if (kind === "bd") {
+    if (!imageUrlToSave) {
+      episodeMessage.textContent = "Pour une BD, l’épisode doit contenir une image.";
+      episodeMessage.classList.add("err");
+      episodeSubmitBtn.disabled = false;
+      return;
+    }
+  } else {
+    if (!textContent) {
+      episodeMessage.textContent = "Pour un épisode texte, le contenu est obligatoire.";
+      episodeMessage.classList.add("err");
+      episodeSubmitBtn.disabled = false;
+      return;
+    }
   }
 
   episodeContentInput.value = htmlContent;
@@ -1909,8 +1972,9 @@ episodeForm?.addEventListener("submit", async (e) => {
     slug,
     episodeNumber,
     summary,
-    content: htmlContent,
-    pages: pagesToSave
+    kind: kind.toUpperCase(),    // "BD" ou "TEXTE"
+    content: htmlContent,        // obligatoire si TEXTE
+    imageUrl: imageUrlToSave     // obligatoire si BD
   };
 
   try {
@@ -1947,6 +2011,7 @@ episodeForm?.addEventListener("submit", async (e) => {
 loadStories();
 loadArticles();
 </script>
+
 <script type="text/javascript">
     atOptions = {
       'key' : 'c8f6fe03fa0be119b2a3477767248bac',

@@ -30,117 +30,111 @@
 
   <script src="/assets/app.js"></script>
   <script>
-    document.addEventListener("DOMContentLoaded", () => {
-      SP.setActiveNav("stories");
-      loadEpisode();
-    });
+document.addEventListener("DOMContentLoaded", () => {
+  SP.setActiveNav("stories");
+  loadEpisode();
+});
 
-    async function loadEpisode(){
-      const el = document.getElementById("episodeDetail");
-      const params = new URLSearchParams(location.search);
-      const id = params.get("id");
+async function loadEpisode(){
+  const el = document.getElementById("episodeDetail");
+  const params = new URLSearchParams(location.search);
+  const id = params.get("id");
 
-      if(!id){
-        el.innerHTML = '<div class="empty-state error-state">ID épisode manquant.</div><a class="back-link" href="/stories.html">Retour</a>';
-        return;
-      }
+  if(!id){
+    el.innerHTML = '<div class="empty-state error-state">ID épisode manquant.</div><a class="back-link" href="/stories.html">Retour</a>';
+    return;
+  }
 
-      try{
-        const r = await fetch("/api/episodes/" + encodeURIComponent(id));
-        if(!r.ok) throw new Error("Episode KO");
-        const ep = await r.json();
+  try{
+    const r = await fetch("/api/episodes/" + encodeURIComponent(id));
+    if(!r.ok) throw new Error("Episode KO");
+    const ep = await r.json();
 
-        el.innerHTML = "";
+    el.innerHTML = "";
 
-        const h1 = document.createElement("h1");
-        h1.textContent = ep.title || "Épisode";
+    const h1 = document.createElement("h1");
+    h1.textContent = ep.title || "Épisode";
 
-        const meta = document.createElement("p");
-        meta.className = "meta-line";
+    const meta = document.createElement("p");
+    meta.className = "meta-line";
 
-        const s1 = document.createElement("span");
-        s1.textContent = ep.author || "Sante-Planète";
+    const s1 = document.createElement("span");
+    s1.textContent = ep.author || "Sante-Planète";
 
-        const s2 = document.createElement("span");
-        const d = SP.formatDate(ep.created_at || ep.createdAt);
-        if(d) s2.textContent = d;
+    const s2 = document.createElement("span");
+    const d = SP.formatDate(ep.created_at || ep.createdAt);
+    if(d) s2.textContent = d;
 
-        const s3 = document.createElement("span");
-        s3.textContent = (ep.episode_number != null) ? ("Épisode " + ep.episode_number) : "Épisode";
+    const s3 = document.createElement("span");
+    const num = ep.episode_number ?? ep.episodeNumber;
+    s3.textContent = (num != null) ? ("Épisode " + num) : "Épisode";
 
-        meta.appendChild(s1);
-        if(d) meta.appendChild(s2);
-        meta.appendChild(s3);
+    meta.appendChild(s1);
+    if(d) meta.appendChild(s2);
+    meta.appendChild(s3);
 
-        el.appendChild(h1);
-        el.appendChild(meta);
+    el.appendChild(h1);
+    el.appendChild(meta);
 
-        if(ep.summary){
-          const chapo = document.createElement("p");
-          chapo.className = "chapo";
-          chapo.textContent = ep.summary;
-          el.appendChild(chapo);
-        }
-
-        // pages_json peut arriver en string JSON
-        const pages = normalizePages(ep.pages_json ?? ep.pages ?? null);
-
-        if(Array.isArray(pages) && pages.length){
-          const wrap = document.createElement("div");
-          wrap.style.display = "grid";
-          wrap.style.gap = "0.9rem";
-          for(const url of pages){
-            const img = document.createElement("img");
-            img.src = url;
-            img.alt = ep.title || "Page BD";
-            img.loading = "lazy";
-            img.style.width = "100%";
-            img.style.borderRadius = "8px";
-            img.style.border = "1px solid var(--border)";
-            wrap.appendChild(img);
-          }
-          el.appendChild(wrap);
-        }else if(ep.content_html || ep.content){
-          const content = document.createElement("div");
-          content.innerHTML = (ep.content_html || ep.content);
-          el.appendChild(content);
-        }else{
-          const empty = document.createElement("div");
-          empty.className = "empty-state";
-          empty.textContent = "Contenu en cours de rédaction.";
-          el.appendChild(empty);
-        }
-
-        // Retour vers story
-        if(ep.story_slug){
-          const backStory = document.createElement("a");
-          backStory.href = "/story.html?slug=" + encodeURIComponent(ep.story_slug);
-          backStory.className = "back-link";
-          backStory.textContent = "Retour à l’histoire";
-          el.appendChild(backStory);
-        }else{
-          const back = document.createElement("a");
-          back.href = "/stories.html";
-          back.className = "back-link";
-          back.textContent = "Retour";
-          el.appendChild(back);
-        }
-
-        window.scrollTo({ top: 0, behavior: "smooth" });
-      }catch(e){
-        el.innerHTML = '<div class="empty-state error-state">Erreur de chargement.</div><a class="back-link" href="/stories.html">Retour</a>';
-      }
+    if(ep.summary){
+      const chapo = document.createElement("p");
+      chapo.className = "chapo";
+      chapo.textContent = ep.summary;
+      el.appendChild(chapo);
     }
 
-    function normalizePages(p){
-      if(!p) return [];
-      if(Array.isArray(p)) return p;
-      if(typeof p === "string"){
-        try{ return JSON.parse(p); }catch{ return []; }
+    // ✅ 1 épisode = 1 image (si BD) ou texte (si TEXTE)
+    const kind = (ep.kind || "").toString().toUpperCase();
+    const imageUrl = ep.imageUrl || ep.image_url || "";
+
+    if (kind === "BD" || imageUrl) {
+      if (imageUrl) {
+        const img = document.createElement("img");
+        img.src = imageUrl;
+        img.alt = ep.title || "Épisode BD";
+        img.loading = "lazy";
+        img.style.width = "100%";
+        img.style.borderRadius = "8px";
+        img.style.border = "1px solid var(--border)";
+        el.appendChild(img);
+      } else {
+        const empty = document.createElement("div");
+        empty.className = "empty-state";
+        empty.textContent = "Image de l’épisode manquante.";
+        el.appendChild(empty);
       }
-      return [];
+    } else if (ep.content_html || ep.content) {
+      const content = document.createElement("div");
+      content.innerHTML = (ep.content_html || ep.content);
+      el.appendChild(content);
+    } else {
+      const empty = document.createElement("div");
+      empty.className = "empty-state";
+      empty.textContent = "Contenu en cours de rédaction.";
+      el.appendChild(empty);
     }
-  </script>
+
+    // Retour vers story
+    if(ep.story_slug || ep.storySlug){
+      const backStory = document.createElement("a");
+      backStory.href = "/story.html?slug=" + encodeURIComponent(ep.story_slug || ep.storySlug);
+      backStory.className = "back-link";
+      backStory.textContent = "Retour à l’histoire";
+      el.appendChild(backStory);
+    }else{
+      const back = document.createElement("a");
+      back.href = "/stories.html";
+      back.className = "back-link";
+      back.textContent = "Retour";
+      el.appendChild(back);
+    }
+
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }catch(e){
+    el.innerHTML = '<div class="empty-state error-state">Erreur de chargement.</div><a class="back-link" href="/stories.html">Retour</a>';
+  }
+}
+</script>
   <script type="text/javascript">
     atOptions = {
       'key' : 'c8f6fe03fa0be119b2a3477767248bac',
