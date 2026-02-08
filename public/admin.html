@@ -1328,8 +1328,9 @@ articleForm?.addEventListener("submit", async (e) => {
     let url = "/api/articles";
     let method = "POST";
     if (currentMode === "edit" && currentId != null) {
-      url = "/api/articles?id=" + encodeURIComponent(currentId);
-      method = "PUT";
+     url = "/api/articles/" + encodeURIComponent(currentId);
+method = "PUT";
+
     }
 
     const res = await fetch(url, {
@@ -1541,7 +1542,8 @@ function renderStories(){
       if (!ok.isConfirmed) return;
 
       try{
-        const res = await fetch("/api/stories?id=" + encodeURIComponent(st.id), { method:"DELETE" });
+        const res = await fetch("/api/stories/" + encodeURIComponent(st.id), { method:"DELETE" });
+
         if (!res.ok) {
           const data = await res.json().catch(()=>({}));
           throw new Error(data.error || "Erreur serveur");
@@ -1601,8 +1603,9 @@ storyForm?.addEventListener("submit", async (e) => {
     let url = "/api/stories";
     let method = "POST";
     if (storyMode === "edit" && storyCurrentId != null) {
-      url = "/api/stories?id=" + encodeURIComponent(storyCurrentId);
-      method = "PUT";
+     url = "/api/stories/" + encodeURIComponent(storyCurrentId);
+method = "PUT";
+
     }
 
     const res = await fetch(url, {
@@ -1810,7 +1813,8 @@ function renderEpisodes(){
       if (!ok.isConfirmed) return;
 
       try{
-        const res = await fetch("/api/episodes?id=" + encodeURIComponent(ep.id), { method:"DELETE" });
+        const res = await fetch("/api/episodes/" + encodeURIComponent(ep.id), { method:"DELETE" });
+
         if (!res.ok) {
           const data = await res.json().catch(()=>({}));
           throw new Error(data.error || "Erreur serveur");
@@ -1981,8 +1985,9 @@ episodeForm?.addEventListener("submit", async (e) => {
     let url = "/api/episodes";
     let method = "POST";
     if (episodeMode === "edit" && currentEpisodeId != null) {
-      url = "/api/episodes?id=" + encodeURIComponent(currentEpisodeId);
-      method = "PUT";
+      url = "/api/episodes/" + encodeURIComponent(currentEpisodeId);
+method = "PUT";
+
     }
 
     const res = await fetch(url, {
