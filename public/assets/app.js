@@ -1,3 +1,4 @@
+// public/assets/app.js
 async function injectPartial(targetSelector, url) {
   const el = document.querySelector(targetSelector);
   if (!el) return;
@@ -57,3 +58,18 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   wireMobileNav();
 });
+async function injectHeadAds() {
+  try {
+    const res = await fetch("/assets/partials/head.html", { cache: "no-store" });
+    if (!res.ok) return;
+
+    const html = await res.text();
+
+    // Empêche double injection si tu changes de page ou reload partiel
+    if (document.head.querySelector('meta[name="monetag"]')) return;
+
+    document.head.insertAdjacentHTML("beforeend", html);
+  } catch (e) {
+    console.warn("Injection head.html impossible:", e);
+  }
+}
