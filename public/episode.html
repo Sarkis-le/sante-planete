@@ -4,141 +4,435 @@
   <meta charset="utf-8">
   <title>Santé Planète – Épisode</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  
+
   <meta name="monetag" content="7829d23ba4a1542e7b69d76a78b9f27d">
-  
+
   <!-- Google AdSense -->
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8529764196804634"
     crossorigin="anonymous"></script>
 
   <script src="https://fpyf8.com/88/tag.min.js" data-zone="187598" async data-cfasync="false"></script>
+
   <link rel="icon" type="image/svg+xml" href="logo.png" />
   <link rel="stylesheet" href="/assets/styles.css">
+
+  <style>
+    :root{
+      --bg:#020617;
+      --card: rgba(15, 23, 42, 0.72);
+      --card2: rgba(15, 23, 42, 0.55);
+      --border: rgba(148, 163, 184, 0.22);
+      --text:#e5e7eb;
+      --muted:#cbd5e1;
+      --accent:#38bdf8;
+      --accent2:#a855f7;
+      --danger:#f97373;
+      --shadow: 0 18px 55px rgba(0,0,0,.28);
+      --r:18px;
+    }
+
+    body{
+      background: radial-gradient(1200px 600px at 20% 0%, rgba(56,189,248,.10), transparent 50%),
+                  radial-gradient(1200px 600px at 80% 0%, rgba(168,85,247,.10), transparent 55%),
+                  var(--bg);
+      color: var(--text);
+    }
+
+    .container{ max-width: 980px; margin: 0 auto; padding: 0 16px; }
+
+    .ep-shell{
+      max-width: 860px;
+      margin: 28px auto 18px auto;
+    }
+
+    .post-card{
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--r);
+      overflow: hidden;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(7px);
+    }
+
+    .post-head{
+      display:flex;
+      align-items:center;
+      gap: 12px;
+      padding: 14px 16px;
+    }
+
+    .avatar{
+      width: 46px; height:46px;
+      border-radius: 999px;
+      background: rgba(56,189,248,.14);
+      border: 1px solid rgba(56,189,248,.35);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-weight: 950;
+      color: #fff;
+      flex: 0 0 auto;
+    }
+
+    .post-meta{ flex: 1 1 auto; min-width:0; }
+    .post-title{
+      margin:0;
+      font-size: 1.2rem;
+      font-weight: 950;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .post-sub{
+      margin-top: 6px;
+      display:flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      color: var(--muted);
+      font-size: .92rem;
+      align-items:center;
+    }
+
+    .pill{
+      display:inline-flex;
+      align-items:center;
+      gap: 6px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: rgba(2,6,23,.35);
+      color: var(--text);
+      font-size: .82rem;
+      font-weight: 850;
+    }
+
+    .post-body{
+      padding: 14px 16px 12px;
+    }
+
+    .chapo{
+      margin: 0 0 12px 0;
+      line-height: 1.65;
+      color: var(--text);
+      opacity: .96;
+    }
+
+    /* ===== BD image ===== */
+    .bd-wrap{
+      margin-top: 8px;
+    }
+    .bd-img{
+      width: 100%;
+      display:block;
+      border-radius: 16px;
+      border: 1px solid rgba(148,163,184,.20);
+      box-shadow: 0 18px 45px rgba(0,0,0,.25);
+      cursor: zoom-in;
+    }
+    .bd-hint{
+      margin-top: 10px;
+      color: var(--muted);
+      font-size: .92rem;
+      opacity: .9;
+    }
+
+    /* ===== Texte content ===== */
+    .text-content{
+      border-radius: 16px;
+      border: 1px solid rgba(148,163,184,.16);
+      background: rgba(2,6,23,.35);
+      padding: 14px 14px;
+      line-height: 1.75;
+      color: var(--text);
+    }
+    .text-content h2, .text-content h3{
+      margin-top: 1rem;
+      margin-bottom: .5rem;
+    }
+    .text-content p{
+      margin: .7rem 0;
+    }
+    .text-content img{
+      max-width: 100%;
+      height: auto;
+      border-radius: 12px;
+      border: 1px solid rgba(148,163,184,.18);
+    }
+
+    /* ===== Actions ===== */
+    .actions{
+      display:flex;
+      gap: 10px;
+      padding: 12px 16px 16px;
+      border-top: 1px solid rgba(148,163,184,.16);
+      flex-wrap: wrap;
+    }
+    .btnx{
+      appearance:none;
+      border: 1px solid rgba(148,163,184,.24);
+      background: rgba(15,23,42,.55);
+      color: var(--text);
+      padding: 10px 12px;
+      border-radius: 14px;
+      cursor:pointer;
+      font-weight: 950;
+      text-decoration:none;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap: 8px;
+      flex: 1 1 220px;
+      min-width: 180px;
+    }
+    .btnx:hover{ transform: translateY(-1px); border-color: rgba(56,189,248,.45); }
+    .btn-primaryx{
+      border-color: rgba(56,189,248,.35);
+      background: rgba(56,189,248,.14);
+    }
+
+    .empty-state{
+      padding: 18px;
+      border-radius: 16px;
+      background: rgba(15,23,42,.45);
+      border: 1px solid rgba(148,163,184,.18);
+      color: var(--muted);
+      text-align:center;
+    }
+    .error-state{
+      border-color: rgba(249,115,115,.35);
+      background: rgba(249,115,115,.10);
+      color: #fecaca;
+    }
+
+    /* ===== Zoom modal ===== */
+    .zoom{
+      position: fixed;
+      inset: 0;
+      background: rgba(2,6,23,.85);
+      display:none;
+      align-items:center;
+      justify-content:center;
+      z-index: 9999;
+      padding: 18px;
+    }
+    .zoom.is-open{ display:flex; }
+    .zoom img{
+      max-width: min(1100px, 96vw);
+      max-height: 92vh;
+      border-radius: 16px;
+      border: 1px solid rgba(148,163,184,.22);
+      box-shadow: 0 24px 80px rgba(0,0,0,.55);
+      cursor: zoom-out;
+    }
+    .zoom .hint{
+      position: absolute;
+      bottom: 14px;
+      left: 0;
+      right: 0;
+      text-align:center;
+      color: rgba(226,232,240,.9);
+      font-weight: 800;
+      font-size: .92rem;
+    }
+
+    @media (max-width: 640px){
+      .btnx{ flex: 1 1 100%; min-width: 100%; }
+    }
+  </style>
 </head>
+
 <body>
   <div id="siteHeader"></div>
 
-  <section class="detail-wrap">
+  <section>
     <div class="container">
-      <article class="detail" id="episodeDetail">
+      <div class="ep-shell" id="episodeDetail">
         <div class="empty-state">Chargement…</div>
-      </article>
+      </div>
     </div>
   </section>
 
   <div id="siteFooter"></div>
 
+  <!-- Zoom overlay -->
+  <div class="zoom" id="zoomLayer" role="dialog" aria-modal="true">
+    <img id="zoomImg" alt="Zoom épisode">
+    <div class="hint">Clique sur l’image pour fermer</div>
+  </div>
+
   <script src="/assets/app.js"></script>
- <script>
-document.addEventListener("DOMContentLoaded", () => {
-  SP.setActiveNav("stories");
-  loadEpisode();
-});
 
-async function loadEpisode(){
-  const el = document.getElementById("episodeDetail");
-  const params = new URLSearchParams(location.search);
-  const id = params.get("id");
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      try { SP.setActiveNav("stories"); } catch(_) {}
+      loadEpisode();
+    });
 
-  if(!id){
-    el.innerHTML =
-      '<div class="empty-state error-state">ID épisode manquant.</div><a class="back-link" href="/stories.html">Retour</a>';
-    return;
-  }
-
-  try{
-    const r = await fetch("/api/episodes/" + encodeURIComponent(id));
-    if(!r.ok) throw new Error("Episode KO");
-    const ep = await r.json();
-
-    el.innerHTML = "";
-
-    const h1 = document.createElement("h1");
-    h1.textContent = ep.title || "Épisode";
-
-    const meta = document.createElement("p");
-    meta.className = "meta-line";
-
-    // Date
-    const sDate = document.createElement("span");
-    const d = SP.formatDate(ep.createdAt || ep.created_at);
-    if(d) sDate.textContent = d;
-
-    // Numéro
-    const sNum = document.createElement("span");
-    const num = ep.episodeNumber ?? ep.episode_number;
-    sNum.textContent = (num != null) ? ("Épisode " + num) : "Épisode";
-
-    if (d) meta.appendChild(sDate);
-    meta.appendChild(sNum);
-
-    el.appendChild(h1);
-    el.appendChild(meta);
-
-    if(ep.summary){
-      const chapo = document.createElement("p");
-      chapo.className = "chapo";
-      chapo.textContent = ep.summary;
-      el.appendChild(chapo);
+    function safeText(v){
+      return String(v ?? "").replace(/[<>&]/g, s => ({'<':'&lt;','>':'&gt;','&':'&amp;'}[s]));
     }
-
-    // ✅ 1 épisode = BD (image) ou TEXTE (content)
-    const kind = (ep.kind || "TEXTE").toString().toUpperCase();
-    const imageUrl = (ep.imageUrl || ep.image_url || "").toString().trim();
-
-    if (kind === "BD") {
-      if (imageUrl) {
-        const img = document.createElement("img");
-        img.src = imageUrl;
-        img.alt = ep.title || "Épisode BD";
-        img.loading = "lazy";
-        img.style.width = "100%";
-        img.style.borderRadius = "8px";
-        img.style.border = "1px solid var(--border)";
-        el.appendChild(img);
-      } else {
-        const empty = document.createElement("div");
-        empty.className = "empty-state";
-        empty.textContent = "Image de l’épisode manquante.";
-        el.appendChild(empty);
-      }
-    } else {
-      const html = ep.content_html || ep.content || "";
-      if (html.trim()) {
-        const content = document.createElement("div");
-        content.innerHTML = html;
-        el.appendChild(content);
-      } else {
-        const empty = document.createElement("div");
-        empty.className = "empty-state";
-        empty.textContent = "Contenu en cours de rédaction.";
-        el.appendChild(empty);
+    function initials(title){
+      const t = String(title || "E").trim();
+      return (t[0] || "E").toUpperCase();
+    }
+    function fmtDate(v){
+      try{
+        return (window.SP && SP.formatDate) ? (SP.formatDate(v) || "") : "";
+      }catch(_){ return ""; }
+    }
+    async function shareLink(url){
+      try{
+        if(navigator.share){
+          await navigator.share({ title: "Santé Planète", url });
+          return;
+        }
+        await navigator.clipboard.writeText(url);
+        alert("Lien copié !");
+      }catch(e){
+        console.error(e);
+        alert("Impossible de partager pour le moment.");
       }
     }
 
-    // Retour vers story
-    const storySlug = ep.storySlug || ep.story_slug;
-    if (storySlug) {
-      const backStory = document.createElement("a");
-      backStory.href = "/story.html?slug=" + encodeURIComponent(storySlug);
-      backStory.className = "back-link";
-      backStory.textContent = "Retour à l’histoire";
-      el.appendChild(backStory);
-    } else {
-      const back = document.createElement("a");
-      back.href = "/stories.html";
-      back.className = "back-link";
-      back.textContent = "Retour";
-      el.appendChild(back);
+    function openZoom(src){
+      const layer = document.getElementById("zoomLayer");
+      const img = document.getElementById("zoomImg");
+      img.src = src;
+      layer.classList.add("is-open");
+    }
+    function closeZoom(){
+      const layer = document.getElementById("zoomLayer");
+      const img = document.getElementById("zoomImg");
+      img.src = "";
+      layer.classList.remove("is-open");
     }
 
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  } catch(e){
-    el.innerHTML =
-      '<div class="empty-state error-state">Erreur de chargement.</div><a class="back-link" href="/stories.html">Retour</a>';
-  }
-}
-</script>
+    document.addEventListener("click", (e)=>{
+      const layer = document.getElementById("zoomLayer");
+      if(layer.classList.contains("is-open")){
+        // clic sur l’image ou sur le fond : on ferme
+        closeZoom();
+      }
+    });
+    document.addEventListener("keydown", (e)=>{
+      if(e.key === "Escape") closeZoom();
+    });
+
+    async function loadEpisode(){
+      const el = document.getElementById("episodeDetail");
+      const params = new URLSearchParams(location.search);
+      const id = params.get("id");
+
+      if(!id){
+        el.innerHTML = `
+          <div class="post-card">
+            <div class="post-body">
+              <div class="empty-state error-state">ID épisode manquant.</div>
+              <a class="btnx" href="/stories.html">📚 Retour aux histoires</a>
+            </div>
+          </div>
+        `;
+        return;
+      }
+
+      try{
+        const r = await fetch("/api/episodes/" + encodeURIComponent(id));
+        if(!r.ok) throw new Error("Episode KO");
+        const ep = await r.json();
+
+        const title = safeText(ep.title || "Épisode");
+        const created = fmtDate(ep.createdAt || ep.created_at);
+        const num = (ep.episodeNumber ?? ep.episode_number);
+        const numTxt = (num != null && num !== "") ? ("Épisode " + num) : "Épisode";
+
+        const summary = safeText(ep.summary || "");
+        const kind = (ep.kind || "TEXTE").toString().toUpperCase();
+        const imageUrl = (ep.imageUrl || ep.image_url || "").toString().trim();
+
+        const storySlug = ep.storySlug || ep.story_slug;
+
+        const shareUrl = location.href;
+
+        // Build
+        let bodyHTML = "";
+
+        if(kind === "BD"){
+          bodyHTML = `
+            <div class="bd-wrap">
+              ${imageUrl
+                ? `<img class="bd-img" src="${imageUrl}" alt="${title}" loading="lazy" id="bdImg">`
+                : `<div class="empty-state">Image de l’épisode manquante.</div>`
+              }
+              ${imageUrl ? `<div class="bd-hint">Astuce : clique sur l’image pour zoomer.</div>` : ``}
+            </div>
+          `;
+        } else {
+          const html = (ep.content_html || ep.content || "").toString();
+          bodyHTML = html.trim()
+            ? `<div class="text-content">${html}</div>`
+            : `<div class="empty-state">Contenu en cours de rédaction.</div>`;
+        }
+
+        el.innerHTML = `
+          <article class="post-card">
+            <header class="post-head">
+              <div class="avatar" aria-hidden="true">${initials(title)}</div>
+              <div class="post-meta">
+                <h1 class="post-title" title="${title}">${title}</h1>
+                <div class="post-sub">
+                  ${created ? `<span class="pill">📅 ${safeText(created)}</span>` : ``}
+                  <span class="pill">🏷️ ${safeText(numTxt)}</span>
+                  <span class="pill">${kind === "BD" ? "🖼️ BD" : "📝 TEXTE"}</span>
+                </div>
+              </div>
+            </header>
+
+            <div class="post-body">
+              ${summary ? `<p class="chapo">${summary}</p>` : ``}
+              ${bodyHTML}
+            </div>
+
+            <div class="actions">
+              <button class="btnx btn-primaryx" type="button" id="btnShare">🔗 Partager</button>
+              ${storySlug
+                ? `<a class="btnx" href="/story.html?slug=${encodeURIComponent(storySlug)}">↩️ Retour à l’histoire</a>`
+                : `<a class="btnx" href="/stories.html">📚 Retour aux histoires</a>`
+              }
+              <a class="btnx" href="/stories.html">📚 Liste des histoires</a>
+            </div>
+          </article>
+        `;
+
+        // Share
+        const btnShare = document.getElementById("btnShare");
+        if(btnShare) btnShare.addEventListener("click", ()=> shareLink(shareUrl));
+
+        // Zoom BD
+        const bdImg = document.getElementById("bdImg");
+        if(bdImg){
+          bdImg.addEventListener("click", (e)=>{
+            e.stopPropagation();
+            openZoom(imageUrl);
+          });
+        }
+
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      } catch(e){
+        console.error(e);
+        el.innerHTML = `
+          <div class="post-card">
+            <div class="post-body">
+              <div class="empty-state error-state">Erreur de chargement.</div>
+              <a class="btnx" href="/stories.html">📚 Retour aux histoires</a>
+            </div>
+          </div>
+        `;
+      }
+    }
+  </script>
+
+  <!-- Tes scripts pub (inchangés) -->
   <script type="text/javascript">
     atOptions = {
       'key' : 'c8f6fe03fa0be119b2a3477767248bac',

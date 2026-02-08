@@ -4,207 +4,559 @@
   <meta charset="utf-8">
   <title>Santé Planète – Histoire</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  
+
   <meta name="monetag" content="7829d23ba4a1542e7b69d76a78b9f27d">
-  
+
   <!-- Google AdSense -->
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8529764196804634"
     crossorigin="anonymous"></script>
 
   <script src="https://fpyf8.com/88/tag.min.js" data-zone="187598" async data-cfasync="false"></script>
+
   <link rel="icon" type="image/svg+xml" href="logo.png" />
+
+  <!-- ✅ Si tu veux garder ton CSS global, laisse ça -->
   <link rel="stylesheet" href="/assets/styles.css">
+
+  <!-- ✅ CSS spécifique story.html (dans le même fichier) -->
+  <style>
+    :root{
+      --bg:#020617;
+      --card: rgba(15, 23, 42, 0.72);
+      --card2: rgba(15, 23, 42, 0.55);
+      --border: rgba(148, 163, 184, 0.22);
+      --text:#e5e7eb;
+      --muted:#cbd5e1;
+      --accent:#38bdf8;
+      --accent2:#a855f7;
+      --danger:#f97373;
+      --shadow: 0 18px 55px rgba(0,0,0,.28);
+      --r:18px;
+    }
+
+    body{
+      background: radial-gradient(1200px 600px at 20% 0%, rgba(56,189,248,.10), transparent 50%),
+                  radial-gradient(1200px 600px at 80% 0%, rgba(168,85,247,.10), transparent 55%),
+                  var(--bg);
+      color: var(--text);
+    }
+
+    .container{ max-width: 980px; margin: 0 auto; padding: 0 16px; }
+
+    .story-hero{
+      padding: 28px 0 14px;
+    }
+
+    .story-shell{
+      max-width: 860px;
+      margin: 0 auto 18px auto;
+      border-radius: var(--r);
+    }
+
+    /* ===== Post header (style Facebook) ===== */
+    .post-card{
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--r);
+      overflow: hidden;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(7px);
+    }
+
+    .post-head{
+      display:flex;
+      align-items:center;
+      gap: 12px;
+      padding: 14px 16px;
+    }
+
+    .avatar{
+      width: 46px; height:46px;
+      border-radius: 999px;
+      background: rgba(56,189,248,.14);
+      border: 1px solid rgba(56,189,248,.35);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-weight: 900;
+      color: #fff;
+      flex: 0 0 auto;
+    }
+
+    .post-meta{ flex: 1 1 auto; min-width:0; }
+    .post-title{
+      margin:0;
+      font-size: 1.2rem;
+      font-weight: 950;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .post-sub{
+      margin-top: 6px;
+      display:flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      color: var(--muted);
+      font-size: .92rem;
+      align-items:center;
+    }
+
+    .pill{
+      display:inline-flex;
+      align-items:center;
+      gap: 6px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: rgba(2,6,23,.35);
+      color: var(--text);
+      font-size: .82rem;
+      font-weight: 800;
+    }
+
+    /* ===== Cover like Facebook photo ===== */
+    .cover{
+      position: relative;
+      aspect-ratio: 16/9;
+      width: 100%;
+      background: rgba(2,6,23,.6);
+      display:block;
+      overflow:hidden;
+    }
+    .cover img{
+      width:100%;
+      height:100%;
+      object-fit: cover;
+      display:block;
+    }
+    .cover-overlay{
+      position:absolute;
+      inset:0;
+      background: linear-gradient(to top, rgba(2,6,23,.90), rgba(2,6,23,0) 55%);
+    }
+    .cover-title{
+      position:absolute;
+      left: 14px;
+      right: 14px;
+      bottom: 12px;
+      font-weight: 950;
+      font-size: 1.35rem;
+      text-shadow: 0 10px 30px rgba(0,0,0,.65);
+    }
+
+    .post-body{
+      padding: 14px 16px 6px;
+    }
+
+    .chapo{
+      margin: 0;
+      color: var(--text);
+      line-height: 1.6;
+      font-size: 1rem;
+      opacity: .96;
+    }
+
+    /* ===== actions ===== */
+    .actions{
+      display:flex;
+      gap: 10px;
+      padding: 12px 16px 16px;
+      border-top: 1px solid rgba(148,163,184,.16);
+      flex-wrap: wrap;
+    }
+
+    .btnx{
+      appearance:none;
+      border: 1px solid rgba(148,163,184,.24);
+      background: rgba(15,23,42,.55);
+      color: var(--text);
+      padding: 10px 12px;
+      border-radius: 14px;
+      cursor:pointer;
+      font-weight: 900;
+      text-decoration:none;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap: 8px;
+      flex: 1 1 220px;
+      min-width: 180px;
+    }
+    .btnx:hover{ transform: translateY(-1px); border-color: rgba(56,189,248,.45); }
+
+    .btn-primaryx{
+      border-color: rgba(56,189,248,.35);
+      background: rgba(56,189,248,.14);
+    }
+
+    .btn-back{
+      margin-top: 14px;
+      display:inline-flex;
+      gap: 8px;
+      align-items:center;
+      color: var(--muted);
+      text-decoration:none;
+      font-weight: 800;
+      border: 1px solid rgba(148,163,184,.18);
+      background: rgba(15,23,42,.35);
+      padding: 10px 12px;
+      border-radius: 14px;
+    }
+    .btn-back:hover{ border-color: rgba(56,189,248,.45); color: var(--text); }
+
+    /* ===== Episodes section ===== */
+    .episodes-wrap{
+      margin-top: 16px;
+      background: var(--card2);
+      border: 1px solid var(--border);
+      border-radius: var(--r);
+      overflow:hidden;
+      box-shadow: 0 18px 45px rgba(0,0,0,.18);
+      backdrop-filter: blur(6px);
+    }
+
+    .episodes-head{
+      padding: 14px 16px;
+      display:flex;
+      align-items:flex-end;
+      justify-content: space-between;
+      gap: 10px;
+      border-bottom: 1px solid rgba(148,163,184,.16);
+    }
+    .episodes-head h2{
+      margin:0;
+      font-size: 1.05rem;
+      font-weight: 950;
+    }
+    .episodes-head .hint{
+      color: var(--muted);
+      font-size: .92rem;
+      opacity:.9;
+    }
+
+    .episodes-feed{
+      display:grid;
+      grid-template-columns: 1fr;
+      gap: 12px;
+      padding: 14px 16px 16px;
+    }
+
+    .ep-card{
+      background: rgba(15,23,42,.62);
+      border: 1px solid rgba(148,163,184,.20);
+      border-radius: 16px;
+      overflow:hidden;
+      display:flex;
+      gap: 12px;
+      box-shadow: 0 14px 35px rgba(0,0,0,.16);
+    }
+
+    .ep-thumb{
+      width: 156px;
+      flex: 0 0 156px;
+      background: rgba(2,6,23,.6);
+      position: relative;
+      overflow:hidden;
+    }
+    .ep-thumb img{
+      width:100%;
+      height:100%;
+      object-fit: cover;
+      display:block;
+    }
+    .ep-thumb-fallback{
+      width:100%;
+      height:100%;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-size: 1.8rem;
+      opacity:.85;
+    }
+
+    .ep-content{
+      padding: 12px 12px 12px 0;
+      flex: 1 1 auto;
+      min-width:0;
+    }
+    .ep-meta{
+      display:flex;
+      gap: 10px;
+      align-items:center;
+      flex-wrap: wrap;
+      color: var(--muted);
+      font-size: .9rem;
+      margin-bottom: 6px;
+    }
+    .ep-title{
+      margin:0;
+      font-weight: 950;
+      font-size: 1rem;
+      white-space: nowrap;
+      overflow:hidden;
+      text-overflow: ellipsis;
+    }
+    .ep-excerpt{
+      margin: 8px 0 10px;
+      color: var(--text);
+      opacity:.95;
+      line-height: 1.5;
+      font-size: .95rem;
+    }
+    .ep-actions{
+      display:flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .ep-actions a{
+      text-decoration:none;
+      font-weight: 900;
+      padding: 9px 12px;
+      border-radius: 12px;
+      border: 1px solid rgba(148,163,184,.22);
+      background: rgba(15,23,42,.55);
+      color: var(--text);
+      display:inline-flex;
+      align-items:center;
+      gap: 8px;
+    }
+    .ep-actions a:hover{ border-color: rgba(56,189,248,.45); transform: translateY(-1px); }
+
+    .empty-state{
+      padding: 18px;
+      border-radius: 16px;
+      background: rgba(15,23,42,.45);
+      border: 1px solid rgba(148,163,184,.18);
+      color: var(--muted);
+      text-align:center;
+    }
+
+    .error-state{
+      border-color: rgba(249,115,115,.35);
+      background: rgba(249,115,115,.10);
+      color: #fecaca;
+    }
+
+    /* Responsive */
+    @media (max-width: 640px){
+      .ep-card{ flex-direction: column; }
+      .ep-thumb{ width: 100%; height: 190px; flex: 0 0 auto; }
+      .ep-content{ padding: 12px 12px 14px; }
+      .btnx{ flex: 1 1 100%; min-width: 100%; }
+    }
+  </style>
 </head>
+
 <body>
   <div id="siteHeader"></div>
 
-  <section class="detail-wrap">
+  <section class="story-hero">
     <div class="container">
-      <article class="detail" id="storyDetail">
+      <div class="story-shell" id="storyDetail">
         <div class="empty-state">Chargement…</div>
-      </article>
+      </div>
     </div>
   </section>
 
   <div id="siteFooter"></div>
 
   <script src="/assets/app.js"></script>
+
   <script>
-document.addEventListener("DOMContentLoaded", () => {
-  SP.setActiveNav("stories");
-  loadStory();
-});
-
-async function loadStory(){
-  const el = document.getElementById("storyDetail");
-  const params = new URLSearchParams(location.search);
-  const slug = params.get("slug");
-
-  if(!slug){
-    el.innerHTML = '<div class="empty-state error-state">Slug manquant.</div><a class="back-link" href="/stories.html">Retour</a>';
-    return;
-  }
-
-  try{
-    // 1) story
-    const r1 = await fetch("/api/stories/" + encodeURIComponent(slug));
-    if(!r1.ok) throw new Error("Story KO");
-    const st = await r1.json();
-
-    // 2) episodes
-    const r2 = await fetch("/api/stories/" + encodeURIComponent(slug) + "/episodes");
-    if(!r2.ok) throw new Error("Episodes KO");
-    const epsRaw = await r2.json();
-    const eps = Array.isArray(epsRaw) ? epsRaw : [];
-
-    el.innerHTML = "";
-
-    const h1 = document.createElement("h1");
-    h1.textContent = st.title || "Histoire";
-
-    const meta = document.createElement("p");
-    meta.className = "meta-line";
-
-    const date = document.createElement("span");
-    const d = SP.formatDate(st.createdAt || st.created_at);
-    if(d) date.textContent = d;
-
-    const cat = document.createElement("span");
-    cat.textContent = st.category || "Histoire";
-
-    if(d) meta.appendChild(date);
-    meta.appendChild(cat);
-
-    el.appendChild(h1);
-    el.appendChild(meta);
-
-    const coverUrl = st.coverUrl || st.cover_url;
-    if(coverUrl){
-      const img = document.createElement("img");
-      img.className = "detail-cover";
-      img.src = coverUrl;
-      img.alt = st.title || "Couverture";
-      img.loading = "lazy";
-      el.appendChild(img);
-    }
-
-    if(st.summary){
-      const chapo = document.createElement("p");
-      chapo.className = "chapo";
-      chapo.textContent = st.summary;
-      el.appendChild(chapo);
-    }
-
-    // CTA: commencer (episode 1)
-    const sortedForStart = eps.slice().sort((a,b)=>{
-      const na = (a.episodeNumber ?? a.episode_number ?? 0);
-      const nb = (b.episodeNumber ?? b.episode_number ?? 0);
-      return na - nb;
+    document.addEventListener("DOMContentLoaded", () => {
+      try { SP.setActiveNav("stories"); } catch(_) {}
+      loadStory();
     });
-    const first = sortedForStart[0] || null;
 
-    if(first && first.id){
-      const start = document.createElement("a");
-      start.className = "btn btn-primary";
-      start.href = "/episode.html?id=" + encodeURIComponent(first.id);
-      start.textContent = "Commencer";
-      el.appendChild(start);
+    function safeText(v){
+      return String(v ?? "").replace(/[<>&]/g, s => ({'<':'&lt;','>':'&gt;','&':'&amp;'}[s]));
+    }
+    function normalizeKind(v){
+      const raw = String(v ?? "").trim();
+      const low = raw.toLowerCase();
+      if (low === "bd") return "BD";
+      if (low === "histoire") return "Histoire";
+      if (low === "episode" || low === "épisode") return "Épisode";
+      if (low === "texte") return "Histoire";
+      return raw || "Histoire";
+    }
+    function initials(title){
+      const t = String(title || "H").trim();
+      return (t[0] || "H").toUpperCase();
+    }
+    async function shareLink(url){
+      try{
+        if(navigator.share){
+          await navigator.share({ title: "Santé Planète", url });
+          return;
+        }
+        await navigator.clipboard.writeText(url);
+        alert("Lien copié !");
+      }catch(e){
+        console.error(e);
+        alert("Impossible de partager pour le moment.");
+      }
+    }
+    function pickNum(ep){
+      return (ep.episodeNumber ?? ep.episode_number ?? "");
+    }
+    function pickDate(v){
+      try{
+        return (window.SP && SP.formatDate) ? (SP.formatDate(v) || "") : "";
+      }catch(_){ return ""; }
     }
 
-    // Liste épisodes
-    const sep = document.createElement("div");
-    sep.style.marginTop = "1.4rem";
-    sep.style.borderTop = "1px solid var(--border)";
-    sep.style.paddingTop = "1rem";
+    async function loadStory(){
+      const el = document.getElementById("storyDetail");
+      const params = new URLSearchParams(location.search);
+      const slug = params.get("slug");
 
-    const h3 = document.createElement("h3");
-    h3.textContent = "Épisodes";
-    h3.style.marginBottom = ".8rem";
-    sep.appendChild(h3);
-
-    if(!eps.length){
-      const empty = document.createElement("div");
-      empty.className = "empty-state";
-      empty.textContent = "Aucun épisode pour le moment.";
-      sep.appendChild(empty);
-    } else {
-      const listWrap = document.createElement("div");
-      listWrap.className = "grid-cards";
-
-      const sorted = eps.slice().sort((a,b)=>{
-        const na = (a.episodeNumber ?? a.episode_number ?? 0);
-        const nb = (b.episodeNumber ?? b.episode_number ?? 0);
-        return na - nb;
-      });
-
-      for(const ep of sorted){
-        const card = document.createElement("article");
-        card.className = "card";
-
-        const meta2 = document.createElement("div");
-        meta2.className = "meta";
-
-        const b = document.createElement("span");
-        b.className = "badge";
-        const num = (ep.episodeNumber ?? ep.episode_number ?? "");
-        b.textContent = "Épisode " + num;
-
-        const r = document.createElement("span");
-        r.textContent = SP.formatDate(ep.createdAt || ep.created_at) || "";
-
-        meta2.appendChild(b);
-        meta2.appendChild(r);
-
-        const t = document.createElement("div");
-        t.className = "title";
-        t.textContent = ep.title || ("Épisode " + num);
-
-        // ✅ miniature BD (si dispo)
-        const kind = (ep.kind || "").toString().toUpperCase();
-        const imgUrl = (ep.imageUrl || ep.image_url || "").toString().trim();
-        if(kind === "BD" && imgUrl){
-          const img = document.createElement("img");
-          img.className = "card-cover";
-          img.src = imgUrl;
-          img.alt = ep.title || "Épisode BD";
-          img.loading = "lazy";
-          card.appendChild(img);
-        }
-
-        const ex = document.createElement("div");
-        ex.className = "excerpt";
-        ex.textContent = (ep.summary || "Ouvrir l’épisode.").slice(0,160);
-
-        const a = document.createElement("a");
-        a.href = "/episode.html?id=" + encodeURIComponent(ep.id);
-        a.textContent = "Lire";
-
-        card.appendChild(meta2);
-        card.appendChild(t);
-        card.appendChild(ex);
-        card.appendChild(a);
-
-        listWrap.appendChild(card);
+      if(!slug){
+        el.innerHTML = `
+          <div class="post-card">
+            <div class="post-body">
+              <div class="empty-state error-state">Slug manquant.</div>
+              <a class="btn-back" href="/stories.html">← Retour aux histoires</a>
+            </div>
+          </div>
+        `;
+        return;
       }
 
-      sep.appendChild(listWrap);
+      try{
+        // 1) story
+        const r1 = await fetch("/api/stories/" + encodeURIComponent(slug));
+        if(!r1.ok) throw new Error("Story KO");
+        const st = await r1.json();
+
+        // 2) episodes
+        const r2 = await fetch("/api/stories/" + encodeURIComponent(slug) + "/episodes");
+        if(!r2.ok) throw new Error("Episodes KO");
+        const epsRaw = await r2.json();
+        const eps = Array.isArray(epsRaw) ? epsRaw : [];
+
+        const title = safeText(st.title || "Histoire");
+        const kind = normalizeKind(st.category || "Histoire");
+        const date = pickDate(st.createdAt || st.created_at);
+        const coverUrl = (st.coverUrl || st.cover_url || "").toString().trim();
+        const summary = safeText(st.summary || "");
+
+        // Trier épisodes
+        const sorted = eps.slice().sort((a,b)=>{
+          const na = (a.episodeNumber ?? a.episode_number ?? 0);
+          const nb = (b.episodeNumber ?? b.episode_number ?? 0);
+          return na - nb;
+        });
+        const first = sorted[0] || null;
+
+        const shareUrl = location.href;
+
+        // ---- Build HTML (post + episodes)
+        el.innerHTML = `
+          <div class="post-card">
+            <div class="post-head">
+              <div class="avatar" aria-hidden="true">${initials(title)}</div>
+              <div class="post-meta">
+                <h1 class="post-title" title="${title}">${title}</h1>
+                <div class="post-sub">
+                  ${date ? `<span class="pill">📅 ${safeText(date)}</span>` : ``}
+                  <span class="pill">🏷️ ${safeText(kind)}</span>
+                  <span class="pill">🌍 Santé Planète</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="cover">
+              ${coverUrl ? `<img src="${coverUrl}" alt="${title}" loading="lazy">` : ``}
+              <div class="cover-overlay"></div>
+              <div class="cover-title">${title}</div>
+            </div>
+
+            <div class="post-body">
+              ${summary ? `<p class="chapo">${summary}</p>` : ``}
+            </div>
+
+            <div class="actions">
+              ${first && first.id ? `<a class="btnx btn-primaryx" href="/episode.html?id=${encodeURIComponent(first.id)}">▶️ Commencer</a>` : `<span class="btnx" style="opacity:.75; cursor:not-allowed;">⏳ Pas d’épisode disponible</span>`}
+              <button class="btnx" type="button" id="btnShare">🔗 Partager</button>
+              <a class="btnx" href="/stories.html">📚 Retour aux histoires</a>
+            </div>
+          </div>
+
+          <section class="episodes-wrap">
+            <div class="episodes-head">
+              <h2>Épisodes</h2>
+              <div class="hint">${sorted.length ? `${sorted.length} épisode(s)` : `Aucun épisode pour le moment`}</div>
+            </div>
+            <div class="episodes-feed" id="episodesFeed"></div>
+          </section>
+        `;
+
+        // Share btn
+        const btnShare = document.getElementById("btnShare");
+        if(btnShare){
+          btnShare.addEventListener("click", ()=> shareLink(shareUrl));
+        }
+
+        // Episodes render
+        const feed = document.getElementById("episodesFeed");
+        if(!feed) return;
+
+        if(!sorted.length){
+          feed.innerHTML = `<div class="empty-state">Aucun épisode pour le moment.</div>`;
+        } else {
+          feed.innerHTML = sorted.map(ep => {
+            const num = pickNum(ep);
+            const epTitle = safeText(ep.title || ("Épisode " + num));
+            const epSum = safeText((ep.summary || "Ouvrir l’épisode.").slice(0, 170));
+            const epDate = pickDate(ep.createdAt || ep.created_at);
+
+            const kindEp = String(ep.kind || "").toUpperCase();
+            const imgUrl = String(ep.imageUrl || ep.image_url || "").trim();
+
+            const thumb = (kindEp === "BD" && imgUrl)
+              ? `<img src="${imgUrl}" alt="${epTitle}" loading="lazy">`
+              : `<div class="ep-thumb-fallback">📖</div>`;
+
+            return `
+              <article class="ep-card">
+                <div class="ep-thumb">${thumb}</div>
+                <div class="ep-content">
+                  <div class="ep-meta">
+                    <span class="pill">Épisode ${safeText(num)}</span>
+                    ${epDate ? `<span class="pill">${safeText(epDate)}</span>` : ``}
+                    ${kindEp ? `<span class="pill">${safeText(kindEp)}</span>` : ``}
+                  </div>
+                  <h3 class="ep-title" title="${epTitle}">${epTitle}</h3>
+                  <p class="ep-excerpt">${epSum}</p>
+                  <div class="ep-actions">
+                    <a href="/episode.html?id=${encodeURIComponent(ep.id)}">📖 Lire</a>
+                    <a href="/episode.html?id=${encodeURIComponent(ep.id)}#comments">💬 Commenter</a>
+                  </div>
+                </div>
+              </article>
+            `;
+          }).join("");
+        }
+
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      } catch(e){
+        console.error(e);
+        el.innerHTML = `
+          <div class="post-card">
+            <div class="post-body">
+              <div class="empty-state error-state">Erreur de chargement.</div>
+              <a class="btn-back" href="/stories.html">← Retour aux histoires</a>
+            </div>
+          </div>
+        `;
+      }
     }
+  </script>
 
-    el.appendChild(sep);
-
-    const back = document.createElement("a");
-    back.href = "/stories.html";
-    back.className = "back-link";
-    back.textContent = "Retour aux histoires";
-    el.appendChild(back);
-
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  } catch(e){
-    console.error(e);
-    el.innerHTML = '<div class="empty-state error-state">Erreur de chargement.</div><a class="back-link" href="/stories.html">Retour</a>';
-  }
-}
-</script>
+  <!-- Tes scripts pub (inchangés) -->
   <script type="text/javascript">
     atOptions = {
       'key' : 'c8f6fe03fa0be119b2a3477767248bac',
@@ -216,5 +568,6 @@ async function loadStory(){
   </script>
   <script src="https://pl28417835.effectivegatecpm.com/f6/af/b7/f6afb7c91547e6fd77713d2eb4cf1252.js"></script>
   <script type="text/javascript" src="//www.highperformanceformat.com/c8f6fe03fa0be119b2a3477767248bac/invoke.js"></script>
+
 </body>
 </html>
