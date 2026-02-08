@@ -1,22 +1,20 @@
 // api/server.js
 import http from "http";
-import handler, { DEFAULT_HEADERS } from "./articles.js";
+import articlesHandler, { DEFAULT_HEADERS as H } from "./articles.js";
+import storiesHandler from "./stories.js";
+import episodesHandler from "./episodes.js";
 
 const server = http.createServer((req, res) => {
   const url = req.url ? new URL(req.url, "http://localhost") : null;
   const pathname = url ? url.pathname : "";
 
-  if (pathname === "/api/articles") {
-    // On délègue toutes les méthodes (GET, POST, OPTIONS) au handler
-    handler(req, res);
-    return;
-  }
+  // --- API routing ---
+  if (pathname.startsWith("/api/articles")) return articlesHandler(req, res);
+  if (pathname.startsWith("/api/stories"))  return storiesHandler(req, res);
+  if (pathname.startsWith("/api/episodes")) return episodesHandler(req, res);
 
-  // 404 pour toute autre route
-  res.writeHead(404, {
-    ...DEFAULT_HEADERS,
-    "Content-Type": "application/json",
-  });
+  // 404
+  res.writeHead(404, { ...H, "Content-Type": "application/json; charset=utf-8" });
   res.end(JSON.stringify({ error: "Ressource non trouvée" }));
 });
 

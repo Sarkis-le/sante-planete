@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <title>Santé Planète – Histoire</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" type="image/svg+xml" href="logo.png" />
+  <link rel="stylesheet" href="/assets/styles.css">
+</head>
+<body>
+  <div id="siteHeader"></div>
+
+  <section class="detail-wrap">
+    <div class="container">
+      <article class="detail" id="storyDetail">
+        <div class="empty-state">Chargement…</div>
+      </article>
+    </div>
+  </section>
+
+  <div id="siteFooter"></div>
+
+  <script src="/assets/app.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      SP.setActiveNav("stories");
+      loadStory();
+    });
+
+    async function loadStory(){
+      const el = document.getElementById("storyDetail");
+      const params = new URLSearchParams(location.search);
+      const slug = params.get("slug");
+      if(!slug){
+        el.innerHTML = '<div class="empty-state error-state">Slug manquant.</div><a class="back-link" href="/stories.html">Retour</a>';
+        return;
+      }
+
+      try{
+        // story info
+        const r1 = await fetch("/api/stories/" + encodeURIComponent(slug));
+        if(!r1.ok) throw new Error("Story KO");
+        const st = await r1.json();
+
+        // episodes list
+        const r2 = await fetch("/api/stories/" + encodeURIComponent(slug) + "/episodes");
+        if(!r2.ok) throw new Error("Episodes KO");
+        const eps = await r2.json();
+
+        el.innerHTML = "";
+
+        const h1 = document.createElement("h1");
+        h1.textContent = st.title || "Histoire";
+
+        const meta = document.createElement("p");
+        meta.className = "meta-line";
+
+        const author = document.createElement("span");
+        author.textContent = st.author || "Sante-Planète";
+
+        const date = document.createElement("span");
+        const d = SP.formatDate(st.createdAt || st.created_at);
+        if(d) date.textContent = d;
+
+        const cat = document.createElement("span");
+        cat.textContent = st.category || "Histoire";
+
+        meta.appendChild(author);
+        if(d) meta.appendChild(date);
+        meta.appendChild(cat);
+
+        el.appendChild(h1);
+        el.appendChild(meta);
+
+        const coverUrl = st.coverUrl || st.cover_url;
+        if(coverUrl){
+          const img = document.createElement("img");
+          img.className = "detail-cover";
+          img.src = coverUrl;
+          img.alt = st.title || "Couverture";
+          img.loading = "lazy";
+          el.appendChild(img);
+        }
+
+        if(st.summary){
+          const chapo = document.createElement("p");
+          chapo.className = "chapo";
+          chapo.textContent = st.summary;
+          el.appendChild(chapo);
+        }
+
+        // CTA: commencer (episode 1)
+        const first = Array.isArray(eps) ? eps.slice().sort((a,b)=> (a.episode_number||0)-(b.episode_number||0))[0] : null;
+        if(first && first.id){
+          const start = document.createElement("a");
+          start.className = "btn btn-primary";
+          start.href = "/episode.html?id=" + encodeURIComponent(first.id);
+          start.textContent = "Commencer";
+          el.appendChild(start);
+        }
+
+        // Liste épisodes
+        const sep = document.createElement("div");
+        sep.style.marginTop = "1.4rem";
+        sep.style.borderTop = "1px solid var(--border)";
+        sep.style.paddingTop = "1rem";
+
+        const h3 = document.createElement("h3");
+        h3.textContent = "Épisodes";
+        h3.style.marginBottom = ".8rem";
+        sep.appendChild(h3);
+
+        if(!Array.isArray(eps) || !eps.length){
+          const empty = document.createElement("div");
+          empty.className = "empty-state";
+          empty.textContent = "Aucun épisode pour le moment.";
+          sep.appendChild(empty);
+        }else{
+          const listWrap = document.createElement("div");
+          listWrap.className = "grid-cards";
+
+          const sorted = eps.slice().sort((a,b)=> (a.episode_number||0)-(b.episode_number||0));
+          for(const ep of sorted){
+            const card = document.createElement("article");
+            card.className = "card";
+
+            const meta2 = document.createElement("div");
+            meta2.className = "meta";
+            const b = document.createElement("span");
+            b.className = "badge";
+            b.textContent = "Épisode " + (ep.episode_number ?? "");
+            const r = document.createElement("span");
+            r.textContent = SP.formatDate(ep.created_at || ep.createdAt) || "";
+            meta2.appendChild(b); meta2.appendChild(r);
+
+            const t = document.createElement("div");
+            t.className = "title";
+            t.textContent = ep.title || ("Épisode " + (ep.episode_number ?? ""));
+
+            const ex = document.createElement("div");
+            ex.className = "excerpt";
+            ex.textContent = (ep.summary || "Ouvrir l’épisode.").slice(0,160);
+
+            const a = document.createElement("a");
+            a.href = "/episode.html?id=" + encodeURIComponent(ep.id);
+            a.textContent = "Lire";
+
+            card.appendChild(meta2);
+            card.appendChild(t);
+            card.appendChild(ex);
+            card.appendChild(a);
+
+            listWrap.appendChild(card);
+          }
+          sep.appendChild(listWrap);
+        }
+
+        el.appendChild(sep);
+
+        const back = document.createElement("a");
+        back.href = "/stories.html";
+        back.className = "back-link";
+        back.textContent = "Retour aux histoires";
+        el.appendChild(back);
+
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }catch(e){
+        el.innerHTML = '<div class="empty-state error-state">Erreur de chargement.</div><a class="back-link" href="/stories.html">Retour</a>';
+      }
+    }
+  </script>
+</body>
+</html>

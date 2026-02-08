@@ -34,10 +34,12 @@ async function readJsonBody(req) {
   });
 }
 
-function getIdFromPath(pathname) {
-  const match = pathname.match(/^\/api\/stories\/?([^/]+)?$/);
-  if (!match || !match[1]) return null;
-  return match[1];
+function segs(pathname) {
+  return pathname.split("/").filter(Boolean); // ["api","stories",...]
+}
+
+function isNumericId(x) {
+  return typeof x === "string" && /^[0-9]+$/.test(x);
 }
 
 function mapStoryRow(row) {
@@ -48,11 +50,12 @@ function mapStoryRow(row) {
     slug: row.slug,
     category: row.category,
     summary: row.summary,
-    coverUrl: row.cover_url || row.coverUrl || null,
-    pages: row.pages || [],          // json/jsonb côté PG
-    content: row.content || "",      // html éventuel
+    coverUrl: row.cover_url || null,
     createdAt: row.created_at || null,
     updatedAt: row.updated_at || null,
+    // legacy fields (ok de les garder)
+    pages: row.pages || [],
+    content: row.content || "",
   };
 }
 
@@ -61,75 +64,106 @@ export default async function handler(req, res) {
 
   const url = req.url ? new URL(req.url, "http://localhost") : null;
   const pathname = url ? url.pathname : "";
-
-  // IMPORTANT: Vercel doit router sur ce fichier. Ce guard est OK.
-  if (!pathname.startsWith("/api/stories")) {
-    sendJson(res, 404, { error: "Ressource non trouvée" });
-    return;
-  }
-
-  const pathId  = getIdFromPath(pathname);
-  const queryId = url ? url.searchParams.get("id") : null;
+  const S = segs(pathname);
 
   if (req.method === "OPTIONS") {
     res.statusCode = 204;
-    res.end();
-    return;
+    return res.end();
   }
 
-  // GET (liste / détail)
-  if (req.method === "GET") {
-    const storyId = pathId || queryId;
+  if (S[0] !== "api" || S[1] !== "stories") {
+    return sendJson(res, 404, { error: "Ressource non trouvée" });
+  }
 
+  // ---------------------------
+  // GET /api/stories (liste)
+  // ---------------------------
+  if (req.method === "GET" && S.length === 2) {
     try {
-      if (storyId != null) {
-        const rows = await query("SELECT * FROM stories WHERE id = $1", [storyId]);
-        if (!rows.length) return sendJson(res, 404, { error: "Histoire introuvable" });
-        return sendJson(res, 200, mapStoryRow(rows[0]));
-      }
+      const rows = await query(`
+        SELECT s.*,
+          (SELECT COUNT(*) FROM episodes e WHERE e.story_id = s.id) AS episodes_count
+        FROM stories s
+        ORDER BY s.created_at DESC, s.id DESC
+      `);
 
-      const rows = await query("SELECT * FROM stories ORDER BY created_at DESC, id DESC");
-      return sendJson(res, 200, rows.map(mapStoryRow));
+      const out = rows.map(r => ({
+        ...mapStoryRow(r),
+        episodesCount: Number(r.episodes_count || 0),
+      }));
+
+      return sendJson(res, 200, out);
     } catch (err) {
       console.error("GET /api/stories error", err);
       return sendJson(res, 500, { error: "Erreur serveur" });
     }
   }
 
-  // Body pour POST/PUT/DELETE
-  let body = {};
-  try {
-    body = await readJsonBody(req);
-  } catch (err) {
-    console.error(`${req.method} /api/stories body parse error`, err);
-    return sendJson(res, 400, { error: "Corps de requête invalide" });
+  // ---------------------------
+  // GET /api/stories/:slugOrId (détail)
+  // ---------------------------
+  if (req.method === "GET" && S.length === 3) {
+    const key = decodeURIComponent(S[2]);
+    try {
+      const rows = isNumericId(key)
+        ? await query("SELECT * FROM stories WHERE id=$1 LIMIT 1", [key])
+        : await query("SELECT * FROM stories WHERE slug=$1 LIMIT 1", [key]);
+
+      if (!rows.length) return sendJson(res, 404, { error: "Histoire introuvable" });
+      return sendJson(res, 200, mapStoryRow(rows[0]));
+    } catch (err) {
+      console.error("GET /api/stories/:key error", err);
+      return sendJson(res, 500, { error: "Erreur serveur" });
+    }
   }
 
-  const bodyId = body && (body.id || body.storyId || null);
-  const idForWrite = pathId || queryId || bodyId;
+  // ---------------------------
+  // GET /api/stories/:slugOrId/episodes (liste épisodes)
+  // ---------------------------
+  if (req.method === "GET" && S.length === 4 && S[3] === "episodes") {
+    const key = decodeURIComponent(S[2]);
 
-  // POST
-  if (req.method === "POST") {
-    const {
-      title,
-      slug,
-      category = "",
-      summary = "",
-      coverUrl = "",
-      pages = [],
-      content = "",
-    } = body || {};
+    try {
+      const storyRows = isNumericId(key)
+        ? await query("SELECT id, slug FROM stories WHERE id=$1 LIMIT 1", [key])
+        : await query("SELECT id, slug FROM stories WHERE slug=$1 LIMIT 1", [key]);
 
-    if (!title || !slug) {
-      return sendJson(res, 400, { error: "Titre et slug sont requis." });
+      if (!storyRows.length) return sendJson(res, 404, { error: "Histoire introuvable" });
+
+      const storyId = storyRows[0].id;
+
+      const eps = await query(
+        `SELECT id, story_id, title, slug, episode_number, summary, created_at
+         FROM episodes
+         WHERE story_id=$1
+         ORDER BY episode_number ASC, created_at ASC`,
+        [storyId]
+      );
+
+      return sendJson(res, 200, eps);
+    } catch (err) {
+      console.error("GET /api/stories/:key/episodes error", err);
+      return sendJson(res, 500, { error: "Erreur serveur" });
     }
+  }
+
+  // ---------------------------
+  // POST /api/stories (création)
+  // ---------------------------
+  if (req.method === "POST" && S.length === 2) {
+    let body = {};
+    try { body = await readJsonBody(req); }
+    catch { return sendJson(res, 400, { error: "Corps de requête invalide" }); }
+
+    const { title, slug, category = "", summary = "", coverUrl = "" } = body || {};
+    if (!title || !slug) return sendJson(res, 400, { error: "Titre et slug sont requis." });
 
     try {
       const rows = await query(
-        `INSERT INTO stories (title, slug, category, summary, cover_url, pages, content)
-         VALUES ($1,$2,$3,$4,$5,$6,$7)
+        `INSERT INTO stories (title, slug, category, summary, cover_url)
+         VALUES ($1,$2,$3,$4,$5)
          RETURNING *`,
-        [title, slug, category, summary, coverUrl, JSON.stringify(pages || []), content]
+        [title, slug, category, summary, coverUrl]
       );
       return sendJson(res, 201, mapStoryRow(rows[0]));
     } catch (err) {
@@ -139,55 +173,5 @@ export default async function handler(req, res) {
     }
   }
 
-  // PUT/DELETE → besoin id
-  if (idForWrite == null) {
-    return sendJson(res, 400, { error: "Identifiant manquant (URL, ?id= ou body.id)." });
-  }
-
-  // PUT
-  if (req.method === "PUT") {
-    const {
-      title,
-      slug,
-      category = "",
-      summary = "",
-      coverUrl = "",
-      pages = [],
-      content = "",
-    } = body || {};
-
-    if (!title || !slug) {
-      return sendJson(res, 400, { error: "Titre et slug sont requis." });
-    }
-
-    try {
-      const rows = await query(
-        `UPDATE stories
-         SET title=$1, slug=$2, category=$3, summary=$4, cover_url=$5, pages=$6, content=$7, updated_at=NOW()
-         WHERE id=$8
-         RETURNING *`,
-        [title, slug, category, summary, coverUrl, JSON.stringify(pages || []), content, idForWrite]
-      );
-      if (!rows.length) return sendJson(res, 404, { error: "Histoire introuvable" });
-      return sendJson(res, 200, mapStoryRow(rows[0]));
-    } catch (err) {
-      console.error("PUT /api/stories error", err);
-      if (err.code === "23505") return sendJson(res, 400, { error: "Ce slug est déjà utilisé." });
-      return sendJson(res, 500, { error: "Erreur serveur" });
-    }
-  }
-
-  // DELETE
-  if (req.method === "DELETE") {
-    try {
-      const rows = await query("DELETE FROM stories WHERE id=$1 RETURNING id", [idForWrite]);
-      if (!rows.length) return sendJson(res, 404, { error: "Histoire introuvable" });
-      return sendJson(res, 200, { success: true });
-    } catch (err) {
-      console.error("DELETE /api/stories error", err);
-      return sendJson(res, 500, { error: "Erreur serveur" });
-    }
-  }
-
-  return sendJson(res, 405, { error: "Méthode non autorisée" });
+  return sendJson(res, 405, { error: "Méthode non autorisée / route non gérée" });
 }

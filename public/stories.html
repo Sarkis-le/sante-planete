@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <title>Santé Planète – Histoires</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" type="image/svg+xml" href="logo.png" />
+  <link rel="stylesheet" href="/assets/styles.css">
+</head>
+<body>
+  <div id="siteHeader"></div>
+
+  <section class="page-section" style="background:linear-gradient(135deg,#0f172a,#1e293b); color:white;">
+    <div class="container">
+      <div class="section-title" style="margin-bottom:1.5rem;">
+        <h2 style="color:white;">Histoires & Bandes dessinées</h2>
+        <p style="color:#cbd5e1;">Des séries en épisodes, du texte ou des BD en images.</p>
+      </div>
+
+      <div class="search-row">
+        <div class="search-box">
+          <label for="storySearch" class="sr-only">Rechercher une histoire</label>
+          <input id="storySearch" type="search" placeholder="Rechercher une histoire…"
+            oninput="StoriesPage.onStorySearch(this.value)">
+        </div>
+        <div class="filters">
+          <button type="button" class="filter-chip" onclick="StoriesPage.onStoryClear()">Toutes</button>
+          <button type="button" class="filter-chip" onclick="StoriesPage.onStoryFilter('BD')">BD</button>
+          <button type="button" class="filter-chip" onclick="StoriesPage.onStoryFilter('Histoire')">Histoire</button>
+          <button type="button" class="filter-chip" onclick="StoriesPage.onStoryFilter('Épisode')">Épisode</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="page-section">
+    <div class="container">
+      <div class="grid-cards" id="storiesGrid">
+        <div class="empty-state">Chargement…</div>
+      </div>
+    </div>
+  </section>
+
+  <div id="siteFooter"></div>
+
+  <script src="/assets/app.js"></script>
+  <script src="/assets/stories.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      StoriesPage.loadStoriesPage();
+    });
+  </script>
+</body>
+</html>

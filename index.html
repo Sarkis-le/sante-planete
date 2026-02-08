@@ -2,1095 +2,160 @@
 <html lang="fr">
 <head>
   <meta charset="utf-8">
-  <title>Santé Planète – Articles</title>
+  <title>Santé Planète – Accueil</title>
   <meta name="monetag" content="7829d23ba4a1542e7b69d76a78b9f27d">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   <!-- Google AdSense -->
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8529764196804634"
-     crossorigin="anonymous"></script>
+    crossorigin="anonymous"></script>
 
-  <!-- Monetag / autre script pub -->
   <script src="https://fpyf8.com/88/tag.min.js" data-zone="187598" async data-cfasync="false"></script>
 
-  <!-- Favicon -->
-  <link
-    rel="icon"
-    type="image/svg+xml"
-    href="logo.png"
-  />
-
-  <style>
-    :root {
-      --primary: #0ea5e9;
-      --primary-dark: #0284c7;
-      --secondary: #6366f1;
-      --dark: #1e293b;
-      --darker: #0f172a;
-      --light: #f8fafc;
-      --gray: #64748b;
-      --border: #e2e8f0;
-      --radius: 8px;
-      --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-    }
-
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
-    body {
-      font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      color: var(--dark);
-      line-height: 1.6;
-      background-color: var(--light);
-    }
-
-    .container {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 0 1.5rem;
-    }
-
-    /* Header */
-    header {
-      background-color: white;
-      box-shadow: var(--shadow);
-      position: sticky;
-      top: 0;
-      z-index: 100;
-    }
-
-    .header-content {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 1.2rem 0;
-    }
-
-    .logo {
-      display: flex;
-      align-items: center;
-      gap: 0.8rem;
-      text-decoration: none;
-      color: var(--dark);
-    }
-
-    .logo-icon {
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      background-color: var(--primary);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: white;
-      font-weight: 700;
-      font-size: 1.1rem;
-    }
-
-    .logo-text h1 {
-      font-size: 1.5rem;
-      font-weight: 700;
-    }
-
-    .logo-text p {
-      font-size: 0.85rem;
-      color: var(--gray);
-    }
-
-    nav ul {
-      display: flex;
-      list-style: none;
-      gap: 1.5rem;
-    }
-
-    nav a {
-      text-decoration: none;
-      color: var(--dark);
-      font-weight: 500;
-      transition: color 0.2s;
-      padding: 0.5rem 0;
-      position: relative;
-    }
-
-    nav a:hover {
-      color: var(--primary);
-    }
-
-    nav a.active {
-      color: var(--primary);
-    }
-
-    nav a.active::after {
-      content: '';
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      width: 100%;
-      height: 2px;
-      background-color: var(--primary);
-    }
-
-    /* Hero Section */
-    .hero {
-      padding: 4rem 0;
-      background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
-      color: white;
-      text-align: center;
-    }
-
-    .hero h2 {
-      font-size: 2.5rem;
-      margin-bottom: 1rem;
-      font-weight: 700;
-    }
-
-    .hero p {
-      font-size: 1.1rem;
-      max-width: 700px;
-      margin: 0 auto 1.5rem;
-      opacity: 0.95;
-    }
-
-    .hero-meta {
-      font-size: 0.95rem;
-      opacity: 0.9;
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 0.75rem;
-    }
-
-    .hero-meta strong {
-      font-weight: 700;
-    }
-
-    .hero-actions {
-      margin-top: 2rem;
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 1rem;
-    }
-
-    .btn {
-      display: inline-block;
-      background-color: white;
-      color: var(--primary);
-      padding: 0.8rem 1.8rem;
-      border-radius: var(--radius);
-      text-decoration: none;
-      font-weight: 600;
-      transition: all 0.3s;
-      border: none;
-      cursor: pointer;
-    }
-
-    .btn:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
-    }
-
-    .btn-primary {
-      background-color: var(--primary);
-      color: white;
-    }
-
-    .btn-primary:hover {
-      background-color: var(--primary-dark);
-    }
-
-    /* Section titre générique */
-    .section-title {
-      text-align: center;
-      margin-bottom: 2.5rem;
-    }
-
-    .section-title h2 {
-      font-size: 2rem;
-      color: var(--dark);
-      margin-bottom: 0.5rem;
-    }
-
-    .section-title p {
-      color: var(--gray);
-      max-width: 600px;
-      margin: 0 auto;
-    }
-
-    /* Features Section */
-    .features {
-      padding: 3.5rem 0;
-      background-color: white;
-    }
-
-    .features-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-      gap: 2rem;
-    }
-
-    .feature-card {
-      background-color: white;
-      border-radius: var(--radius);
-      padding: 2rem;
-      box-shadow: var(--shadow);
-      transition: transform 0.3s;
-    }
-
-    .feature-card:hover {
-      transform: translateY(-5px);
-    }
-
-    .feature-icon {
-      width: 60px;
-      height: 60px;
-      border-radius: 50%;
-      background-color: rgba(14, 165, 233, 0.1);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin-bottom: 1.5rem;
-    }
-
-    .feature-icon svg {
-      width: 30px;
-      height: 30px;
-      color: var(--primary);
-    }
-
-    .feature-card h3 {
-      font-size: 1.3rem;
-      margin-bottom: 1rem;
-    }
-
-    .feature-card p {
-      color: var(--gray);
-    }
-
-    /* Tendances */
-    .trends {
-      padding: 3.5rem 0;
-      background-color: #f1f5f9;
-    }
-
-    .trends-list {
-      display: flex;
-      gap: 1.5rem;
-      overflow-x: auto;
-      padding-bottom: 0.5rem;
-    }
-
-    .trend-card {
-      min-width: 260px;
-      max-width: 320px;
-      background-color: white;
-      border-radius: var(--radius);
-      padding: 1.2rem 1.3rem 1.4rem;
-      box-shadow: var(--shadow);
-      flex-shrink: 0;
-    }
-
-    .trend-thumb {
-      width: 100%;
-      height: 140px;
-      border-radius: var(--radius);
-      object-fit: cover;
-      margin-bottom: 0.8rem;
-      background: linear-gradient(135deg, var(--primary), var(--secondary));
-    }
-
-    .trend-meta {
-      font-size: 0.85rem;
-      color: var(--gray);
-      margin-bottom: 0.4rem;
-    }
-
-    .trend-title {
-      font-size: 1rem;
-      font-weight: 600;
-      margin-bottom: 0.4rem;
-    }
-
-    .trend-snippet {
-      font-size: 0.9rem;
-      color: var(--gray);
-      margin-bottom: 0.7rem;
-    }
-
-    /* Derniers articles */
-    .articles-section {
-      padding: 3.5rem 0;
-      background-color: white;
-    }
-
-    .articles-layout {
-      display: grid;
-      grid-template-columns: minmax(0, 2fr) minmax(260px, 1fr);
-      gap: 2rem;
-      align-items: flex-start;
-    }
-
-    #articlesList {
-      display: grid;
-      grid-template-columns: minmax(0, 1fr);
-      gap: 1rem;
-    }
-
-    .article-card {
-      background-color: white;
-      border-radius: var(--radius);
-      padding: 1.2rem 1.3rem;
-      box-shadow: var(--shadow);
-      border: 1px solid var(--border);
-      transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
-      display: grid;
-      grid-template-columns: 120px minmax(0, 1fr);
-      gap: 1rem;
-      align-items: stretch;
-    }
-
-    .article-card:hover {
-      transform: translateY(-3px);
-      border-color: var(--primary);
-      box-shadow: 0 12px 24px rgba(15, 23, 42, 0.12);
-    }
-
-    .article-thumb {
-      width: 100%;
-      height: 100%;
-      max-height: 140px;
-      border-radius: var(--radius);
-      object-fit: cover;
-      background: linear-gradient(135deg, var(--primary), var(--secondary));
-    }
-
-    .article-meta {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      font-size: 0.82rem;
-      color: var(--gray);
-      margin-bottom: 0.3rem;
-      gap: 0.6rem;
-      flex-wrap: wrap;
-    }
-
-    .article-category {
-      font-weight: 600;
-      color: var(--primary-dark);
-    }
-
-    .article-title {
-      font-size: 1.05rem;
-      font-weight: 600;
-      margin-bottom: 0.3rem;
-    }
-
-    .article-excerpt {
-      font-size: 0.9rem;
-      color: var(--gray);
-      margin-bottom: 0.7rem;
-    }
-
-    .article-actions {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      font-size: 0.86rem;
-    }
-
-    .article-actions a {
-      color: var(--primary-dark);
-      font-weight: 600;
-      text-decoration: none;
-    }
-
-    .article-actions a::after {
-      content: " →";
-    }
-
-    .article-tag {
-      font-size: 0.78rem;
-      padding: 0.1rem 0.6rem;
-      border-radius: 999px;
-      background-color: rgba(14, 165, 233, 0.08);
-      color: var(--primary-dark);
-    }
-
-    /* Sidebar */
-    .sidebar {
-      background-color: #f9fafb;
-      border-radius: var(--radius);
-      padding: 1.5rem;
-      border: 1px solid var(--border);
-    }
-
-    .sidebar h3 {
-      font-size: 1.1rem;
-      margin-bottom: 0.8rem;
-    }
-
-    .sidebar p {
-      font-size: 0.9rem;
-      color: var(--gray);
-      margin-bottom: 0.6rem;
-    }
-
-    .sidebar ul {
-      list-style: disc;
-      padding-left: 1.2rem;
-      font-size: 0.9rem;
-      color: var(--gray);
-    }
-
-    /* Barre de recherche */
-    .search-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 1rem;
-      margin-bottom: 1.5rem;
-      flex-wrap: wrap;
-    }
-
-    .search-box {
-      flex: 1;
-      min-width: 220px;
-    }
-
-    .search-box input {
-      width: 100%;
-      padding: 0.65rem 0.9rem;
-      border-radius: var(--radius);
-      border: 1px solid var(--border);
-      font-size: 0.9rem;
-    }
-
-    .search-box input::placeholder {
-      color: #94a3b8;
-    }
-
-    .filters {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.5rem;
-    }
-
-    .filter-chip {
-      font-size: 0.8rem;
-      padding: 0.25rem 0.7rem;
-      border-radius: 999px;
-      border: 1px solid var(--border);
-      background-color: #eff6ff;
-      color: var(--dark);
-      cursor: pointer;
-    }
-
-    /* CTA Section */
-    .cta {
-      padding: 3.5rem 0;
-      background: linear-gradient(135deg, var(--darker) 0%, var(--dark) 100%);
-      color: white;
-      text-align: center;
-    }
-
-    .cta h2 {
-      font-size: 2rem;
-      margin-bottom: 1rem;
-    }
-
-    .cta p {
-      max-width: 600px;
-      margin: 0 auto 2rem;
-      opacity: 0.9;
-    }
-
-    /* Article détail */
-    .article-detail-wrap {
-      padding: 3.5rem 0;
-      display: none;
-    }
-
-    .article-detail {
-      max-width: 800px;
-      margin: 0 auto;
-      background-color: white;
-      border-radius: var(--radius);
-      padding: 2rem;
-      box-shadow: var(--shadow);
-      border: 1px solid var(--border);
-    }
-
-    .article-detail h1 {
-      font-size: 2rem;
-      margin-bottom: 0.6rem;
-    }
-
-    .article-detail .meta-line {
-      font-size: 0.86rem;
-      color: var(--gray);
-      margin-bottom: 1rem;
-    }
-
-    .article-detail .meta-line span + span::before {
-      content: " • ";
-      margin: 0 0.2rem;
-      color: #cbd5f5;
-    }
-
-    .article-detail .chapo {
-      font-size: 1rem;
-      color: var(--gray);
-      margin-bottom: 1rem;
-      font-style: italic;
-    }
-
-    .detail-cover {
-      width: 100%;
-      max-height: 260px;
-      object-fit: cover;
-      border-radius: var(--radius);
-      margin-bottom: 1rem;
-      background: linear-gradient(135deg, var(--primary), var(--secondary));
-    }
-
-    .article-detail p {
-      margin-bottom: 0.9rem;
-      font-size: 0.98rem;
-    }
-
-    .article-detail .back-link {
-      display: inline-block;
-      margin-top: 1.2rem;
-      font-size: 0.9rem;
-      color: var(--primary-dark);
-      text-decoration: none;
-      font-weight: 600;
-    }
-
-    .article-detail .back-link::before {
-      content: "← ";
-    }
-
-    .related {
-      margin-top: 1.5rem;
-      border-top: 1px solid var(--border);
-      padding-top: 1rem;
-    }
-
-    .related h3 {
-      font-size: 1rem;
-      margin-bottom: 0.6rem;
-    }
-
-    .related ul {
-      padding-left: 1.1rem;
-      font-size: 0.9rem;
-      color: var(--gray);
-    }
-
-    /* Empty/error states */
-    .empty-state {
-      font-size: 0.9rem;
-      color: var(--gray);
-      padding: 0.9rem 1rem;
-      border-radius: var(--radius);
-      background-color: #f9fafb;
-      border: 1px dashed var(--border);
-    }
-
-    .error-state {
-      color: #b91c1c;
-      background-color: #fef2f2;
-      border-color: #fecaca;
-    }
-
-    /* Footer */
-    footer {
-      background-color: var(--darker);
-      color: white;
-      padding: 3rem 0 2rem;
-    }
-
-
-    .footer-content {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 2rem;
-      margin-bottom: 2rem;
-    }
-
-    .footer-column h3 {
-      font-size: 1.2rem;
-      margin-bottom: 1.2rem;
-      position: relative;
-      padding-bottom: 0.5rem;
-    }
-
-    .footer-column h3::after {
-      content: '';
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      width: 40px;
-      height: 2px;
-      background-color: var(--primary);
-    }
-
-    .footer-column ul {
-      list-style: none;
-    }
-
-    .footer-column ul li {
-      margin-bottom: 0.7rem;
-    }
-
-    .footer-column a {
-      color: #cbd5e1;
-      text-decoration: none;
-      transition: color 0.2s;
-    }
-
-    .footer-column a:hover {
-      color: white;
-    }
-
-    .copyright {
-      text-align: center;
-      padding-top: 2rem;
-      border-top: 1px solid #334155;
-      color: #94a3b8;
-      font-size: 0.9rem;
-    }
-
-    /* Mobile Navigation */
-    .mobile-menu-btn {
-      display: none;
-      background: none;
-      border: none;
-      font-size: 1.5rem;
-      cursor: pointer;
-      color: var(--dark);
-    }
-
-    @media (max-width: 768px) {
-      .header-content {
-        padding: 1rem 0;
-      }
-
-      .mobile-menu-btn {
-        display: block;
-      }
-
-      nav {
-        position: fixed;
-        top: 0;
-        right: -100%;
-        width: 80%;
-        max-width: 300px;
-        height: 100vh;
-        background-color: white;
-        box-shadow: -5px 0 15px rgba(0, 0, 0, 0.1);
-        transition: right 0.3s;
-        z-index: 1000;
-        padding: 2rem;
-      }
-
-      nav.active {
-        right: 0;
-      }
-
-      nav ul {
-        flex-direction: column;
-        margin-top: 2rem;
-      }
-
-      .close-menu {
-        position: absolute;
-        top: 1rem;
-        right: 1rem;
-        background: none;
-        border: none;
-        font-size: 1.5rem;
-        cursor: pointer;
-      }
-
-      .hero h2 {
-        font-size: 2rem;
-      }
-
-      .hero p {
-        font-size: 1rem;
-      }
-
-      .articles-layout {
-        grid-template-columns: minmax(0, 1fr);
-      }
-
-      .article-card {
-        grid-template-columns: minmax(0, 1fr);
-      }
-    }
-
-    .logo-img {
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      object-fit: cover;
-      box-shadow: 0 0 0 2px rgba(14, 165, 233, 0.4);
-    }
-
-    .sr-only {
-      position: absolute;
-      width: 1px;
-      height: 1px;
-      padding: 0;
-      margin: -1px;
-      overflow: hidden;
-      clip: rect(0, 0, 0, 0);
-      white-space: nowrap;
-      border: 0;
-    }
-  </style>
+  <link rel="icon" type="image/svg+xml" href="logo.png" />
+  <link rel="stylesheet" href="/assets/styles.css">
 </head>
 <body>
-  <!-- Header -->
-  <header>
+  <div id="siteHeader"></div>
+
+  <section class="hero" id="top">
     <div class="container">
-      <div class="header-content">
-        <a href="/" class="logo">
-          <img src="logo.png" alt="Logo Santé Planète" class="logo-img">
-          <div class="logo-text">
-            <h1>Santé Planète</h1>
-            <p>Articles santé </p>
-          </div>
-        </a>
-
-        <button class="mobile-menu-btn" id="mobileMenuBtn">☰</button>
-
-        <nav id="mainNav" aria-label="Navigation principale">
-          <button class="close-menu" id="closeMenuBtn">×</button>
-          <ul>
-            <li><a href="#top" class="active">Accueil</a></li>
-            <li><a href="#trends">Tendances</a></li>
-             <li><a href="#stories">Histoires(BD)</a></li>
-            <li><a href="#articles">Derniers articles</a></li>
-           
-            <li><a href="#about">À propos</a></li>
-            <!-- Contact vers une page dédiée -->
-            <li><a href="contact.html">Contact</a></li>
-          </ul>
-        </nav>
+      <h2>Bienvenue sur Santé Planète</h2>
+      <p>
+        Des contenus clairs et accessibles sur la santé, la nutrition, le bien-être
+        et la vie quotidienne.
+      </p>
+      <div class="hero-meta" aria-live="polite">
+        <span><strong id="articleCount">–</strong> articles publiés</span>
+        <span><strong id="storyCount">–</strong> histoires & BD</span>
       </div>
-    </div>
-  </header>
-
-  <!-- Vue accueil -->
-  <div id="home">
-    <!-- Hero -->
-    <section class="hero" id="top">
-      <div class="container">
-        <h2>Bienvenue sur Santé Planète</h2>
-        <p>
-          Nous vous proposons des articles clairs et fiables sur la santé, la nutrition,
-          le bien-être et la vie quotidienne, rédigés avec soin et mis à jour régulièrement.
-        </p>
-        <div class="hero-meta" aria-live="polite">
-          <span><strong id="articleCount">–</strong> articles publiés sur Santé Planète</span>
-        
-        </div>
-        <div class="hero-actions">
-          <button class="btn" type="button" onclick="document.getElementById('articles').scrollIntoView({behavior:'smooth'})">
-            Lire les articles
-          </button>
-        </div>
+      <div class="hero-actions">
+        <a class="btn" href="/articles.html">Lire les articles</a>
+        <a class="btn btn-primary" href="/stories.html">Découvrir les histoires</a>
       </div>
-    </section>
-
-    <!-- Pourquoi publier -->
-    <section class="features" id="about">
-      <div class="container">
-        <div class="section-title">
-          <h2>Pourquoi lire Santé Planète&nbsp;?</h2>
-          <p>Une plateforme pensée pour rendre la lecture d’articles santé simple, agréable et accessible.</p>
-        </div>
-
-        <div class="features-grid">
-          <div class="feature-card">
-            <div class="feature-icon">
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-              </svg>
-            </div>
-            <h3>Contenus fiables</h3>
-            <p>Des articles clairs, structurés, accessibles au grand public, sans jargon inutile.</p>
-          </div>
-
-          <div class="feature-card">
-            <div class="feature-icon">
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 20h10M7 4h10M5 8h14M5 16h14" />
-              </svg>
-            </div>
-            <h3>Lecture confortable</h3>
-            <p>Une mise en page lisible, avec des titres, sous-titres, listes et citations pour aérer le texte.</p>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Tendances -->
-    <section class="trends" id="trends">
-      <div class="container">
-        <div class="section-title">
-          <h2>Articles à la une</h2>
-          <p>Une sélection d’articles récents ou mis en avant.</p>
-        </div>
-
-        <div class="trends-list" id="trendsContainer">
-          <div class="empty-state">En attente de contenus à la une…</div>
-        </div>
-      </div>
-    </section>
-<!-- Histoires / BD -->
-<section class="articles-section" id="stories">
-  <div class="container">
-    <div class="section-title">
-      <h2>Histoires & Bandes dessinées</h2>
-      <p>Des histoires courtes à lire, parfois en images (BD), parfois en épisodes.</p>
-    </div>
-
-    <div class="search-row">
-      <div class="search-box">
-        <label for="storySearchInput" class="sr-only">Rechercher une histoire</label>
-        <input id="storySearchInput" type="search" placeholder="Rechercher une histoire…"
-          oninput="filterStories(this.value)">
-      </div>
-      <div class="filters">
-        <button type="button" class="filter-chip" onclick="clearStoryCategory()">Toutes</button>
-        <button type="button" class="filter-chip" onclick="filterStoriesByCategory('BD')">BD</button>
-        <button type="button" class="filter-chip" onclick="filterStoriesByCategory('Histoire')">Histoire</button>
-        <button type="button" class="filter-chip" onclick="filterStoriesByCategory('Épisode')">Épisode</button>
-      </div>
-    </div>
-
-    <div id="storiesList">
-      <div class="empty-state">Chargement des histoires…</div>
-    </div>
-  </div>
-</section>
-
-    <!-- Derniers articles -->
-    <section class="articles-section" id="articles">
-      <div class="container">
-        <div class="section-title">
-          <h2>Derniers articles publiés</h2>
-          <p>Les publications les plus récentes apparaissent en premier.</p>
-        </div>
-
-        <div class="search-row">
-          <div class="search-box">
-            <label for="searchInput" class="sr-only">Rechercher un article</label>
-            <input
-              id="searchInput"
-              type="search"
-              placeholder="Rechercher par titre ou contenu…"
-              oninput="filterArticles(this.value)"
-            >
-          </div>
-          <div class="filters">
-            <button type="button" class="filter-chip" onclick="clearCategory()">Tous les thèmes</button>
-            <button type="button" class="filter-chip" onclick="filterByCategory('Santé')">Santé</button>
-            <button type="button" class="filter-chip" onclick="filterByCategory('Nutrition')">Nutrition</button>
-            <button type="button" class="filter-chip" onclick="filterByCategory('Psychologie')">Psychologie</button>
-            <button type="button" class="filter-chip" onclick="filterByCategory('Bien-être')">Bien-être</button>
-            <button type="button" class="filter-chip" onclick="filterByCategory('Vie quotidienne')">Vie quotidienne</button>
-          </div>
-        </div>
-
-        <div class="articles-layout">
-          <div id="articlesList">
-            <div class="empty-state">Chargement des articles…</div>
-          </div>
-          <aside class="sidebar">
-            <h3>Conseils de lecture</h3>
-            <p>Commencez par les articles à la une, puis explorez les derniers ajouts selon vos centres d’intérêt.</p>
-            <p>Chaque article indique sa catégorie, sa date de publication et un temps de lecture estimé.</p>
-            <ul>
-              <li>Ne remplace jamais l’avis d’un professionnel.</li>
-              <li>Notez les questions à poser à votre médecin.</li>
-              <li>Partagez les contenus utiles avec vos proches.</li>
-            </ul>
-          </aside>
-        </div>
-      </div>
-    </section>
-  </div>
-
-  <!-- Vue détail article -->
-  <section class="article-detail-wrap" id="articleDetailWrap">
-    <div class="container">
-      <article class="article-detail" id="articleDetail"></article>
     </div>
   </section>
 
-  <!-- Footer -->
-  <footer>
+  <section class="features" id="about">
     <div class="container">
-      <div class="footer-content">
-        <div class="footer-column">
-          <h3>Santé Planète</h3>
-          <p>Votre partenaire pour une information santé claire et accessible.</p>
-        </div>
-
-        <div class="footer-column">
-          <h3>Liens rapides</h3>
-          <ul>
-            <li><a href="#top">Accueil</a></li>
-            <li><a href="#trends">Tendances</a></li>
-            <li><a href="#articles">Derniers articles</a></li>
-            <li><a href="#about">À propos</a></li>
-          </ul>
-        </div>
-
-        <div class="footer-column">
-          <h3>Mentions</h3>
-          <ul>
-            <li>Contenus à visée informative.</li>
-            <li>Ne remplace pas une consultation médicale.</li>
-            <li>Responsabilité éditoriale limitée.</li>
-          </ul>
-        </div>
-
-        <div class="footer-column">
-          <h3>Contact</h3>
-          <ul>
-            <li>lprod4610@gmail.com</li>
-          </ul>
-        </div>
+      <div class="section-title">
+        <h2>Pourquoi lire Santé Planète&nbsp;?</h2>
+        <p>Une plateforme pensée pour rendre la lecture simple, agréable et accessible.</p>
       </div>
 
-      <div class="copyright">
-        <p>&copy; 2025 Santé Planète. Tous droits réservés.</p>
+      <div class="features-grid">
+        <div class="feature-card">
+          <div class="feature-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+            </svg>
+          </div>
+          <h3>Contenus fiables</h3>
+          <p>Des articles clairs, structurés, sans jargon inutile.</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 20h10M7 4h10M5 8h14M5 16h14" />
+            </svg>
+          </div>
+          <h3>Lecture confortable</h3>
+          <p>Une mise en page lisible, avec titres et résumés.</p>
+        </div>
       </div>
     </div>
-  </footer>
+  </section>
 
+  <section class="trends" id="trends">
+    <div class="container">
+      <div class="section-title">
+        <h2>À la une</h2>
+        <p>Articles récents ou mis en avant.</p>
+      </div>
+      <div class="trends-list" id="trendsContainer">
+        <div class="empty-state">Chargement…</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="page-section">
+    <div class="container">
+      <div class="section-title">
+        <h2>Nouveaux articles</h2>
+        <p>Un aperçu rapide — voir la liste complète sur la page Articles.</p>
+      </div>
+      <div class="grid-cards" id="homeArticles">
+        <div class="empty-state">Chargement…</div>
+      </div>
+      <div style="text-align:center; margin-top:1.2rem;">
+        <a class="btn btn-primary" href="/articles.html">Voir tous les articles</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="page-section" style="background:#f1f5f9;">
+    <div class="container">
+      <div class="section-title">
+        <h2>Histoires & BD</h2>
+        <p>Des histoires en épisodes, parfois en images.</p>
+      </div>
+      <div class="grid-cards" id="homeStories">
+        <div class="empty-state">Chargement…</div>
+      </div>
+      <div style="text-align:center; margin-top:1.2rem;">
+        <a class="btn btn-primary" href="/stories.html">Voir toutes les histoires</a>
+      </div>
+    </div>
+  </section>
+
+  <div id="siteFooter"></div>
+
+  <script src="/assets/app.js"></script>
   <script>
-    // --- Menu mobile ---
-    const mobileMenuBtn = document.getElementById('mobileMenuBtn');
-    const closeMenuBtn = document.getElementById('closeMenuBtn');
-    const mainNav = document.getElementById('mainNav');
-
-    mobileMenuBtn.addEventListener('click', () => {
-      mainNav.classList.add('active');
+    // Active nav
+    document.addEventListener("DOMContentLoaded", () => {
+      SP.setActiveNav("home");
+      loadHome();
     });
 
-    closeMenuBtn.addEventListener('click', () => {
-      mainNav.classList.remove('active');
-    });
+    async function loadHome(){
+      // Articles
+      try{
+        const ar = await fetch("/api/articles");
+        const articles = (ar.ok ? await ar.json() : []);
+        document.getElementById("articleCount").textContent = (articles?.length || 0);
 
-    const navLinks = document.querySelectorAll('nav a');
-    navLinks.forEach(link => {
-      link.addEventListener('click', () => {
-        mainNav.classList.remove('active');
-      });
-    });
+        buildTrends(articles);
+        buildHomeArticles(articles);
+      }catch(e){
+        document.getElementById("articleCount").textContent = "0";
+      }
 
-    // --- Logique articles ---
-
-    window.__ARTICLES__ = [];
-    let __FILTER_TEXT__ = "";
-    let __FILTER_CATEGORY__ = null;
-
-    async function loadArticles() {
-      const listContainer = document.getElementById("articlesList");
-      const trendsContainer = document.getElementById("trendsContainer");
-
-      try {
-        const res = await fetch("/api/articles");
-        if (!res.ok) {
-          throw new Error("Réponse réseau incorrecte");
-        }
-        const data = await res.json();
-        window.__ARTICLES__ = Array.isArray(data) ? data : [];
-
-        updateCount();
-        buildTrends();
-        buildList();
-
-        const params = new URLSearchParams(window.location.search);
-        const slug = params.get("article");
-        if (slug) {
-          showArticle(slug);
-        } else {
-          showHome();
-        }
-      } catch (e) {
-        console.error(e);
-        window.__ARTICLES__ = [];
-        listContainer.innerHTML =
-          '<div class="empty-state error-state">Erreur lors du chargement des articles.</div>';
-        trendsContainer.innerHTML =
-          '<div class="empty-state">Impossible d’afficher les tendances.</div>';
-        const c = document.getElementById("articleCount");
-        if (c) c.textContent = "0";
+      // Stories
+      try{
+        const sr = await fetch("/api/stories");
+        const stories = (sr.ok ? await sr.json() : []);
+        document.getElementById("storyCount").textContent = (stories?.length || 0);
+        buildHomeStories(stories);
+      }catch(e){
+        document.getElementById("storyCount").textContent = "0";
       }
     }
 
-    function updateCount() {
-      const count = (window.__ARTICLES__ || []).length;
-      const el = document.getElementById("articleCount");
-      if (el) el.textContent = count || "0";
-    }
-
-    // supprime les balises HTML pour les préviews et le temps de lecture
-    function stripHtml(raw) {
-      if (!raw) return "";
-      return raw.replace(/<[^>]+>/g, " ");
-    }
-
-    function estimateReadingTime(text) {
-      const clean = stripHtml(text || "");
-      if (!clean.trim()) return "1 min de lecture";
-      const words = clean.trim().split(/\s+/).length;
-      const minutes = Math.max(1, Math.round(words / 200));
-      return minutes + " min de lecture";
-    }
-
-    // ✅ NE PLUS UTILISER LA DATE DU JOUR PAR DÉFAUT
-    function formatDate(value) {
-      if (!value) return "";
-      const date = new Date(value);
-      if (isNaN(date.getTime())) return "";
-      return date.toLocaleDateString("fr-FR", {
-        day: "2-digit",
-        month: "long",
-        year: "numeric",
-      });
-    }
-
-    function buildTrends() {
+    function buildTrends(articles){
       const container = document.getElementById("trendsContainer");
-      const articles = window.__ARTICLES__ || [];
-
-      if (!articles.length) {
-        container.innerHTML =
-          '<div class="empty-state">Aucun article à la une pour le moment.</div>';
+      const list = Array.isArray(articles) ? articles.slice(0,3) : [];
+      if(!list.length){
+        container.innerHTML = '<div class="empty-state">Aucun article à la une.</div>';
         return;
       }
-
-      const trends = articles.slice(0, 3);
       container.innerHTML = "";
-
-      for (const art of trends) {
+      for(const art of list){
         const card = document.createElement("article");
         card.className = "trend-card";
 
-        if (art.imageUrl) {
+        if(art.imageUrl){
           const img = document.createElement("img");
           img.className = "trend-thumb";
           img.src = art.imageUrl;
@@ -1102,584 +167,117 @@
         const meta = document.createElement("div");
         meta.className = "trend-meta";
         const cat = art.category || "Santé";
-        const dateText = formatDate(art.createdAt);
+        const dateText = SP.formatDate(art.createdAt);
         meta.textContent = dateText ? (cat + " • " + dateText) : cat;
 
         const title = document.createElement("h3");
         title.className = "trend-title";
-        title.textContent = art.title || "Article sans titre";
+        title.textContent = art.title || "Article";
 
         const p = document.createElement("p");
         p.className = "trend-snippet";
-        const raw = art.summary || art.content || "";
-        const clean = stripHtml(raw);
-        const preview = clean.slice(0, 140);
-        p.textContent = preview + (clean.length > 140 ? "…" : "");
+        const clean = SP.stripHtml(art.summary || art.content || "");
+        p.textContent = clean.slice(0,140) + (clean.length>140 ? "…" : "");
 
         const link = document.createElement("a");
-        link.href = "?article=" + encodeURIComponent(art.slug || "");
+        link.href = "/article.html?slug=" + encodeURIComponent(art.slug || "");
         link.textContent = "Lire";
 
         card.appendChild(meta);
         card.appendChild(title);
         card.appendChild(p);
         card.appendChild(link);
-
         container.appendChild(card);
       }
     }
 
-    function matchesFilters(art) {
-      const text = __FILTER_TEXT__.toLowerCase();
-      const cat = __FILTER_CATEGORY__;
+    function makeCard({thumb, badgeLeft, badgeRight, title, excerpt, href, linkText}){
+      const card = document.createElement("article");
+      card.className = "card";
 
-      if (text) {
-        const hay =
-          ((art.title || "") + " " + (art.summary || art.content || "")).toLowerCase();
-        if (!hay.includes(text)) return false;
+      if(thumb){
+        const img = document.createElement("img");
+        img.className = "thumb";
+        img.src = thumb;
+        img.alt = title || "Couverture";
+        img.loading = "lazy";
+        card.appendChild(img);
+      }else{
+        const ph = document.createElement("div");
+        ph.className = "thumb";
+        card.appendChild(ph);
       }
 
-      if (cat) {
-        const articleCat = (art.category || "").toLowerCase();
-        if (!articleCat.includes(cat.toLowerCase())) return false;
-      }
+      const meta = document.createElement("div");
+      meta.className = "meta";
+      const b1 = document.createElement("span"); b1.className = "badge"; b1.textContent = badgeLeft || "";
+      const b2 = document.createElement("span"); b2.textContent = badgeRight || "";
+      meta.appendChild(b1); meta.appendChild(b2);
 
-      return true;
+      const h = document.createElement("div");
+      h.className = "title";
+      h.textContent = title || "Sans titre";
+
+      const ex = document.createElement("div");
+      ex.className = "excerpt";
+      ex.textContent = excerpt || "";
+
+      const a = document.createElement("a");
+      a.href = href;
+      a.textContent = linkText || "Ouvrir";
+
+      card.appendChild(meta);
+      card.appendChild(h);
+      card.appendChild(ex);
+      card.appendChild(a);
+      return card;
     }
 
-    function buildList() {
-      const container = document.getElementById("articlesList");
-      const articles = (window.__ARTICLES__ || []).filter(matchesFilters);
-
-      if (!articles.length) {
-        container.innerHTML =
-          '<div class="empty-state">Aucun article ne correspond à votre recherche pour le moment.</div>';
+    function buildHomeArticles(articles){
+      const container = document.getElementById("homeArticles");
+      const list = Array.isArray(articles) ? articles.slice(0,6) : [];
+      if(!list.length){
+        container.innerHTML = '<div class="empty-state">Aucun article.</div>';
         return;
       }
-
       container.innerHTML = "";
-
-      for (const art of articles) {
-        const card = document.createElement("article");
-        card.className = "article-card";
-
-        const hasImage = !!art.imageUrl;
-        if (hasImage) {
-          const img = document.createElement("img");
-          img.className = "article-thumb";
-          img.src = art.imageUrl;
-          img.alt = art.title || "Illustration";
-          img.loading = "lazy";
-          card.appendChild(img);
-        } else {
-          const placeholder = document.createElement("div");
-          placeholder.className = "article-thumb";
-          card.appendChild(placeholder);
-        }
-
-        const contentWrap = document.createElement("div");
-
-        const meta = document.createElement("div");
-        meta.className = "article-meta";
-
-        const cat = document.createElement("span");
-        cat.className = "article-category";
-        cat.textContent = art.category || "Santé";
-
-        const right = document.createElement("span");
-        const dateText = formatDate(art.createdAt);
-        const readTime = estimateReadingTime(art.content || art.summary || "");
-        right.textContent = dateText ? (dateText + " • " + readTime) : readTime;
-
-        meta.appendChild(cat);
-        meta.appendChild(right);
-
-        const title = document.createElement("h3");
-        title.className = "article-title";
-        title.textContent = art.title || "Article sans titre";
-
-        const excerpt = document.createElement("p");
-        excerpt.className = "article-excerpt";
-        const raw = art.summary || art.content || "";
-        const clean = stripHtml(raw);
-        const preview = clean.slice(0, 220);
-        excerpt.textContent = preview + (clean.length > 220 ? "…" : "");
-
-        const actions = document.createElement("div");
-        actions.className = "article-actions";
-
-        const link = document.createElement("a");
-        link.href = "?article=" + encodeURIComponent(art.slug || "");
-        link.textContent = "Lire l’article";
-
-        const tag = document.createElement("span");
-        tag.className = "article-tag";
-        tag.textContent = "Article";
-
-        actions.appendChild(link);
-        actions.appendChild(tag);
-
-        contentWrap.appendChild(meta);
-        contentWrap.appendChild(title);
-        contentWrap.appendChild(excerpt);
-        contentWrap.appendChild(actions);
-
-        card.appendChild(contentWrap);
-
-        container.appendChild(card);
+      for(const art of list){
+        const clean = SP.stripHtml(art.summary || art.content || "");
+        container.appendChild(makeCard({
+          thumb: art.imageUrl || null,
+          badgeLeft: art.category || "Santé",
+          badgeRight: SP.formatDate(art.createdAt) + " • " + SP.estimateReadingTime(art.content || art.summary || ""),
+          title: art.title,
+          excerpt: clean.slice(0,160) + (clean.length>160 ? "…" : ""),
+          href: "/article.html?slug=" + encodeURIComponent(art.slug || ""),
+          linkText: "Lire"
+        }));
       }
     }
 
-    function filterArticles(text) {
-      __FILTER_TEXT__ = text || "";
-      buildList();
-    }
-
-    function filterByCategory(category) {
-      __FILTER_CATEGORY__ = category;
-      buildList();
-      const articlesSection = document.getElementById("articles");
-      if (articlesSection) {
-        articlesSection.scrollIntoView({ behavior: "smooth" });
-      }
-    }
-
-    function clearCategory() {
-      __FILTER_CATEGORY__ = null;
-      buildList();
-    }
-
-    function showHome() {
-      const home = document.getElementById("home");
-      const detailWrap = document.getElementById("articleDetailWrap");
-      if (home) home.style.display = "block";
-      if (detailWrap) detailWrap.style.display = "none";
-    }
-
-    // 👉 Affiche le HTML EXACT stocké dans content
-    function showArticle(slug) {
-      const home = document.getElementById("home");
-      const detailWrap = document.getElementById("articleDetailWrap");
-      const detail = document.getElementById("articleDetail");
-
-      if (home) home.style.display = "none";
-      if (detailWrap) detailWrap.style.display = "block";
-      if (!detail) return;
-
-      const articles = window.__ARTICLES__ || [];
-      const art = articles.find(a => a.slug === slug);
-
-      if (!art) {
-        detail.innerHTML =
-          '<div class="empty-state error-state">Article introuvable.</div>' +
-          '<a href="/" class="back-link">Retour aux articles</a>';
+    function buildHomeStories(stories){
+      const container = document.getElementById("homeStories");
+      const list = Array.isArray(stories) ? stories.slice(0,6) : [];
+      if(!list.length){
+        container.innerHTML = '<div class="empty-state">Aucune histoire.</div>';
         return;
       }
-
-      const contentHtml = (art.content || "").trim();
-      const chapo = art.summary || "";
-
-      detail.innerHTML = "";
-
-      // Titre
-      const title = document.createElement("h1");
-      title.textContent = art.title || "Article sans titre";
-
-      // Ligne méta
-      const metaLine = document.createElement("p");
-      metaLine.className = "meta-line";
-
-      const author = document.createElement("span");
-      // Comme c'est toi qui publies : valeur par défaut
-      author.textContent = art.author || "Sante-Planète";
-
-      const dateSpan = document.createElement("span");
-      const dateText = formatDate(art.createdAt);
-      if (dateText) dateSpan.textContent = dateText;
-
-      const readSpan = document.createElement("span");
-      readSpan.textContent = estimateReadingTime(contentHtml || chapo);
-
-      const catSpan = document.createElement("span");
-      catSpan.textContent = art.category || "Santé";
-
-      metaLine.appendChild(author);
-      if (dateText) metaLine.appendChild(dateSpan);
-      metaLine.appendChild(readSpan);
-      metaLine.appendChild(catSpan);
-
-      // Image
-      if (art.imageUrl) {
-        const cover = document.createElement("img");
-        cover.className = "detail-cover";
-        cover.src = art.imageUrl;
-        cover.alt = art.title || "Illustration";
-        cover.loading = "lazy";
-        detail.appendChild(cover);
-      }
-
-      // Chapo
-      if (chapo) {
-        const chapoEl = document.createElement("p");
-        chapoEl.className = "chapo";
-        chapoEl.textContent = chapo;
-        detail.appendChild(chapoEl);
-      }
-
-      // On met titre + méta au début
-      detail.insertBefore(metaLine, detail.firstChild);
-      detail.insertBefore(title, detail.firstChild);
-
-      // 🔥 Contenu HTML EXACT de l’admin
-      if (contentHtml) {
-        const contentWrapper = document.createElement("div");
-        contentWrapper.innerHTML = contentHtml;
-        detail.appendChild(contentWrapper);
-      }
-
-      // Articles connexes
-      const related = document.createElement("div");
-      related.className = "related";
-
-      const relTitle = document.createElement("h3");
-      relTitle.textContent = "Articles connexes";
-
-      const relList = document.createElement("ul");
-      const sameCat = (window.__ARTICLES__ || []).filter(a =>
-        a.slug !== art.slug && (a.category || "") === (art.category || "")
-      ).slice(0, 3);
-
-      if (!sameCat.length) {
-        const li = document.createElement("li");
-        li.textContent = "D’autres articles vous seront bientôt proposés.";
-        relList.appendChild(li);
-      } else {
-        for (const r of sameCat) {
-          const li = document.createElement("li");
-          const link = document.createElement("a");
-          link.href = "?article=" + encodeURIComponent(r.slug || "");
-          link.textContent = r.title || "Article sans titre";
-          li.appendChild(link);
-          relList.appendChild(li);
-        }
-      }
-
-      related.appendChild(relTitle);
-      related.appendChild(relList);
-      detail.appendChild(related);
-
-      const back = document.createElement("a");
-      back.href = "/";
-      back.className = "back-link";
-      back.textContent = "Retour aux articles";
-      detail.appendChild(back);
-
-      window.scrollTo({ top: 0, behavior: "smooth" });
-    }
-
-    // --- Statistiques visiteurs ---
-    async function loadStats() {
-      const visitorEl = document.getElementById("visitorCount");
-      if (!visitorEl) return;
-
-      // 1. Si tu crées plus tard une route /api/stats, on essaie d'abord
-      try {
-        const res = await fetch("/api/stats");
-        if (res.ok) {
-          const data = await res.json();
-          if (data && typeof data.totalVisitors === "number") {
-            visitorEl.textContent = data.totalVisitors;
-            return;
-          }
-        }
-      } catch (e) {
-        console.error("Erreur stats API (fallback localStorage) :", e);
-      }
-
-      // 2. Fallback simple avec localStorage (compte les visites sur CE navigateur)
-      try {
-        let localViews = Number(localStorage.getItem("__SANTE_PLANETE_VIEWS__") || "0");
-        localViews += 1;
-        localStorage.setItem("__SANTE_PLANETE_VIEWS__", String(localViews));
-        visitorEl.textContent = localViews;
-      } catch (e) {
-        // Si localStorage indisponible
-        visitorEl.textContent = "1";
+      container.innerHTML = "";
+      for(const st of list){
+        container.appendChild(makeCard({
+          thumb: st.coverUrl || st.cover_url || null,
+          badgeLeft: st.category || "Histoire",
+          badgeRight: SP.formatDate(st.createdAt || st.created_at),
+          title: st.title,
+          excerpt: (st.summary || "Cliquez pour ouvrir…").slice(0,160),
+          href: "/story.html?slug=" + encodeURIComponent(st.slug || ""),
+          linkText: "Voir les épisodes"
+        }));
       }
     }
-
-    document.addEventListener("DOMContentLoaded", () => {
-      loadArticles();
-      loadStories();  
-      loadStats();
-    });
-    // --- Histoires / BD ---
-window.__STORIES__ = [];
-let __STORY_FILTER_TEXT__ = "";
-let __STORY_FILTER_CATEGORY__ = null;
-
-async function loadStories() {
-  const container = document.getElementById("storiesList");
-  if (!container) return;
-
-  try {
-    const res = await fetch("/api/stories");
-    if (!res.ok) throw new Error("Réponse réseau incorrecte (stories)");
-    const data = await res.json();
-
-// ✅ Normalisation uniquement pour STORIES (Neon renvoie souvent cover_url / created_at)
-window.__STORIES__ = (Array.isArray(data) ? data : []).map(s => ({
-  ...s,
-  createdAt: s.createdAt ?? s.created_at ?? null,
-  coverUrl:  s.coverUrl  ?? s.cover_url  ?? null,
-  // pages peut être déjà un array JSON, ou une string JSON
-  pages: (() => {
-    const p = s.pages;
-    if (!p) return [];
-    if (Array.isArray(p)) return p;
-    if (typeof p === "string") {
-      try { return JSON.parse(p); } catch { return []; }
-    }
-    return [];
-  })(),
-}));
-
-buildStoriesList();
-
-
-    // Si URL contient ?story=slug
-    const params = new URLSearchParams(window.location.search);
-    const slug = params.get("story");
-    if (slug) showStory(slug);
-
-  } catch (e) {
-    console.error(e);
-    window.__STORIES__ = [];
-    container.innerHTML =
-      '<div class="empty-state error-state">Erreur lors du chargement des histoires.</div>';
-  }
-}
-
-function matchesStoryFilters(story) {
-  const text = (__STORY_FILTER_TEXT__ || "").toLowerCase();
-  const cat = __STORY_FILTER_CATEGORY__;
-
-  if (text) {
-    const hay = ((story.title || "") + " " + (story.summary || "")).toLowerCase();
-    if (!hay.includes(text)) return false;
-  }
-
-  if (cat) {
-    const sc = (story.category || "").toLowerCase();
-    if (!sc.includes(cat.toLowerCase())) return false;
-  }
-
-  return true;
-}
-
-function buildStoriesList() {
-  const container = document.getElementById("storiesList");
-  if (!container) return;
-
-  const stories = (window.__STORIES__ || []).filter(matchesStoryFilters);
-
-  if (!stories.length) {
-    container.innerHTML =
-      '<div class="empty-state">Aucune histoire ne correspond à votre recherche.</div>';
-    return;
-  }
-
-  container.innerHTML = "";
-
-  for (const st of stories) {
-    const card = document.createElement("article");
-    card.className = "article-card";
-
-    // cover
-    if (st.coverUrl) {
-      const img = document.createElement("img");
-      img.className = "article-thumb";
-      img.src = st.coverUrl;
-      img.alt = st.title || "Couverture";
-      img.loading = "lazy";
-      card.appendChild(img);
-    } else {
-      const placeholder = document.createElement("div");
-      placeholder.className = "article-thumb";
-      card.appendChild(placeholder);
-    }
-
-    const wrap = document.createElement("div");
-
-    const meta = document.createElement("div");
-    meta.className = "article-meta";
-
-    const cat = document.createElement("span");
-    cat.className = "article-category";
-    cat.textContent = st.category || "Histoire";
-
-    const right = document.createElement("span");
-    const dateText = formatDate(st.createdAt);
-    right.textContent = dateText ? dateText : "";
-
-    meta.appendChild(cat);
-    meta.appendChild(right);
-
-    const title = document.createElement("h3");
-    title.className = "article-title";
-    title.textContent = st.title || "Sans titre";
-
-    const excerpt = document.createElement("p");
-    excerpt.className = "article-excerpt";
-    excerpt.textContent = (st.summary || "Cliquez pour lire…").slice(0, 220);
-
-    const actions = document.createElement("div");
-    actions.className = "article-actions";
-
-    const link = document.createElement("a");
-    link.href = "?story=" + encodeURIComponent(st.slug || "");
-    link.textContent = "Lire l’histoire";
-
-    const tag = document.createElement("span");
-    tag.className = "article-tag";
-    tag.textContent = (st.pages && st.pages.length) ? "BD" : "Texte";
-
-    actions.appendChild(link);
-    actions.appendChild(tag);
-
-    wrap.appendChild(meta);
-    wrap.appendChild(title);
-    wrap.appendChild(excerpt);
-    wrap.appendChild(actions);
-
-    card.appendChild(wrap);
-    container.appendChild(card);
-  }
-}
-
-function filterStories(text) {
-  __STORY_FILTER_TEXT__ = text || "";
-  buildStoriesList();
-}
-
-function filterStoriesByCategory(category) {
-  __STORY_FILTER_CATEGORY__ = category;
-  buildStoriesList();
-  document.getElementById("stories")?.scrollIntoView({ behavior: "smooth" });
-}
-
-function clearStoryCategory() {
-  __STORY_FILTER_CATEGORY__ = null;
-  buildStoriesList();
-}
-
-// Lecteur d’histoire (BD ou HTML)
-function showStory(slug) {
-  const home = document.getElementById("home");
-  const detailWrap = document.getElementById("articleDetailWrap");
-  const detail = document.getElementById("articleDetail");
-
-  if (home) home.style.display = "none";
-  if (detailWrap) detailWrap.style.display = "block";
-  if (!detail) return;
-
-  const st = (window.__STORIES__ || []).find(s => s.slug === slug);
-
-  if (!st) {
-    detail.innerHTML =
-      '<div class="empty-state error-state">Histoire introuvable.</div>' +
-      '<a href="/" class="back-link">Retour</a>';
-    return;
-  }
-
-  detail.innerHTML = "";
-
-  const title = document.createElement("h1");
-  title.textContent = st.title || "Histoire";
-
-  const metaLine = document.createElement("p");
-  metaLine.className = "meta-line";
-
-  const author = document.createElement("span");
-  author.textContent = st.author || "Sante-Planète";
-
-  const dateSpan = document.createElement("span");
-  const dateText = formatDate(st.createdAt);
-  if (dateText) dateSpan.textContent = dateText;
-
-  const catSpan = document.createElement("span");
-  catSpan.textContent = st.category || "Histoire";
-
-  metaLine.appendChild(author);
-  if (dateText) metaLine.appendChild(dateSpan);
-  metaLine.appendChild(catSpan);
-
-  detail.appendChild(title);
-  detail.appendChild(metaLine);
-
-  // Couverture
-  if (st.coverUrl) {
-    const cover = document.createElement("img");
-    cover.className = "detail-cover";
-    cover.src = st.coverUrl;
-    cover.alt = st.title || "Couverture";
-    cover.loading = "lazy";
-    detail.appendChild(cover);
-  }
-
-  // Résumé
-  if (st.summary) {
-    const chapo = document.createElement("p");
-    chapo.className = "chapo";
-    chapo.textContent = st.summary;
-    detail.appendChild(chapo);
-  }
-
-  // Mode BD: pages[]
-  if (Array.isArray(st.pages) && st.pages.length) {
-    const pagesWrap = document.createElement("div");
-    pagesWrap.style.display = "grid";
-    pagesWrap.style.gap = "0.9rem";
-
-    for (const url of st.pages) {
-      const img = document.createElement("img");
-      img.src = url;
-      img.alt = st.title || "Page BD";
-      img.loading = "lazy";
-      img.style.width = "100%";
-      img.style.borderRadius = "8px";
-      img.style.border = "1px solid var(--border)";
-      pagesWrap.appendChild(img);
-    }
-    detail.appendChild(pagesWrap);
-  } else {
-    // Mode HTML texte (si tu veux stocker du HTML comme art.content)
-   // Mode texte (HTML)
-if (st.content) {
-  const content = document.createElement("div");
-  content.innerHTML = st.content;
-  detail.appendChild(content);
-} else {
-  const empty = document.createElement("div");
-  empty.className = "empty-state";
-  empty.textContent = "Contenu en cours de rédaction.";
-  detail.appendChild(empty);
-}
-
-  }
-
-  const back = document.createElement("a");
-  back.href = "/";
-  back.className = "back-link";
-  back.textContent = "Retour";
-  detail.appendChild(back);
-
-  window.scrollTo({ top: 0, behavior: "smooth" });
-}
-
   </script>
 
-  <!-- autre script pub -->
+  <!-- scripts pub (inchangés) -->
   <script type="text/javascript">
     atOptions = {
       'key' : 'c8f6fe03fa0be119b2a3477767248bac',
@@ -1688,14 +286,8 @@ if (st.content) {
       'width' : 160,
       'params' : {}
     };
-    
   </script>
-  <script type="text/javascript">
-    aclib.runAutoTag({
-        zoneId: '120fi1i9f0',
-    });
-</script>
-<script src="https://pl28417835.effectivegatecpm.com/f6/af/b7/f6afb7c91547e6fd77713d2eb4cf1252.js"></script>
+  <script src="https://pl28417835.effectivegatecpm.com/f6/af/b7/f6afb7c91547e6fd77713d2eb4cf1252.js"></script>
   <script type="text/javascript" src="//www.highperformanceformat.com/c8f6fe03fa0be119b2a3477767248bac/invoke.js"></script>
 </body>
 </html>

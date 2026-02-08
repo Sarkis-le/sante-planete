@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <title>Santé Planète – Épisode</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" type="image/svg+xml" href="logo.png" />
+  <link rel="stylesheet" href="/assets/styles.css">
+</head>
+<body>
+  <div id="siteHeader"></div>
+
+  <section class="detail-wrap">
+    <div class="container">
+      <article class="detail" id="episodeDetail">
+        <div class="empty-state">Chargement…</div>
+      </article>
+    </div>
+  </section>
+
+  <div id="siteFooter"></div>
+
+  <script src="/assets/app.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      SP.setActiveNav("stories");
+      loadEpisode();
+    });
+
+    async function loadEpisode(){
+      const el = document.getElementById("episodeDetail");
+      const params = new URLSearchParams(location.search);
+      const id = params.get("id");
+
+      if(!id){
+        el.innerHTML = '<div class="empty-state error-state">ID épisode manquant.</div><a class="back-link" href="/stories.html">Retour</a>';
+        return;
+      }
+
+      try{
+        const r = await fetch("/api/episodes/" + encodeURIComponent(id));
+        if(!r.ok) throw new Error("Episode KO");
+        const ep = await r.json();
+
+        el.innerHTML = "";
+
+        const h1 = document.createElement("h1");
+        h1.textContent = ep.title || "Épisode";
+
+        const meta = document.createElement("p");
+        meta.className = "meta-line";
+
+        const s1 = document.createElement("span");
+        s1.textContent = ep.author || "Sante-Planète";
+
+        const s2 = document.createElement("span");
+        const d = SP.formatDate(ep.created_at || ep.createdAt);
+        if(d) s2.textContent = d;
+
+        const s3 = document.createElement("span");
+        s3.textContent = (ep.episode_number != null) ? ("Épisode " + ep.episode_number) : "Épisode";
+
+        meta.appendChild(s1);
+        if(d) meta.appendChild(s2);
+        meta.appendChild(s3);
+
+        el.appendChild(h1);
+        el.appendChild(meta);
+
+        if(ep.summary){
+          const chapo = document.createElement("p");
+          chapo.className = "chapo";
+          chapo.textContent = ep.summary;
+          el.appendChild(chapo);
+        }
+
+        // pages_json peut arriver en string JSON
+        const pages = normalizePages(ep.pages_json ?? ep.pages ?? null);
+
+        if(Array.isArray(pages) && pages.length){
+          const wrap = document.createElement("div");
+          wrap.style.display = "grid";
+          wrap.style.gap = "0.9rem";
+          for(const url of pages){
+            const img = document.createElement("img");
+            img.src = url;
+            img.alt = ep.title || "Page BD";
+            img.loading = "lazy";
+            img.style.width = "100%";
+            img.style.borderRadius = "8px";
+            img.style.border = "1px solid var(--border)";
+            wrap.appendChild(img);
+          }
+          el.appendChild(wrap);
+        }else if(ep.content_html || ep.content){
+          const content = document.createElement("div");
+          content.innerHTML = (ep.content_html || ep.content);
+          el.appendChild(content);
+        }else{
+          const empty = document.createElement("div");
+          empty.className = "empty-state";
+          empty.textContent = "Contenu en cours de rédaction.";
+          el.appendChild(empty);
+        }
+
+        // Retour vers story
+        if(ep.story_slug){
+          const backStory = document.createElement("a");
+          backStory.href = "/story.html?slug=" + encodeURIComponent(ep.story_slug);
+          backStory.className = "back-link";
+          backStory.textContent = "Retour à l’histoire";
+          el.appendChild(backStory);
+        }else{
+          const back = document.createElement("a");
+          back.href = "/stories.html";
+          back.className = "back-link";
+          back.textContent = "Retour";
+          el.appendChild(back);
+        }
+
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }catch(e){
+        el.innerHTML = '<div class="empty-state error-state">Erreur de chargement.</div><a class="back-link" href="/stories.html">Retour</a>';
+      }
+    }
+
+    function normalizePages(p){
+      if(!p) return [];
+      if(Array.isArray(p)) return p;
+      if(typeof p === "string"){
+        try{ return JSON.parse(p); }catch{ return []; }
+      }
+      return [];
+    }
+  </script>
+</body>
+</html>
