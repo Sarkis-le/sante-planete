@@ -820,6 +820,117 @@
       </form>
     </div>
   </div>
+<!-- Colonne : liste des histoires -->
+<section class="card">
+  <div class="table-toolbar">
+    <div class="table-toolbar-title">Histoires / BD publiées</div>
+    <div style="display:flex;align-items:center;gap:10px;">
+      <span id="stories-count" class="count-label"></span>
+      <button type="button" class="btn-primary" id="openCreateStoryBtn">
+        <span class="icon">＋</span> Nouvelle histoire
+      </button>
+    </div>
+  </div>
+
+  <p class="desc">
+    Gérez ici vos histoires et bandes dessinées (couverture + pages).
+  </p>
+
+  <div class="article-list" id="stories-list">
+    <div class="empty">Chargement des histoires…</div>
+  </div>
+</section>
+<!-- Modal création / édition : Histoire -->
+<div class="modal-backdrop" id="storyModal" aria-hidden="true">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="storyModalTitle">
+    <div class="modal-header">
+      <div class="modal-title" id="storyModalTitle">Nouvelle histoire</div>
+      <button type="button" class="modal-close" id="storyModalCloseBtn" aria-label="Fermer">×</button>
+    </div>
+
+    <p class="desc" id="storyModalSubtitle">
+      Ajoutez une histoire texte ou une BD (couverture + pages).
+    </p>
+
+    <form id="story-form" autocomplete="off">
+      <div class="form-grid">
+        <div>
+          <label for="storyTitle">Titre *</label>
+          <input id="storyTitle" name="title" type="text" required />
+        </div>
+
+        <div class="row">
+          <div>
+            <label for="storySlug">Slug (URL) *</label>
+            <input id="storySlug" name="slug" type="text" placeholder="ex : aventure-sante-1" required />
+          </div>
+
+          <div>
+            <label for="storyCategory">Type</label>
+            <select id="storyCategory" name="category">
+              <option value="">— Choisir —</option>
+              <option value="BD">BD</option>
+              <option value="Histoire">Histoire</option>
+              <option value="Épisode">Épisode</option>
+            </select>
+          </div>
+        </div>
+
+        <div>
+          <label for="storyCoverFile">Couverture</label>
+          <input id="storyCoverFile" name="coverFile" type="file" accept="image/*" />
+          <div class="hint" id="currentCoverHint">Aucune couverture sélectionnée.</div>
+        </div>
+
+        <div>
+          <label for="storyPagesFile">Pages BD (multi-images)</label>
+          <input id="storyPagesFile" name="pagesFiles" type="file" accept="image/*" multiple />
+          <div class="hint" id="currentPagesHint">Aucune page ajoutée.</div>
+        </div>
+
+        <div>
+          <label for="storySummary">Résumé (facultatif)</label>
+          <textarea id="storySummary" name="summary" rows="2" placeholder="Petit résumé…"></textarea>
+        </div>
+
+        <!-- Option : contenu texte HTML (si ce n’est pas une BD) -->
+        <div class="editor-wrapper">
+          <label for="storyContentEditor">Contenu (si histoire texte)</label>
+          <div class="editor-toolbar" aria-label="Barre d’édition">
+            <button type="button" class="editor-btn story-editor-btn" data-cmd="bold"><strong>B</strong></button>
+            <button type="button" class="editor-btn story-editor-btn" data-cmd="italic"><em>I</em></button>
+            <button type="button" class="editor-btn story-editor-btn" data-cmd="underline"><span style="text-decoration:underline;">U</span></button>
+            <div class="editor-divider"></div>
+            <button type="button" class="editor-btn story-editor-btn" data-cmd="formatBlock" data-value="p">Parag.</button>
+            <button type="button" class="editor-btn story-editor-btn" data-cmd="formatBlock" data-value="h2">H2</button>
+            <button type="button" class="editor-btn story-editor-btn" data-cmd="formatBlock" data-value="h3">H3</button>
+            <div class="editor-divider"></div>
+            <button type="button" class="editor-btn story-editor-btn" data-cmd="insertUnorderedList">• Liste</button>
+            <button type="button" class="editor-btn story-editor-btn" data-cmd="insertOrderedList">1. Liste</button>
+            <div class="editor-divider"></div>
+            <button type="button" class="editor-btn story-editor-btn" data-cmd="createLink" data-link="true">Lien</button>
+            <button type="button" class="editor-btn story-editor-btn" data-cmd="removeFormat">Effacer style</button>
+          </div>
+
+          <div id="storyContentEditor" class="rich-editor empty" contenteditable="true"
+            data-placeholder="Écrivez ici si c’est une histoire texte (sinon laissez vide et utilisez Pages BD)."></div>
+          <input type="hidden" id="storyContentInput" name="content" />
+        </div>
+
+      </div>
+
+      <div class="modal-actions">
+        <button type="button" class="btn-secondary" id="storyCancelBtn">Annuler</button>
+        <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;">
+          <button type="submit" class="btn-primary" id="storySubmitBtn">Publier l’histoire</button>
+          <span class="hint">Pour une BD, ajoutez des pages (multi-images).</span>
+        </div>
+      </div>
+
+      <div id="storyMessage" aria-live="polite"></div>
+    </form>
+  </div>
+</div>
 
   <!-- SweetAlert2 -->
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -1222,6 +1333,379 @@
         submitBtn.disabled = false;
       }
     });
+// ===================== HISTOIRES / BD =====================
+
+const storiesListContainer = document.getElementById("stories-list");
+const storiesCountLabel    = document.getElementById("stories-count");
+const openCreateStoryBtn   = document.getElementById("openCreateStoryBtn");
+
+const storyModalBackdrop   = document.getElementById("storyModal");
+const storyModalCloseBtn   = document.getElementById("storyModalCloseBtn");
+const storyCancelBtn       = document.getElementById("storyCancelBtn");
+const storyForm            = document.getElementById("story-form");
+const storySubmitBtn       = document.getElementById("storySubmitBtn");
+const storyMessage         = document.getElementById("storyMessage");
+
+const storyCoverFile       = document.getElementById("storyCoverFile");
+const storyPagesFile       = document.getElementById("storyPagesFile");
+const currentCoverHint     = document.getElementById("currentCoverHint");
+const currentPagesHint     = document.getElementById("currentPagesHint");
+
+const storyContentEditor   = document.getElementById("storyContentEditor");
+const storyContentInput    = document.getElementById("storyContentInput");
+const storyToolbarButtons  = document.querySelectorAll(".story-editor-btn");
+
+let STORIES = [];
+let storyMode = "create";
+let storyCurrentId = null;
+let currentCoverUrl = "";
+let currentPages = []; // array of dataURL strings
+
+// toolbar story
+storyToolbarButtons.forEach(btn => {
+  btn.addEventListener("click", (e) => {
+    e.preventDefault();
+    const cmd = btn.dataset.cmd;
+    const value = btn.dataset.value || null;
+
+    if (btn.dataset.link === "true") {
+      const url = prompt("Adresse du lien (URL) :", "https://");
+      if (!url) return;
+      document.execCommand("createLink", false, url);
+    } else if (cmd === "formatBlock") {
+      document.execCommand("formatBlock", false, value || "p");
+    } else {
+      document.execCommand(cmd, false, value);
+    }
+    storyContentEditor.focus();
+  });
+});
+
+// open/close modal story
+function openStoryModal(mode="create", story=null) {
+  storyMode = mode;
+  storyCurrentId = story && story.id != null ? story.id : null;
+
+  storyForm.reset();
+  storyCoverFile.value = "";
+  storyPagesFile.value = "";
+  storyMessage.textContent = "";
+  storyMessage.className = "";
+
+  currentCoverUrl = story?.coverUrl || "";
+  currentPages    = Array.isArray(story?.pages) ? story.pages : [];
+
+  if (mode === "create") {
+    document.getElementById("storyModalTitle").textContent = "Nouvelle histoire";
+    storySubmitBtn.textContent = "Publier l’histoire";
+    currentCoverHint.textContent = "Aucune couverture sélectionnée.";
+    currentPagesHint.textContent = "Aucune page ajoutée.";
+    storyContentEditor.innerHTML = "";
+    storyContentInput.value = "";
+  } else {
+    document.getElementById("storyModalTitle").textContent = "Modifier l’histoire";
+    storySubmitBtn.textContent = "Enregistrer";
+    storyForm.title.value = story.title || "";
+    storyForm.slug.value = story.slug || "";
+    storyForm.summary.value = story.summary || "";
+    storyForm.category.value = story.category || "";
+
+    currentCoverHint.textContent = currentCoverUrl
+      ? "Une couverture existe déjà. Vous pouvez la remplacer."
+      : "Aucune couverture enregistrée.";
+
+    currentPagesHint.textContent = currentPages.length
+      ? (currentPages.length + " page(s) déjà enregistrée(s). Vous pouvez en ajouter pour remplacer.")
+      : "Aucune page enregistrée.";
+
+    const html = story.content || "";
+    storyContentEditor.innerHTML = html;
+    storyContentInput.value = html;
+  }
+
+  storyModalBackdrop.classList.add("active");
+  storyModalBackdrop.setAttribute("aria-hidden","false");
+  setTimeout(() => document.getElementById("storyTitle").focus(), 10);
+}
+
+function closeStoryModal(){
+  storyModalBackdrop.classList.remove("active");
+  storyModalBackdrop.setAttribute("aria-hidden","true");
+  storyMode = "create";
+  storyCurrentId = null;
+  currentCoverUrl = "";
+  currentPages = [];
+}
+
+openCreateStoryBtn?.addEventListener("click", () => openStoryModal("create"));
+storyModalCloseBtn?.addEventListener("click", closeStoryModal);
+storyCancelBtn?.addEventListener("click", closeStoryModal);
+
+storyModalBackdrop?.addEventListener("click", (e) => {
+  if (e.target === storyModalBackdrop) closeStoryModal();
+});
+
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Escape" && storyModalBackdrop?.classList.contains("active")) {
+    closeStoryModal();
+  }
+});
+
+// convert multi files -> data urls
+async function filesToDataUrls(fileList){
+  const files = Array.from(fileList || []);
+  const out = [];
+  for (const f of files) {
+    out.push(await fileToDataUrl(f)); // réutilise ta fonction existante
+  }
+  return out;
+}
+
+// load stories
+async function loadStories(){
+  if (!storiesListContainer) return;
+  try{
+    const res = await fetch("/api/stories");
+    if (!res.ok) throw new Error("Erreur HTTP stories");
+    const data = await res.json();
+    STORIES = Array.isArray(data) ? data : [];
+    renderStories();
+  } catch(err){
+    console.error(err);
+    storiesListContainer.innerHTML = '<div class="empty">Erreur lors du chargement des histoires.</div>';
+    storiesCountLabel.textContent = "";
+  }
+}
+
+function renderStories(){
+  if (!STORIES.length) {
+    storiesListContainer.innerHTML = '<div class="empty">Aucune histoire pour le moment.</div>';
+    storiesCountLabel.textContent = "";
+    return;
+  }
+
+  storiesCountLabel.textContent = STORIES.length + (STORIES.length > 1 ? " histoires" : " histoire");
+  storiesListContainer.innerHTML = "";
+
+  const header = document.createElement("div");
+  header.className = "article-header-row";
+  header.innerHTML = `
+    <div>Cover</div>
+    <div>Titre</div>
+    <div>Slug / Type</div>
+    <div style="text-align:right;">Actions</div>
+  `;
+  storiesListContainer.appendChild(header);
+
+  for (const st of STORIES) {
+    const row = document.createElement("div");
+    row.className = "article-item";
+
+    let thumb;
+    if (st.coverUrl) {
+      thumb = document.createElement("img");
+      thumb.className = "thumb-mini";
+      thumb.src = st.coverUrl;
+      thumb.alt = st.title || "Couverture";
+      thumb.loading = "lazy";
+    } else {
+      thumb = document.createElement("div");
+      thumb.className = "thumb-mini placeholder";
+      thumb.textContent = "No cover";
+    }
+    row.appendChild(thumb);
+
+    const title = document.createElement("div");
+    title.className = "article-item-title";
+    title.textContent = st.title || "(sans titre)";
+    row.appendChild(title);
+
+    const meta = document.createElement("div");
+    meta.className = "article-item-meta";
+
+    const slugChip = document.createElement("span");
+    slugChip.className = "chip";
+    slugChip.innerHTML = "<strong>Slug</strong>" + (st.slug || "—");
+
+    const typeChip = document.createElement("span");
+    typeChip.className = "chip";
+    typeChip.innerHTML = "<strong>Type</strong>" + (st.category || "—");
+
+    const pagesChip = document.createElement("span");
+    pagesChip.className = "chip";
+    const nb = Array.isArray(st.pages) ? st.pages.length : 0;
+    pagesChip.innerHTML = "<strong>Pages</strong>" + nb;
+
+    meta.appendChild(slugChip);
+    meta.appendChild(typeChip);
+    meta.appendChild(pagesChip);
+
+    row.appendChild(meta);
+
+    const actions = document.createElement("div");
+    actions.className = "actions";
+
+    const editBtn = document.createElement("button");
+    editBtn.type = "button";
+    editBtn.className = "btn-sm edit";
+    editBtn.textContent = "Modifier";
+    editBtn.addEventListener("click", () => {
+      if (st.id == null) {
+        Swal.fire("Erreur", "Impossible de modifier : aucun id renvoyé.", "error");
+        return;
+      }
+      openStoryModal("edit", st);
+    });
+
+    const deleteBtn = document.createElement("button");
+    deleteBtn.type = "button";
+    deleteBtn.className = "btn-sm delete";
+    deleteBtn.textContent = "Supprimer";
+    deleteBtn.addEventListener("click", async () => {
+      if (st.id == null) {
+        Swal.fire("Erreur", "Impossible de supprimer : aucun id renvoyé.", "error");
+        return;
+      }
+
+      const ok = await Swal.fire({
+        title: "Supprimer cette histoire ?",
+        text: "Cette action est définitive.",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonText: "Oui, supprimer",
+        cancelButtonText: "Annuler"
+      });
+
+      if (!ok.isConfirmed) return;
+
+      try{
+        const res = await fetch("/api/stories?id=" + encodeURIComponent(st.id), { method:"DELETE" });
+        if (!res.ok) {
+          const data = await res.json().catch(()=>({}));
+          throw new Error(data.error || "Erreur serveur");
+        }
+        STORIES = STORIES.filter(s => s.id !== st.id);
+        renderStories();
+        Swal.fire("Supprimé", "L’histoire a été supprimée.", "success");
+      } catch(err){
+        console.error(err);
+        Swal.fire("Erreur", "Impossible de supprimer l’histoire.", "error");
+      }
+    });
+
+    actions.appendChild(editBtn);
+    actions.appendChild(deleteBtn);
+    row.appendChild(actions);
+
+    storiesListContainer.appendChild(row);
+  }
+}
+
+// submit story
+storyForm?.addEventListener("submit", async (e) => {
+  e.preventDefault();
+  storyMessage.textContent = "";
+  storyMessage.className = "";
+  storySubmitBtn.disabled = true;
+
+  const title = storyForm.title.value.trim();
+  const slug  = storyForm.slug.value.trim();
+  const summary = (storyForm.summary.value || "").trim();
+  const category = storyForm.category.value;
+
+  const htmlContent = (storyContentEditor.innerHTML || "").trim();
+  const textContent = (storyContentEditor.textContent || "").trim();
+
+  if (!title || !slug) {
+    storyMessage.textContent = "Titre et slug sont obligatoires.";
+    storyMessage.classList.add("err");
+    storySubmitBtn.disabled = false;
+    return;
+  }
+
+  // cover
+  let coverUrlToSave = currentCoverUrl;
+  const coverFile = storyCoverFile.files && storyCoverFile.files[0];
+  if (coverFile) {
+    try { coverUrlToSave = await fileToDataUrl(coverFile); }
+    catch(err){
+      console.error(err);
+      Swal.fire("Erreur", "Impossible de lire la couverture.", "error");
+      storySubmitBtn.disabled = false;
+      return;
+    }
+  }
+
+  // pages
+  let pagesToSave = currentPages;
+  const pagesFiles = storyPagesFile.files;
+  if (pagesFiles && pagesFiles.length) {
+    try { pagesToSave = await filesToDataUrls(pagesFiles); }
+    catch(err){
+      console.error(err);
+      Swal.fire("Erreur", "Impossible de lire les pages BD.", "error");
+      storySubmitBtn.disabled = false;
+      return;
+    }
+  }
+
+  // Si pas de pages et pas de contenu texte -> on bloque (au moins un des deux)
+  if ((!pagesToSave || pagesToSave.length === 0) && !textContent) {
+    storyMessage.textContent = "Ajoutez soit des pages BD, soit un contenu texte.";
+    storyMessage.classList.add("err");
+    storySubmitBtn.disabled = false;
+    return;
+  }
+
+  storyContentInput.value = htmlContent;
+
+  const payload = {
+    title,
+    slug,
+    summary,
+    category,
+    coverUrl: coverUrlToSave,
+    pages: pagesToSave,
+    content: htmlContent
+  };
+
+  try {
+    let url = "/api/stories";
+    let method = "POST";
+
+    if (storyMode === "edit" && storyCurrentId != null) {
+      url = "/api/stories?id=" + encodeURIComponent(storyCurrentId);
+      method = "PUT";
+    }
+
+    const res = await fetch(url, {
+      method,
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload)
+    });
+
+    if (!res.ok) {
+      const data = await res.json().catch(()=>({}));
+      throw new Error(data.error || "Erreur serveur");
+    }
+
+    await loadStories();
+
+    await Swal.fire(
+      "Succès",
+      storyMode === "create" ? "L’histoire a été créée." : "L’histoire a été mise à jour.",
+      "success"
+    );
+
+    closeStoryModal();
+
+  } catch(err){
+    console.error(err);
+    Swal.fire("Erreur", "Impossible d’enregistrer l’histoire.", "error");
+  } finally {
+    storySubmitBtn.disabled = false;
+  }
+});
 
     loadArticles();
   </script>
