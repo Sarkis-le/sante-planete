@@ -482,20 +482,17 @@ const StoriesPage = (() => {
   function safeText(v) {
     return String(v ?? "").replace(/[<>&]/g, s => ({ "<":"&lt;", ">":"&gt;", "&":"&amp;" }[s]));
   }
+function normalizeKind(v) {
+  const raw = String(v ?? "").trim();
+  if (!raw) return "";              // ✅ important : vide reste vide
 
-  function normalizeKind(v) {
-    const raw = String(v ?? "").trim();
-    const low = raw.toLowerCase();
-
-    if (low === "bd") return "BD";
-    if (low === "histoire") return "Histoire";
-    if (low === "episode" || low === "épisode") return "Épisode";
-
-    // parfois tu peux avoir "TEXTE" dans tes épisodes
-    if (low === "texte") return "Histoire";
-
-    return raw || "Histoire";
-  }
+  const low = raw.toLowerCase();
+  if (low === "bd") return "BD";
+  if (low === "histoire") return "Histoire";
+  if (low === "episode" || low === "épisode") return "Épisode";
+  if (low === "texte") return "Histoire";
+  return raw;
+}
 
   function initialsFromTitle(title = "H") {
     const t = String(title || "").trim();
@@ -584,12 +581,11 @@ const StoriesPage = (() => {
     throw lastErr || new Error("Aucun endpoint ne répond.");
   }
 
-  // ---- Render ----
-  function pill(kind) {
-    const k = normalizeKind(kind);
-    // just un badge
-    return `<span class="story-pill">${safeText(k)}</span>`;
-  }
+ function pill(kind) {
+  const k = normalizeKind(kind) || "Histoire"; // ✅ si vide => badge "Histoire"
+  return `<span class="story-pill">${safeText(k)}</span>`;
+}
+
 
   function storyCardHTML(story) {
     const title = safeText(story.title || "Sans titre");
