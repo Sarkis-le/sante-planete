@@ -775,7 +775,9 @@
           <ul>
             <li><a href="#top" class="active">Accueil</a></li>
             <li><a href="#trends">Tendances</a></li>
+             <li><a href="#stories">Histoires (BD)</a></li>
             <li><a href="#articles">Derniers articles</a></li>
+           
             <li><a href="#about">À propos</a></li>
             <!-- Contact vers une page dédiée -->
             <li><a href="contact.html">Contact</a></li>
@@ -852,6 +854,33 @@
         </div>
       </div>
     </section>
+<!-- Histoires / BD -->
+<section class="articles-section" id="stories">
+  <div class="container">
+    <div class="section-title">
+      <h2>Histoires & Bandes dessinées</h2>
+      <p>Des histoires courtes à lire, parfois en images (BD), parfois en épisodes.</p>
+    </div>
+
+    <div class="search-row">
+      <div class="search-box">
+        <label for="storySearchInput" class="sr-only">Rechercher une histoire</label>
+        <input id="storySearchInput" type="search" placeholder="Rechercher une histoire…"
+          oninput="filterStories(this.value)">
+      </div>
+      <div class="filters">
+        <button type="button" class="filter-chip" onclick="clearStoryCategory()">Toutes</button>
+        <button type="button" class="filter-chip" onclick="filterStoriesByCategory('BD')">BD</button>
+        <button type="button" class="filter-chip" onclick="filterStoriesByCategory('Histoire')">Histoire</button>
+        <button type="button" class="filter-chip" onclick="filterStoriesByCategory('Épisode')">Épisode</button>
+      </div>
+    </div>
+
+    <div id="storiesList">
+      <div class="empty-state">Chargement des histoires…</div>
+    </div>
+  </div>
+</section>
 
     <!-- Derniers articles -->
     <section class="articles-section" id="articles">
@@ -1380,8 +1409,253 @@
 
     document.addEventListener("DOMContentLoaded", () => {
       loadArticles();
+      loadStories();  
       loadStats();
     });
+    // --- Histoires / BD ---
+window.__STORIES__ = [];
+let __STORY_FILTER_TEXT__ = "";
+let __STORY_FILTER_CATEGORY__ = null;
+
+async function loadStories() {
+  const container = document.getElementById("storiesList");
+  if (!container) return;
+
+  try {
+    const res = await fetch("/api/stories");
+    if (!res.ok) throw new Error("Réponse réseau incorrecte (stories)");
+    const data = await res.json();
+    window.__STORIES__ = Array.isArray(data) ? data : [];
+    buildStoriesList();
+
+    // Si URL contient ?story=slug
+    const params = new URLSearchParams(window.location.search);
+    const slug = params.get("story");
+    if (slug) showStory(slug);
+
+  } catch (e) {
+    console.error(e);
+    window.__STORIES__ = [];
+    container.innerHTML =
+      '<div class="empty-state error-state">Erreur lors du chargement des histoires.</div>';
+  }
+}
+
+function matchesStoryFilters(story) {
+  const text = (__STORY_FILTER_TEXT__ || "").toLowerCase();
+  const cat = __STORY_FILTER_CATEGORY__;
+
+  if (text) {
+    const hay = ((story.title || "") + " " + (story.summary || "")).toLowerCase();
+    if (!hay.includes(text)) return false;
+  }
+
+  if (cat) {
+    const sc = (story.category || "").toLowerCase();
+    if (!sc.includes(cat.toLowerCase())) return false;
+  }
+
+  return true;
+}
+
+function buildStoriesList() {
+  const container = document.getElementById("storiesList");
+  if (!container) return;
+
+  const stories = (window.__STORIES__ || []).filter(matchesStoryFilters);
+
+  if (!stories.length) {
+    container.innerHTML =
+      '<div class="empty-state">Aucune histoire ne correspond à votre recherche.</div>';
+    return;
+  }
+
+  container.innerHTML = "";
+
+  for (const st of stories) {
+    const card = document.createElement("article");
+    card.className = "article-card";
+
+    // cover
+    if (st.coverUrl) {
+      const img = document.createElement("img");
+      img.className = "article-thumb";
+      img.src = st.coverUrl;
+      img.alt = st.title || "Couverture";
+      img.loading = "lazy";
+      card.appendChild(img);
+    } else {
+      const placeholder = document.createElement("div");
+      placeholder.className = "article-thumb";
+      card.appendChild(placeholder);
+    }
+
+    const wrap = document.createElement("div");
+
+    const meta = document.createElement("div");
+    meta.className = "article-meta";
+
+    const cat = document.createElement("span");
+    cat.className = "article-category";
+    cat.textContent = st.category || "Histoire";
+
+    const right = document.createElement("span");
+    const dateText = formatDate(st.createdAt);
+    right.textContent = dateText ? dateText : "";
+
+    meta.appendChild(cat);
+    meta.appendChild(right);
+
+    const title = document.createElement("h3");
+    title.className = "article-title";
+    title.textContent = st.title || "Sans titre";
+
+    const excerpt = document.createElement("p");
+    excerpt.className = "article-excerpt";
+    excerpt.textContent = (st.summary || "Cliquez pour lire…").slice(0, 220);
+
+    const actions = document.createElement("div");
+    actions.className = "article-actions";
+
+    const link = document.createElement("a");
+    link.href = "?story=" + encodeURIComponent(st.slug || "");
+    link.textContent = "Lire l’histoire";
+
+    const tag = document.createElement("span");
+    tag.className = "article-tag";
+    tag.textContent = (st.pages && st.pages.length) ? "BD" : "Texte";
+
+    actions.appendChild(link);
+    actions.appendChild(tag);
+
+    wrap.appendChild(meta);
+    wrap.appendChild(title);
+    wrap.appendChild(excerpt);
+    wrap.appendChild(actions);
+
+    card.appendChild(wrap);
+    container.appendChild(card);
+  }
+}
+
+function filterStories(text) {
+  __STORY_FILTER_TEXT__ = text || "";
+  buildStoriesList();
+}
+
+function filterStoriesByCategory(category) {
+  __STORY_FILTER_CATEGORY__ = category;
+  buildStoriesList();
+  document.getElementById("stories")?.scrollIntoView({ behavior: "smooth" });
+}
+
+function clearStoryCategory() {
+  __STORY_FILTER_CATEGORY__ = null;
+  buildStoriesList();
+}
+
+// Lecteur d’histoire (BD ou HTML)
+function showStory(slug) {
+  const home = document.getElementById("home");
+  const detailWrap = document.getElementById("articleDetailWrap");
+  const detail = document.getElementById("articleDetail");
+
+  if (home) home.style.display = "none";
+  if (detailWrap) detailWrap.style.display = "block";
+  if (!detail) return;
+
+  const st = (window.__STORIES__ || []).find(s => s.slug === slug);
+
+  if (!st) {
+    detail.innerHTML =
+      '<div class="empty-state error-state">Histoire introuvable.</div>' +
+      '<a href="/" class="back-link">Retour</a>';
+    return;
+  }
+
+  detail.innerHTML = "";
+
+  const title = document.createElement("h1");
+  title.textContent = st.title || "Histoire";
+
+  const metaLine = document.createElement("p");
+  metaLine.className = "meta-line";
+
+  const author = document.createElement("span");
+  author.textContent = st.author || "Sante-Planète";
+
+  const dateSpan = document.createElement("span");
+  const dateText = formatDate(st.createdAt);
+  if (dateText) dateSpan.textContent = dateText;
+
+  const catSpan = document.createElement("span");
+  catSpan.textContent = st.category || "Histoire";
+
+  metaLine.appendChild(author);
+  if (dateText) metaLine.appendChild(dateSpan);
+  metaLine.appendChild(catSpan);
+
+  detail.appendChild(title);
+  detail.appendChild(metaLine);
+
+  // Couverture
+  if (st.coverUrl) {
+    const cover = document.createElement("img");
+    cover.className = "detail-cover";
+    cover.src = st.coverUrl;
+    cover.alt = st.title || "Couverture";
+    cover.loading = "lazy";
+    detail.appendChild(cover);
+  }
+
+  // Résumé
+  if (st.summary) {
+    const chapo = document.createElement("p");
+    chapo.className = "chapo";
+    chapo.textContent = st.summary;
+    detail.appendChild(chapo);
+  }
+
+  // Mode BD: pages[]
+  if (Array.isArray(st.pages) && st.pages.length) {
+    const pagesWrap = document.createElement("div");
+    pagesWrap.style.display = "grid";
+    pagesWrap.style.gap = "0.9rem";
+
+    for (const url of st.pages) {
+      const img = document.createElement("img");
+      img.src = url;
+      img.alt = st.title || "Page BD";
+      img.loading = "lazy";
+      img.style.width = "100%";
+      img.style.borderRadius = "8px";
+      img.style.border = "1px solid var(--border)";
+      pagesWrap.appendChild(img);
+    }
+    detail.appendChild(pagesWrap);
+  } else {
+    // Mode HTML texte (si tu veux stocker du HTML comme art.content)
+    if (st.contentHtml) {
+      const content = document.createElement("div");
+      content.innerHTML = st.contentHtml;
+      detail.appendChild(content);
+    } else {
+      const empty = document.createElement("div");
+      empty.className = "empty-state";
+      empty.textContent = "Contenu en cours de rédaction.";
+      detail.appendChild(empty);
+    }
+  }
+
+  const back = document.createElement("a");
+  back.href = "/";
+  back.className = "back-link";
+  back.textContent = "Retour";
+  detail.appendChild(back);
+
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
   </script>
 
   <!-- autre script pub -->
