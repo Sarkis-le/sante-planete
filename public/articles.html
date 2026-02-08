@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <title>Santé Planète – Articles</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <link rel="icon" type="image/svg+xml" href="/logo.png">
+  <link rel="stylesheet" href="/assets/styles.css">
+</head>
+
+<body>
+  <!-- Header injecté -->
+  <div id="siteHeader"></div>
+
+  <section class="page-section">
+    <div class="container">
+      <div class="section-title">
+        <h1>Articles santé</h1>
+        <p>Retrouvez tous nos articles classés par date.</p>
+      </div>
+
+      <div class="grid-cards" id="articlesList">
+        <div class="empty-state">Chargement…</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer injecté -->
+  <div id="siteFooter"></div>
+
+  <script src="/assets/app.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      SP.setActiveNav("articles");
+      loadArticles();
+    });
+
+    async function loadArticles(){
+      const container = document.getElementById("articlesList");
+
+      try{
+        const res = await fetch("/api/articles");
+        if(!res.ok) throw new Error("API error");
+
+        const articles = await res.json();
+        if(!Array.isArray(articles) || !articles.length){
+          container.innerHTML = '<div class="empty-state">Aucun article publié.</div>';
+          return;
+        }
+
+        container.innerHTML = "";
+
+        for(const art of articles){
+          const clean = SP.stripHtml(art.summary || art.content || "");
+
+          const card = document.createElement("article");
+          card.className = "card";
+
+          if(art.imageUrl){
+            const img = document.createElement("img");
+            img.className = "thumb";
+            img.src = art.imageUrl;
+            img.alt = art.title || "Illustration";
+            img.loading = "lazy";
+            card.appendChild(img);
+          } else {
+            const ph = document.createElement("div");
+            ph.className = "thumb";
+            card.appendChild(ph);
+          }
+
+          const meta = document.createElement("div");
+          meta.className = "meta";
+
+          const badgeLeft = document.createElement("span");
+          badgeLeft.className = "badge";
+          badgeLeft.textContent = art.category || "Santé";
+
+          const badgeRight = document.createElement("span");
+          badgeRight.textContent = SP.formatDate(art.createdAt);
+
+          meta.appendChild(badgeLeft);
+          meta.appendChild(badgeRight);
+
+          const title = document.createElement("div");
+          title.className = "title";
+          title.textContent = art.title || "Sans titre";
+
+          const excerpt = document.createElement("div");
+          excerpt.className = "excerpt";
+          excerpt.textContent = clean.slice(0,160) + (clean.length > 160 ? "…" : "");
+
+          const link = document.createElement("a");
+          link.href = "/article.html?slug=" + encodeURIComponent(art.slug);
+          link.textContent = "Lire l’article";
+
+          card.appendChild(meta);
+          card.appendChild(title);
+          card.appendChild(excerpt);
+          card.appendChild(link);
+
+          container.appendChild(card);
+        }
+      }catch(e){
+        container.innerHTML =
+          '<div class="empty-state error-state">Erreur de chargement des articles.</div>';
+      }
+    }
+  </script>
+</body>
+</html>
