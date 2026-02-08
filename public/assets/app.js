@@ -1,10 +1,26 @@
 // public/assets/app.js
+
 async function injectPartial(targetSelector, url) {
   const el = document.querySelector(targetSelector);
   if (!el) return;
   const res = await fetch(url, { cache: "no-cache" });
   if (!res.ok) throw new Error("Partial introuvable: " + url);
   el.innerHTML = await res.text();
+}
+
+async function injectHeadAds() {
+  try {
+    const res = await fetch("/assets/partials/head.html", { cache: "no-store" });
+    if (!res.ok) return;
+
+    // Empêche double injection
+    if (document.head.querySelector('meta[name="monetag"]')) return;
+
+    const html = await res.text();
+    document.head.insertAdjacentHTML("beforeend", html);
+  } catch (e) {
+    console.warn("Injection head.html impossible:", e);
+  }
 }
 
 function wireMobileNav() {
@@ -50,26 +66,12 @@ function estimateReadingTime(text) {
 window.SP = { stripHtml, formatDate, estimateReadingTime, setActiveNav };
 
 document.addEventListener("DOMContentLoaded", async () => {
-  // slots
-  // chaque page doit avoir:
-  // <div id="siteHeader"></div> ... <div id="siteFooter"></div>
+  // 1) inject pubs dans <head>
+  await injectHeadAds();
+
+  // 2) inject header/footer dans <body>
   await injectPartial("#siteHeader", "/assets/partials/header.html");
   await injectPartial("#siteFooter", "/assets/partials/footer.html");
 
   wireMobileNav();
 });
-async function injectHeadAds() {
-  try {
-    const res = await fetch("/assets/partials/head.html", { cache: "no-store" });
-    if (!res.ok) return;
-
-    const html = await res.text();
-
-    // Empêche double injection si tu changes de page ou reload partiel
-    if (document.head.querySelector('meta[name="monetag"]')) return;
-
-    document.head.insertAdjacentHTML("beforeend", html);
-  } catch (e) {
-    console.warn("Injection head.html impossible:", e);
-  }
-}
