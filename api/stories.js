@@ -14,10 +14,21 @@ function mapStoryRow(row) {
     coverUrl: row.cover_url ?? null,
     createdAt: row.created_at ?? null,
     updatedAt: row.updated_at ?? null,
+  };
+}
 
-    // legacy (si tu les avais)
-    pages: row.pages || [],
-    content: row.content || "",
+function mapEpisodeLite(row) {
+  return {
+    id: row.id,
+    storyId: row.story_id,
+    title: row.title,
+    slug: row.slug,
+    episodeNumber: row.episode_number,
+    summary: row.summary,
+    kind: row.kind ?? "TEXTE",
+    imageUrl: row.image_url ?? null,
+    createdAt: row.created_at ?? null,
+    updatedAt: row.updated_at ?? null,
   };
 }
 
@@ -80,22 +91,28 @@ export default async function handler(req, res) {
   if (req.method === "GET" && S.length === 4 && S[3] === "episodes") {
     try {
       const storyRows = isNumericId(key)
-        ? await query("SELECT id FROM stories WHERE id=$1 LIMIT 1", [key])
-        : await query("SELECT id FROM stories WHERE slug=$1 LIMIT 1", [key]);
+        ? await query("SELECT id, slug FROM stories WHERE id=$1 LIMIT 1", [key])
+        : await query("SELECT id, slug FROM stories WHERE slug=$1 LIMIT 1", [key]);
 
       if (!storyRows.length) return sendJson(res, 404, { error: "Histoire introuvable" });
 
       const storyId = storyRows[0].id;
-const eps = await query(
-  `SELECT id, story_id, title, slug, episode_number, summary, kind, image_url, created_at, updated_at
-     FROM episodes
-    WHERE story_id=$1
-    ORDER BY episode_number ASC, created_at ASC`,
-  [storyId]
-);
 
+      const epsRows = await query(
+        `SELECT id, story_id, title, slug, episode_number, summary, kind, image_url, created_at, updated_at
+           FROM episodes
+          WHERE story_id=$1
+          ORDER BY episode_number ASC, created_at ASC`,
+        [storyId]
+      );
 
-      return sendJson(res, 200, eps);
+      // ✅ on renvoie aussi story_slug si tu veux (optionnel)
+      const out = epsRows.map((r) => ({
+        ...mapEpisodeLite(r),
+        storySlug: storyRows[0].slug,
+      }));
+
+      return sendJson(res, 200, out);
     } catch (err) {
       console.error("GET /api/stories/:key/episodes error", err);
       return sendJson(res, 500, { error: "Erreur serveur" });
@@ -132,8 +149,7 @@ const eps = await query(
   }
 
   // ---------------------------
-  // PUT /api/stories/:id (update)
-  // (par sécurité: update uniquement sur id numérique)
+  // PUT /api/stories/:id
   // ---------------------------
   if (req.method === "PUT" && S.length === 3) {
     if (!isNumericId(key)) {
@@ -170,7 +186,6 @@ const eps = await query(
 
   // ---------------------------
   // DELETE /api/stories/:id
-  // (on suppose FK ON DELETE CASCADE sur episodes.story_id)
   // ---------------------------
   if (req.method === "DELETE" && S.length === 3) {
     if (!isNumericId(key)) {
