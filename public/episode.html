@@ -29,7 +29,7 @@
   <div id="siteFooter"></div>
 
   <script src="/assets/app.js"></script>
-  <script>
+ <script>
 document.addEventListener("DOMContentLoaded", () => {
   SP.setActiveNav("stories");
   loadEpisode();
@@ -41,7 +41,8 @@ async function loadEpisode(){
   const id = params.get("id");
 
   if(!id){
-    el.innerHTML = '<div class="empty-state error-state">ID épisode manquant.</div><a class="back-link" href="/stories.html">Retour</a>';
+    el.innerHTML =
+      '<div class="empty-state error-state">ID épisode manquant.</div><a class="back-link" href="/stories.html">Retour</a>';
     return;
   }
 
@@ -58,20 +59,18 @@ async function loadEpisode(){
     const meta = document.createElement("p");
     meta.className = "meta-line";
 
-    const s1 = document.createElement("span");
-    s1.textContent = ep.author || "Sante-Planète";
+    // Date
+    const sDate = document.createElement("span");
+    const d = SP.formatDate(ep.createdAt || ep.created_at);
+    if(d) sDate.textContent = d;
 
-    const s2 = document.createElement("span");
-    const d = SP.formatDate(ep.created_at || ep.createdAt);
-    if(d) s2.textContent = d;
+    // Numéro
+    const sNum = document.createElement("span");
+    const num = ep.episodeNumber ?? ep.episode_number;
+    sNum.textContent = (num != null) ? ("Épisode " + num) : "Épisode";
 
-    const s3 = document.createElement("span");
-    const num = ep.episode_number ?? ep.episodeNumber;
-    s3.textContent = (num != null) ? ("Épisode " + num) : "Épisode";
-
-    meta.appendChild(s1);
-    if(d) meta.appendChild(s2);
-    meta.appendChild(s3);
+    if (d) meta.appendChild(sDate);
+    meta.appendChild(sNum);
 
     el.appendChild(h1);
     el.appendChild(meta);
@@ -83,11 +82,11 @@ async function loadEpisode(){
       el.appendChild(chapo);
     }
 
-    // ✅ 1 épisode = 1 image (si BD) ou texte (si TEXTE)
-    const kind = (ep.kind || "").toString().toUpperCase();
-    const imageUrl = ep.imageUrl || ep.image_url || "";
+    // ✅ 1 épisode = BD (image) ou TEXTE (content)
+    const kind = (ep.kind || "TEXTE").toString().toUpperCase();
+    const imageUrl = (ep.imageUrl || ep.image_url || "").toString().trim();
 
-    if (kind === "BD" || imageUrl) {
+    if (kind === "BD") {
       if (imageUrl) {
         const img = document.createElement("img");
         img.src = imageUrl;
@@ -103,25 +102,29 @@ async function loadEpisode(){
         empty.textContent = "Image de l’épisode manquante.";
         el.appendChild(empty);
       }
-    } else if (ep.content_html || ep.content) {
-      const content = document.createElement("div");
-      content.innerHTML = (ep.content_html || ep.content);
-      el.appendChild(content);
     } else {
-      const empty = document.createElement("div");
-      empty.className = "empty-state";
-      empty.textContent = "Contenu en cours de rédaction.";
-      el.appendChild(empty);
+      const html = ep.content_html || ep.content || "";
+      if (html.trim()) {
+        const content = document.createElement("div");
+        content.innerHTML = html;
+        el.appendChild(content);
+      } else {
+        const empty = document.createElement("div");
+        empty.className = "empty-state";
+        empty.textContent = "Contenu en cours de rédaction.";
+        el.appendChild(empty);
+      }
     }
 
     // Retour vers story
-    if(ep.story_slug || ep.storySlug){
+    const storySlug = ep.storySlug || ep.story_slug;
+    if (storySlug) {
       const backStory = document.createElement("a");
-      backStory.href = "/story.html?slug=" + encodeURIComponent(ep.story_slug || ep.storySlug);
+      backStory.href = "/story.html?slug=" + encodeURIComponent(storySlug);
       backStory.className = "back-link";
       backStory.textContent = "Retour à l’histoire";
       el.appendChild(backStory);
-    }else{
+    } else {
       const back = document.createElement("a");
       back.href = "/stories.html";
       back.className = "back-link";
@@ -130,8 +133,9 @@ async function loadEpisode(){
     }
 
     window.scrollTo({ top: 0, behavior: "smooth" });
-  }catch(e){
-    el.innerHTML = '<div class="empty-state error-state">Erreur de chargement.</div><a class="back-link" href="/stories.html">Retour</a>';
+  } catch(e){
+    el.innerHTML =
+      '<div class="empty-state error-state">Erreur de chargement.</div><a class="back-link" href="/stories.html">Retour</a>';
   }
 }
 </script>

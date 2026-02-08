@@ -4,6 +4,7 @@ import { query } from "./db.js";
 import { applyCors, sendJson, readJsonBody, segs, isNumericId } from "./utils.js";
 
 function mapEpisodeRow(row) {
+  if (!row) return null;
   return {
     id: row.id,
     storyId: row.story_id,
@@ -11,13 +12,23 @@ function mapEpisodeRow(row) {
     slug: row.slug,
     episodeNumber: row.episode_number,
     summary: row.summary,
-    kind: row.kind || null,              // "BD" | "TEXTE"
-    imageUrl: row.image_url ?? null,     // ✅ 1 image
-    content: row.content ?? "",          // texte HTML si TEXTE
-    createdAt: row.created_at,
-    updatedAt: row.updated_at,
-    storySlug: row.story_slug || null,
+    kind: row.kind ?? "TEXTE",          // "BD" | "TEXTE"
+    imageUrl: row.image_url ?? null,    // ✅ 1 image si BD
+    content: row.content ?? "",         // ✅ HTML si TEXTE
+    createdAt: row.created_at ?? null,
+    updatedAt: row.updated_at ?? null,
+    storySlug: row.story_slug ?? null,
   };
+}
+
+function normalizeKind(kind) {
+  const k = (kind || "").toString().trim().toUpperCase();
+  return k || "TEXTE";
+}
+
+function normalizeSlug(slug) {
+  const s = (slug ?? "").toString().trim();
+  return s ? s : null;
 }
 
 export default async function handler(req, res) {
@@ -39,6 +50,8 @@ export default async function handler(req, res) {
   // =============== GET /api/episodes/:id ===============
   if (req.method === "GET" && S.length === 3) {
     const id = decodeURIComponent(S[2]);
+    if (!isNumericId(id)) return sendJson(res, 400, { error: "Id épisode invalide." });
+
     try {
       const rows = await query(
         `SELECT e.*, s.slug AS story_slug
@@ -68,22 +81,23 @@ export default async function handler(req, res) {
       slug = null,
       episodeNumber = 1,
       summary = "",
-      kind = "",          // "BD" | "TEXTE"
-      imageUrl = "",      // ✅ 1 image si BD
-      content = "",       // texte HTML si TEXTE
+      kind = "TEXTE",
+      imageUrl = null,
+      content = "",
     } = body || {};
 
     if (!storyId || !title) {
       return sendJson(res, 400, { error: "storyId et title sont requis." });
     }
 
-    const K = (kind || "").toString().trim().toUpperCase();
+    const K = normalizeKind(kind);
+    const SLUG = normalizeSlug(slug);
 
-    // validation logique
     if (K === "BD") {
-      if (!imageUrl) return sendJson(res, 400, { error: "Pour un épisode BD, imageUrl est requis." });
-    } else if (K === "TEXTE" || K === "") {
-      // on autorise kind vide => TEXTE par défaut, mais on exige un contenu
+      if (!imageUrl || !imageUrl.toString().trim()) {
+        return sendJson(res, 400, { error: "Pour un épisode BD, imageUrl est requis." });
+      }
+    } else if (K === "TEXTE") {
       if (!content || !content.toString().trim()) {
         return sendJson(res, 400, { error: "Pour un épisode texte, content est requis." });
       }
@@ -99,11 +113,11 @@ export default async function handler(req, res) {
         [
           storyId,
           title,
-          slug,
-          episodeNumber,
-          summary,
-          (K || "TEXTE"),
-          imageUrl || null,
+          SLUG,
+          Number(episodeNumber) || 1,
+          summary || "",
+          K,
+          imageUrl ? imageUrl.toString().trim() : null,
           content || "",
         ]
       );
@@ -130,8 +144,8 @@ export default async function handler(req, res) {
       slug = null,
       episodeNumber = 1,
       summary = "",
-      kind = "",
-      imageUrl = "",
+      kind = "TEXTE",
+      imageUrl = null,
       content = "",
     } = body || {};
 
@@ -139,11 +153,14 @@ export default async function handler(req, res) {
       return sendJson(res, 400, { error: "storyId et title sont requis." });
     }
 
-    const K = (kind || "").toString().trim().toUpperCase();
+    const K = normalizeKind(kind);
+    const SLUG = normalizeSlug(slug);
 
     if (K === "BD") {
-      if (!imageUrl) return sendJson(res, 400, { error: "Pour un épisode BD, imageUrl est requis." });
-    } else if (K === "TEXTE" || K === "") {
+      if (!imageUrl || !imageUrl.toString().trim()) {
+        return sendJson(res, 400, { error: "Pour un épisode BD, imageUrl est requis." });
+      }
+    } else if (K === "TEXTE") {
       if (!content || !content.toString().trim()) {
         return sendJson(res, 400, { error: "Pour un épisode texte, content est requis." });
       }
@@ -161,11 +178,11 @@ export default async function handler(req, res) {
         [
           storyId,
           title,
-          slug,
-          episodeNumber,
-          summary,
-          (K || "TEXTE"),
-          imageUrl || null,
+          SLUG,
+          Number(episodeNumber) || 1,
+          summary || "",
+          K,
+          imageUrl ? imageUrl.toString().trim() : null,
           content || "",
           id,
         ]

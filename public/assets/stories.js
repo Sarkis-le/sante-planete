@@ -84,7 +84,7 @@ function renderStories(){
     ex.textContent = (st.summary || "Cliquez pour voir les épisodes.").slice(0,190);
 
     const a = document.createElement("a");
-    a.href = "/story.html?slug=" + encodeURIComponent(st.slug || "");
+   a.href = st.slug ? ("/story.html?slug=" + encodeURIComponent(st.slug)) : "/stories.html";
     a.textContent = "Voir les épisodes";
 
     card.appendChild(meta);
