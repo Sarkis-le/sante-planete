@@ -12,47 +12,60 @@ function mapEpisodeRow(row) {
     slug: row.slug,
     episodeNumber: row.episode_number,
     summary: row.summary,
-    kind: row.kind ?? "TEXTE",          // "BD" | "TEXTE"
-    imageUrl: row.image_url ?? null,    // ✅ 1 image si BD
-    content: row.content ?? "",         // ✅ HTML si TEXTE
+    kind: row.kind || "TEXTE",          // "BD" | "TEXTE"
+    imageUrl: row.image_url ?? null,   // ✅ 1 image si BD
+    content: row.content ?? "",        // HTML si TEXTE
     createdAt: row.created_at ?? null,
     updatedAt: row.updated_at ?? null,
-    storySlug: row.story_slug ?? null,
+    storySlug: row.story_slug || null,
   };
 }
 
-function normalizeKind(kind) {
-  const k = (kind || "").toString().trim().toUpperCase();
-  return k || "TEXTE";
-}
-
-function normalizeSlug(slug) {
-  const s = (slug ?? "").toString().trim();
-  return s ? s : null;
+function serverError(res, err, where = "") {
+  console.error(where, err);
+  // ✅ DEBUG TEMP : renvoie détail réel
+  return sendJson(res, 500, {
+    error: "Erreur serveur",
+    where,
+    code: err?.code || null,
+    detail: err?.message || String(err),
+  });
 }
 
 export default async function handler(req, res) {
   applyCors(res);
 
-  const url = new URL(req.url, "http://localhost");
-  const pathname = url.pathname;
-  const S = segs(pathname);
-
+  // OPTIONS (CORS)
   if (req.method === "OPTIONS") {
     res.statusCode = 204;
     return res.end();
   }
 
+  const url = new URL(req.url, "http://localhost");
+  const pathname = url.pathname;
+  const S = segs(pathname);
+
   if (S[0] !== "api" || S[1] !== "episodes") {
     return sendJson(res, 404, { error: "Ressource non trouvée" });
   }
 
-  // =============== GET /api/episodes/:id ===============
-  if (req.method === "GET" && S.length === 3) {
-    const id = decodeURIComponent(S[2]);
-    if (!isNumericId(id)) return sendJson(res, 400, { error: "Id épisode invalide." });
+  // /api/episodes/:id
+  const id = S.length === 3 ? decodeURIComponent(S[2]) : null;
 
+  // ===================== GET =====================
+  if (req.method === "GET") {
     try {
+      if (!id) {
+        // Optionnel : liste brute (si l’admin en a besoin)
+        const rows = await query(
+          `SELECT e.*, s.slug AS story_slug
+             FROM episodes e
+             JOIN stories s ON s.id = e.story_id
+            ORDER BY e.story_id DESC, e.episode_number ASC, e.id ASC`
+        );
+        return sendJson(res, 200, rows.map(mapEpisodeRow));
+      }
+
       const rows = await query(
         `SELECT e.*, s.slug AS story_slug
            FROM episodes e
@@ -61,19 +74,22 @@ export default async function handler(req, res) {
           LIMIT 1`,
         [id]
       );
+
       if (!rows.length) return sendJson(res, 404, { error: "Épisode introuvable" });
       return sendJson(res, 200, mapEpisodeRow(rows[0]));
     } catch (err) {
-      console.error("GET /api/episodes/:id error", err);
-      return sendJson(res, 500, { error: "Erreur serveur" });
+      return serverError(res, err, "GET /api/episodes");
     }
   }
 
-  // =============== POST /api/episodes ===============
-  if (req.method === "POST" && S.length === 2) {
+  // ===================== POST =====================
+  if (req.method === "POST" && !id) {
     let body = {};
-    try { body = await readJsonBody(req); }
-    catch { return sendJson(res, 400, { error: "Corps invalide" }); }
+    try {
+      body = await readJsonBody(req);
+    } catch (err) {
+      return sendJson(res, 400, { error: "Corps invalide" });
+    }
 
     const {
       storyId,
@@ -81,26 +97,23 @@ export default async function handler(req, res) {
       slug = null,
       episodeNumber = 1,
       summary = "",
-      kind = "TEXTE",
-      imageUrl = null,
-      content = "",
+      kind = "TEXTE",     // "BD" | "TEXTE"
+      imageUrl = null,    // si BD
+      content = "",       // si TEXTE
     } = body || {};
 
     if (!storyId || !title) {
       return sendJson(res, 400, { error: "storyId et title sont requis." });
     }
 
-    const K = normalizeKind(kind);
-    const SLUG = normalizeSlug(slug);
+    const K = String(kind || "TEXTE").trim().toUpperCase();
+    const img = imageUrl ? String(imageUrl).trim() : null;
+    const txt = content ? String(content) : "";
 
     if (K === "BD") {
-      if (!imageUrl || !imageUrl.toString().trim()) {
-        return sendJson(res, 400, { error: "Pour un épisode BD, imageUrl est requis." });
-      }
+      if (!img) return sendJson(res, 400, { error: "Pour un épisode BD, imageUrl est requis." });
     } else if (K === "TEXTE") {
-      if (!content || !content.toString().trim()) {
-        return sendJson(res, 400, { error: "Pour un épisode texte, content est requis." });
-      }
+      if (!txt.trim()) return sendJson(res, 400, { error: "Pour un épisode texte, content est requis." });
     } else {
       return sendJson(res, 400, { error: "kind invalide. Utilise 'BD' ou 'TEXTE'." });
     }
@@ -110,33 +123,27 @@ export default async function handler(req, res) {
         `INSERT INTO episodes (story_id, title, slug, episode_number, summary, kind, image_url, content)
          VALUES ($1,$2,$3,$4,$5,$6,$7,$8)
          RETURNING *`,
-        [
-          storyId,
-          title,
-          SLUG,
-          Number(episodeNumber) || 1,
-          summary || "",
-          K,
-          imageUrl ? imageUrl.toString().trim() : null,
-          content || "",
-        ]
+        [storyId, title, slug, episodeNumber, summary, K, img, txt]
       );
       return sendJson(res, 201, mapEpisodeRow(rows[0]));
     } catch (err) {
-      console.error("POST /api/episodes error", err);
-      if (err.code === "23505") return sendJson(res, 400, { error: "Slug épisode déjà utilisé." });
-      return sendJson(res, 500, { error: "Erreur serveur" });
+      if (err?.code === "23505") {
+        return sendJson(res, 400, { error: "Slug épisode déjà utilisé." });
+      }
+      return serverError(res, err, "POST /api/episodes");
     }
   }
 
-  // =============== PUT /api/episodes/:id ===============
-  if (req.method === "PUT" && S.length === 3) {
-    const id = decodeURIComponent(S[2]);
-    if (!isNumericId(id)) return sendJson(res, 400, { error: "Id épisode invalide." });
+  // ===================== PUT =====================
+  if (req.method === "PUT" && id) {
+    if (!isNumericId(String(id))) return sendJson(res, 400, { error: "Id épisode invalide." });
 
     let body = {};
-    try { body = await readJsonBody(req); }
-    catch { return sendJson(res, 400, { error: "Corps invalide" }); }
+    try {
+      body = await readJsonBody(req);
+    } catch {
+      return sendJson(res, 400, { error: "Corps invalide" });
+    }
 
     const {
       storyId,
@@ -153,17 +160,14 @@ export default async function handler(req, res) {
       return sendJson(res, 400, { error: "storyId et title sont requis." });
     }
 
-    const K = normalizeKind(kind);
-    const SLUG = normalizeSlug(slug);
+    const K = String(kind || "TEXTE").trim().toUpperCase();
+    const img = imageUrl ? String(imageUrl).trim() : null;
+    const txt = content ? String(content) : "";
 
     if (K === "BD") {
-      if (!imageUrl || !imageUrl.toString().trim()) {
-        return sendJson(res, 400, { error: "Pour un épisode BD, imageUrl est requis." });
-      }
+      if (!img) return sendJson(res, 400, { error: "Pour un épisode BD, imageUrl est requis." });
     } else if (K === "TEXTE") {
-      if (!content || !content.toString().trim()) {
-        return sendJson(res, 400, { error: "Pour un épisode texte, content est requis." });
-      }
+      if (!txt.trim()) return sendJson(res, 400, { error: "Pour un épisode texte, content est requis." });
     } else {
       return sendJson(res, 400, { error: "kind invalide. Utilise 'BD' ou 'TEXTE'." });
     }
@@ -175,40 +179,28 @@ export default async function handler(req, res) {
                 kind=$6, image_url=$7, content=$8, updated_at=NOW()
           WHERE id=$9
           RETURNING *`,
-        [
-          storyId,
-          title,
-          SLUG,
-          Number(episodeNumber) || 1,
-          summary || "",
-          K,
-          imageUrl ? imageUrl.toString().trim() : null,
-          content || "",
-          id,
-        ]
+        [storyId, title, slug, episodeNumber, summary, K, img, txt, id]
       );
 
       if (!rows.length) return sendJson(res, 404, { error: "Épisode introuvable" });
       return sendJson(res, 200, mapEpisodeRow(rows[0]));
     } catch (err) {
-      console.error("PUT /api/episodes/:id error", err);
-      if (err.code === "23505") return sendJson(res, 400, { error: "Slug épisode déjà utilisé." });
-      return sendJson(res, 500, { error: "Erreur serveur" });
+      if (err?.code === "23505") {
+        return sendJson(res, 400, { error: "Slug épisode déjà utilisé." });
+      }
+      return serverError(res, err, "PUT /api/episodes/:id");
     }
   }
 
-  // =============== DELETE /api/episodes/:id ===============
-  if (req.method === "DELETE" && S.length === 3) {
-    const id = decodeURIComponent(S[2]);
-    if (!isNumericId(id)) return sendJson(res, 400, { error: "Id épisode invalide." });
-
+  // ===================== DELETE =====================
+  if (req.method === "DELETE" && id) {
+    if (!isNumericId(String(id))) return sendJson(res, 400, { error: "Id épisode invalide." });
     try {
       const rows = await query("DELETE FROM episodes WHERE id=$1 RETURNING id", [id]);
       if (!rows.length) return sendJson(res, 404, { error: "Épisode introuvable" });
       return sendJson(res, 200, { success: true });
     } catch (err) {
-      console.error("DELETE /api/episodes/:id error", err);
-      return sendJson(res, 500, { error: "Erreur serveur" });
+      return serverError(res, err, "DELETE /api/episodes/:id");
     }
   }
 
