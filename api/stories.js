@@ -1,46 +1,7 @@
 // api/stories.js
+import { URL } from "url";
 import { query } from "./db.js";
-
-export const DEFAULT_HEADERS = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "Content-Type",
-  "Access-Control-Allow-Methods": "GET,POST,PUT,DELETE,OPTIONS",
-};
-
-function applyCors(res) {
-  Object.entries(DEFAULT_HEADERS).forEach(([k, v]) => res.setHeader(k, v));
-}
-
-function sendJson(res, status, payload) {
-  applyCors(res);
-  res.statusCode = status;
-  res.setHeader("Content-Type", "application/json; charset=utf-8");
-  res.end(JSON.stringify(payload));
-}
-
-async function readJsonBody(req) {
-  if (req.body !== undefined) {
-    if (typeof req.body === "string") return req.body ? JSON.parse(req.body) : {};
-    if (typeof req.body === "object") return req.body;
-  }
-  return new Promise((resolve, reject) => {
-    let data = "";
-    req.on("data", (c) => (data += c));
-    req.on("end", () => {
-      try { resolve(data ? JSON.parse(data) : {}); }
-      catch (e) { reject(e); }
-    });
-    req.on("error", reject);
-  });
-}
-
-function segs(pathname) {
-  return pathname.split("/").filter(Boolean); // ["api","stories",...]
-}
-
-function isNumericId(x) {
-  return typeof x === "string" && /^[0-9]+$/.test(x);
-}
+import { applyCors, sendJson, readJsonBody, segs, isNumericId } from "./utils.js";
 
 function mapStoryRow(row) {
   if (!row) return null;
@@ -50,10 +11,11 @@ function mapStoryRow(row) {
     slug: row.slug,
     category: row.category,
     summary: row.summary,
-    coverUrl: row.cover_url || null,
-    createdAt: row.created_at || null,
-    updatedAt: row.updated_at || null,
-    // legacy fields (ok de les garder)
+    coverUrl: row.cover_url ?? null,
+    createdAt: row.created_at ?? null,
+    updatedAt: row.updated_at ?? null,
+
+    // legacy (si tu les avais)
     pages: row.pages || [],
     content: row.content || "",
   };
@@ -62,14 +24,10 @@ function mapStoryRow(row) {
 export default async function handler(req, res) {
   applyCors(res);
 
-  const url = req.url ? new URL(req.url, "http://localhost") : null;
-  const pathname = url ? url.pathname : "";
-  const S = segs(pathname);
-
-  if (req.method === "OPTIONS") {
-    res.statusCode = 204;
-    return res.end();
-  }
+  const url = new URL(req.url, "http://localhost");
+  const pathname = url.pathname;
+  const S = segs(pathname); // ["api","stories", ...]
+  const key = S.length >= 3 ? decodeURIComponent(S[2]) : null;
 
   if (S[0] !== "api" || S[1] !== "stories") {
     return sendJson(res, 404, { error: "Ressource non trouvée" });
@@ -87,7 +45,7 @@ export default async function handler(req, res) {
         ORDER BY s.created_at DESC, s.id DESC
       `);
 
-      const out = rows.map(r => ({
+      const out = rows.map((r) => ({
         ...mapStoryRow(r),
         episodesCount: Number(r.episodes_count || 0),
       }));
@@ -103,7 +61,6 @@ export default async function handler(req, res) {
   // GET /api/stories/:slugOrId (détail)
   // ---------------------------
   if (req.method === "GET" && S.length === 3) {
-    const key = decodeURIComponent(S[2]);
     try {
       const rows = isNumericId(key)
         ? await query("SELECT * FROM stories WHERE id=$1 LIMIT 1", [key])
@@ -118,25 +75,23 @@ export default async function handler(req, res) {
   }
 
   // ---------------------------
-  // GET /api/stories/:slugOrId/episodes (liste épisodes)
+  // GET /api/stories/:slugOrId/episodes
   // ---------------------------
   if (req.method === "GET" && S.length === 4 && S[3] === "episodes") {
-    const key = decodeURIComponent(S[2]);
-
     try {
       const storyRows = isNumericId(key)
-        ? await query("SELECT id, slug FROM stories WHERE id=$1 LIMIT 1", [key])
-        : await query("SELECT id, slug FROM stories WHERE slug=$1 LIMIT 1", [key]);
+        ? await query("SELECT id FROM stories WHERE id=$1 LIMIT 1", [key])
+        : await query("SELECT id FROM stories WHERE slug=$1 LIMIT 1", [key]);
 
       if (!storyRows.length) return sendJson(res, 404, { error: "Histoire introuvable" });
 
       const storyId = storyRows[0].id;
 
       const eps = await query(
-        `SELECT id, story_id, title, slug, episode_number, summary, created_at
-         FROM episodes
-         WHERE story_id=$1
-         ORDER BY episode_number ASC, created_at ASC`,
+        `SELECT id, story_id, title, slug, episode_number, summary, created_at, updated_at
+           FROM episodes
+          WHERE story_id=$1
+          ORDER BY episode_number ASC, created_at ASC`,
         [storyId]
       );
 
@@ -148,12 +103,15 @@ export default async function handler(req, res) {
   }
 
   // ---------------------------
-  // POST /api/stories (création)
+  // POST /api/stories
   // ---------------------------
   if (req.method === "POST" && S.length === 2) {
     let body = {};
-    try { body = await readJsonBody(req); }
-    catch { return sendJson(res, 400, { error: "Corps de requête invalide" }); }
+    try {
+      body = await readJsonBody(req);
+    } catch {
+      return sendJson(res, 400, { error: "Corps de requête invalide" });
+    }
 
     const { title, slug, category = "", summary = "", coverUrl = "" } = body || {};
     if (!title || !slug) return sendJson(res, 400, { error: "Titre et slug sont requis." });
@@ -169,6 +127,62 @@ export default async function handler(req, res) {
     } catch (err) {
       console.error("POST /api/stories error", err);
       if (err.code === "23505") return sendJson(res, 400, { error: "Ce slug est déjà utilisé." });
+      return sendJson(res, 500, { error: "Erreur serveur" });
+    }
+  }
+
+  // ---------------------------
+  // PUT /api/stories/:id (update)
+  // (par sécurité: update uniquement sur id numérique)
+  // ---------------------------
+  if (req.method === "PUT" && S.length === 3) {
+    if (!isNumericId(key)) {
+      return sendJson(res, 400, { error: "Pour modifier, utilise l’id numérique (/api/stories/:id)." });
+    }
+
+    let body = {};
+    try {
+      body = await readJsonBody(req);
+    } catch {
+      return sendJson(res, 400, { error: "Corps de requête invalide" });
+    }
+
+    const { title, slug, category = "", summary = "", coverUrl = "" } = body || {};
+    if (!title || !slug) return sendJson(res, 400, { error: "Titre et slug sont requis." });
+
+    try {
+      const rows = await query(
+        `UPDATE stories
+            SET title=$1, slug=$2, category=$3, summary=$4, cover_url=$5, updated_at=NOW()
+          WHERE id=$6
+          RETURNING *`,
+        [title, slug, category, summary, coverUrl, key]
+      );
+
+      if (!rows.length) return sendJson(res, 404, { error: "Histoire introuvable" });
+      return sendJson(res, 200, mapStoryRow(rows[0]));
+    } catch (err) {
+      console.error("PUT /api/stories error", err);
+      if (err.code === "23505") return sendJson(res, 400, { error: "Ce slug est déjà utilisé." });
+      return sendJson(res, 500, { error: "Erreur serveur" });
+    }
+  }
+
+  // ---------------------------
+  // DELETE /api/stories/:id
+  // (on suppose FK ON DELETE CASCADE sur episodes.story_id)
+  // ---------------------------
+  if (req.method === "DELETE" && S.length === 3) {
+    if (!isNumericId(key)) {
+      return sendJson(res, 400, { error: "Pour supprimer, utilise l’id numérique (/api/stories/:id)." });
+    }
+
+    try {
+      const rows = await query("DELETE FROM stories WHERE id=$1 RETURNING id", [key]);
+      if (!rows.length) return sendJson(res, 404, { error: "Histoire introuvable" });
+      return sendJson(res, 200, { success: true });
+    } catch (err) {
+      console.error("DELETE /api/stories error", err);
       return sendJson(res, 500, { error: "Erreur serveur" });
     }
   }
