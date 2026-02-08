@@ -1,4 +1,4 @@
-// stories.js
+
 let STORIES = [];
 let S_TEXT = "";
 let S_CAT = null;
