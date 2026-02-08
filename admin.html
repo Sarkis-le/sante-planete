@@ -616,6 +616,20 @@
       pointer-events: none;
       display: block;
     }
+
+    /* Utility Classes */
+    .flex-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .flex-col-end {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 4px;
+    }
   </style>
 </head>
 
@@ -642,7 +656,7 @@
           <div class="table-toolbar-title">
             Articles publiés
           </div>
-          <div style="display:flex;align-items:center;gap:10px;">
+          <div class="flex-row">
             <span id="articles-count" class="count-label"></span>
             <button type="button" class="btn-primary" id="openCreateBtn">
               <span class="icon">＋</span> Nouvel article
@@ -824,12 +838,12 @@
 <section class="card">
   <div class="table-toolbar">
     <div class="table-toolbar-title">Histoires / BD publiées</div>
-    <div style="display:flex;align-items:center;gap:10px;">
-      <span id="stories-count" class="count-label"></span>
-      <button type="button" class="btn-primary" id="openCreateStoryBtn">
-        <span class="icon">＋</span> Nouvelle histoire
-      </button>
-    </div>
+    <div class="flex-row">
+        <span id="stories-count" class="count-label"></span>
+        <button type="button" class="btn-primary" id="openCreateStoryBtn">
+          <span class="icon">＋</span> Nouvelle histoire
+        </button>
+      </div>
   </div>
 
   <p class="desc">
