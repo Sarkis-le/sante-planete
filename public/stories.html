@@ -544,24 +544,28 @@ const StoriesPage = (() => {
 
   // ---- Public API ----
   async function loadStoriesPage() {
-    // header/footer (si ton app.js expose SP)
-    try {
-      if (window.SP?.mountHeader) SP.mountHeader("stories");
-      if (window.SP?.mountFooter) SP.mountFooter();
-    } catch (_) {}
+  try {
+    if (window.SP?.mountHeader) SP.mountHeader("stories");
+    if (window.SP?.mountFooter) SP.mountFooter();
+  } catch (_) {}
 
-    setEmpty("Chargement…");
+  // ✅ FORCE l’état initial
+  state.filterKind = "";
+  state.search = "";
+  setActiveChip("");
 
-    try {
-      const stories = await loadStories();
-      state.all = stories || [];
-      setActiveChip("");
-      applyView();
-    } catch (e) {
-      console.error(e);
-      setError("Impossible de charger les histoires. Vérifie ton endpoint /api/stories et ta base.");
-    }
+  setEmpty("Chargement…");
+
+  try {
+    const stories = await loadStories();
+    state.all = stories || [];
+    applyView();
+  } catch (e) {
+    console.error(e);
+    setError("Impossible de charger les histoires. Vérifie ton endpoint /api/stories et ta base.");
   }
+}
+
 
   function onStoryFilter(kind) {
     state.filterKind = kind || "";
