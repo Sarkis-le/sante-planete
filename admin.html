@@ -1498,7 +1498,7 @@ STORIES = (Array.isArray(data) ? data : []).map(s => ({
     return [];
   })(),
 }));
-
+renderStories(); // ✅ MANQUAIT ICI
   } catch(err){
     console.error(err);
     storiesListContainer.innerHTML = '<div class="empty">Erreur lors du chargement des histoires.</div>';
