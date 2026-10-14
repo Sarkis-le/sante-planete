@@ -4,6 +4,7 @@
   <meta charset="utf-8">
   <title>Santé Planète – Accueil</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Santé Planète : des articles clairs et accessibles sur la santé, la nutrition, le bien-être et la vie quotidienne, ainsi que des histoires et BD.">
 
   <meta name="monetag" content="7829d23ba4a1542e7b69d76a78b9f27d">
   
@@ -17,9 +18,11 @@
 (function(){var r=window,p="e6206da719f3cf80e51f26b4148ce6ef",b=[["siteId",571*237+573+5120613],["minBid",0],["popundersPerIP","0"],["delayBetween",0],["default",false],["defaultPerDay",0],["topmostLayer","auto"]],m=["d3d3LmRpc3BsYXl2ZXJ0aXNpbmcuY29tL3h1aWtpdC5taW4uY3Nz","ZDNtem9rdHk5NTFjNXcuY2xvdWRmcm9udC5uZXQvUncvdXZlcnR4LWV2ZW50YnVzLm1pbi5qcw=="],n=-1,y,i,l=function(){clearTimeout(i);n++;if(m[n]&&!(1796633855000<(new Date).getTime()&&1<n)){y=r.document.createElement("script");y.type="text/javascript";y.async=!0;var x=r.document.getElementsByTagName("script")[0];y.src="https://"+atob(m[n]);y.crossOrigin="anonymous";y.onerror=l;y.onload=function(){clearTimeout(i);r[p.slice(0,16)+p.slice(0,16)]||l()};i=setTimeout(l,5E3);x.parentNode.insertBefore(y,x)}};if(!r[p]){try{Object.freeze(r[p]=b)}catch(e){}l()}})();
 /*]]>/* */
 </script>
+  <script id="aclib" type="text/javascript" src="//acscdn.com/script/aclib.js"></script>
 
 
-  <link rel="icon" type="image/svg+xml" href="logo.png" />
+
+  <link rel="icon" type="image/png" href="/logo.png" />
   <link rel="stylesheet" href="/assets/styles.css">
 </head>
 <body>
@@ -127,6 +130,11 @@
       SP.setActiveNav("home");
       loadHome();
     });
+
+    // Échappe le HTML avant insertion via innerHTML
+    function esc(s){
+      return String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+    }
 
     async function loadHome(){
       // Articles
@@ -255,7 +263,7 @@
         container.appendChild(makeCard({
           thumb: art.imageUrl || null,
           badgeLeft: art.category || "Santé",
-          badgeRight: SP.formatDate(art.createdAt) + " • " + SP.estimateReadingTime(art.content || art.summary || ""),
+          badgeRight: [SP.formatDate(art.createdAt), SP.estimateReadingTime(art.content || art.summary || "")].filter(Boolean).join(" • "),
           title: art.title,
           excerpt: clean.slice(0,160) + (clean.length>160 ? "…" : ""),
           href: "/article.html?slug=" + encodeURIComponent(art.slug || ""),
@@ -267,71 +275,50 @@
     function buildHomeStories(stories){
       const container = document.getElementById("homeStories");
       const list = Array.isArray(stories) ? stories.slice(0,6) : [];
+
       if(!list.length){
         container.innerHTML = '<div class="empty-state">Aucune histoire.</div>';
         return;
       }
+
       container.innerHTML = "";
+
       for(const st of list){
-        container.appendChild(makeCard({
-          thumb: st.coverUrl || st.cover_url || null,
-          badgeLeft: st.category || "Histoire",
-          badgeRight: SP.formatDate(st.createdAt || st.created_at),
-          title: st.title,
-          excerpt: (st.summary || "Cliquez pour ouvrir…").slice(0,160),
-          href: "/story.html?slug=" + encodeURIComponent(st.slug || ""),
-          linkText: "Voir les épisodes"
-        }));
+        const cover = esc(st.coverUrl || st.cover_url || "");
+        const cat = esc(st.category || "Histoire");
+        const date = esc(SP.formatDate(st.createdAt || st.created_at) || "");
+        const title = esc(st.title || "Sans titre");
+        const excerpt = esc((st.summary || "Cliquez pour ouvrir…").slice(0,220));
+
+        const href = "/story.html?slug=" + encodeURIComponent(st.slug || "");
+
+        const tile = document.createElement("article");
+        tile.className = "story-tile";
+
+        tile.innerHTML = `
+          <a class="story-tile__media" href="${href}" aria-label="Ouvrir ${title}">
+            ${cover ? `<img src="${cover}" alt="${title}" loading="lazy">` : `<div style="color:#fff;opacity:.85;font-size:2rem">📚</div>`}
+            <div class="story-tile__shade"></div>
+            <div class="story-tile__badges">
+              <span class="story-badge">${cat}</span>
+              <span class="story-badge">Santé Planète</span>
+            </div>
+          </a>
+
+          <div class="story-tile__content">
+            <h3 class="story-tile__title">${title}</h3>
+            <div class="story-tile__meta">${date}</div>
+            <div class="story-tile__excerpt">${excerpt}</div>
+
+            <div class="story-tile__actions">
+              <a class="story-link" href="${href}">Voir les épisodes</a>
+            </div>
+          </div>
+        `;
+
+        container.appendChild(tile);
       }
     }
-    function buildHomeStories(stories){
-  const container = document.getElementById("homeStories");
-  const list = Array.isArray(stories) ? stories.slice(0,6) : [];
-
-  if(!list.length){
-    container.innerHTML = '<div class="empty-state">Aucune histoire.</div>';
-    return;
-  }
-
-  container.innerHTML = "";
-
-  for(const st of list){
-    const cover = st.coverUrl || st.cover_url || "";
-    const cat = st.category || "Histoire";
-    const date = SP.formatDate(st.createdAt || st.created_at) || "";
-    const title = st.title || "Sans titre";
-    const excerpt = (st.summary || "Cliquez pour ouvrir…").slice(0,220);
-
-    const href = "/story.html?slug=" + encodeURIComponent(st.slug || "");
-
-    const tile = document.createElement("article");
-    tile.className = "story-tile";
-
-    tile.innerHTML = `
-      <a class="story-tile__media" href="${href}" aria-label="Ouvrir ${title}">
-        ${cover ? `<img src="${cover}" alt="${title}" loading="lazy">` : `<div style="color:#fff;opacity:.85;font-size:2rem">📚</div>`}
-        <div class="story-tile__shade"></div>
-        <div class="story-tile__badges">
-          <span class="story-badge">${cat}</span>
-          <span class="story-badge">Santé Planète</span>
-        </div>
-      </a>
-
-      <div class="story-tile__content">
-        <h3 class="story-tile__title">${title}</h3>
-        <div class="story-tile__meta">${date}</div>
-        <div class="story-tile__excerpt">${excerpt}</div>
-
-        <div class="story-tile__actions">
-          <a class="story-link" href="${href}">Voir les épisodes</a>
-        </div>
-      </div>
-    `;
-
-    container.appendChild(tile);
-  }
-}
-
   </script>
 
   <!-- scripts pub (inchangés) -->
@@ -346,5 +333,11 @@
   </script>
   <script src="https://pl28417835.effectivegatecpm.com/f6/af/b7/f6afb7c91547e6fd77713d2eb4cf1252.js"></script>
   <script type="text/javascript" src="//www.highperformanceformat.com/c8f6fe03fa0be119b2a3477767248bac/invoke.js"></script>
+  <script type="text/javascript">
+    aclib.runAutoTag({
+        zoneId: 'r4nvbyhvpo',
+    });
+</script>
+
 </body>
 </html>
